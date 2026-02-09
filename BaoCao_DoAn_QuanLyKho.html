@@ -1,0 +1,3815 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Báo Cáo Đồ Án - Hệ Thống Quản Lý Kho</title>
+<style>
+body { font-family: 'Times New Roman', serif; font-size: 13pt; line-height: 1.5; margin: 40px; }
+h1 { font-size: 16pt; font-weight: bold; text-align: center; margin-top: 30px; }
+h2 { font-size: 14pt; font-weight: bold; margin-top: 20px; }
+h3 { font-size: 13pt; font-weight: bold; margin-top: 15px; }
+h4 { font-size: 13pt; font-weight: bold; font-style: italic; }
+p { text-align: justify; text-indent: 1.27cm; }
+table { border-collapse: collapse; width: 100%; margin: 10px 0; }
+th, td { border: 1px solid black; padding: 8px; text-align: left; }
+th { background-color: #f0f0f0; font-weight: bold; }
+.center { text-align: center; }
+.page-break { page-break-after: always; }
+ul, ol { margin-left: 20px; }
+.toc { margin: 20px 0; }
+.toc a { text-decoration: none; color: black; }
+code { font-family: Consolas, monospace; background: #f5f5f5; padding: 2px 5px; }
+.figure { text-align: center; margin: 15px 0; }
+.figure-caption { font-style: italic; font-size: 12pt; }
+</style>
+</head>
+<body>
+
+<div class="center">
+<h1 style="font-size: 18pt;">BỘ GIÁO DỤC VÀ ĐÀO TẠO</h1>
+<h1 style="font-size: 18pt;">TRƯỜNG ĐẠI HỌC...</h1>
+<br><br><br>
+<h1 style="font-size: 24pt;">ĐỒ ÁN TỐT NGHIỆP</h1>
+<br>
+<h1 style="font-size: 20pt;">XÂY DỰNG HỆ THỐNG QUẢN LÝ KHO HÀNG</h1>
+<br><br><br>
+<p style="text-indent: 0; text-align: left; margin-left: 200px;">
+<strong>Sinh viên thực hiện:</strong> ...........................<br>
+<strong>Mã sinh viên:</strong> ...........................<br>
+<strong>Lớp:</strong> ...........................<br>
+<strong>Giảng viên hướng dẫn:</strong> ...........................
+</p>
+<br><br><br>
+<p style="text-indent: 0;"><strong>Năm 2025</strong></p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- MỤC LỤC -->
+<h1>MỤC LỤC</h1>
+<div class="toc">
+<p style="text-indent: 0;">CHƯƠNG 1. GIỚI THIỆU ĐỀ TÀI .................................................... 1</p>
+<p style="text-indent: 0.5cm;">1.1 Đặt vấn đề .................................................................................. 1</p>
+<p style="text-indent: 0.5cm;">1.2 Mục tiêu và phạm vi đề tài ......................................................... 2</p>
+<p style="text-indent: 0.5cm;">1.3 Định hướng giải pháp ................................................................ 3</p>
+<p style="text-indent: 0.5cm;">1.4 Bố cục đồ án .............................................................................. 4</p>
+<p style="text-indent: 0;">CHƯƠNG 2. KHẢO SÁT VÀ PHÂN TÍCH YÊU CẦU ........................ 5</p>
+<p style="text-indent: 0.5cm;">2.1 Khảo sát thực trạng ................................................................... 5</p>
+<p style="text-indent: 0.5cm;">2.2 Tổng quan chức năng ................................................................ 6</p>
+<p style="text-indent: 1cm;">2.2.1 Biểu đồ Use Case ............................................................ 6</p>
+<p style="text-indent: 1cm;">2.2.8 Biểu đồ hoạt động (Activity Diagram) ........................... 12</p>
+<p style="text-indent: 0.5cm;">2.3 Đặc tả chức năng ....................................................................... 16</p>
+<p style="text-indent: 0.5cm;">2.4 Yêu cầu phi chức năng .............................................................. 21</p>
+<p style="text-indent: 0;">CHƯƠNG 3. CÔNG NGHỆ SỬ DỤNG ................................................ 23</p>
+<p style="text-indent: 0.5cm;">3.1 Node.JS và Express.JS .............................................................. 23</p>
+<p style="text-indent: 0.5cm;">3.2 MySQL ...................................................................................... 24</p>
+<p style="text-indent: 0.5cm;">3.3 React.JS .................................................................................... 25</p>
+<p style="text-indent: 0.5cm;">3.4 Các công nghệ khác .................................................................. 26</p>
+<p style="text-indent: 0;">CHƯƠNG 4. THIẾT KẾ, TRIỂN KHAI VÀ ĐÁNH GIÁ .................... 29</p>
+<p style="text-indent: 0.5cm;">4.1 Thiết kế kiến trúc ...................................................................... 29</p>
+<p style="text-indent: 0.5cm;">4.2 Thiết kế chi tiết ......................................................................... 35</p>
+<p style="text-indent: 1cm;">4.2.1 Biểu đồ tuần tự (Sequence Diagram) .............................. 35</p>
+<p style="text-indent: 1cm;">4.2.2 Thiết kế cơ sở dữ liệu ...................................................... 39</p>
+<p style="text-indent: 1.5cm;">- Biểu đồ lớp (Class Diagram) ........................................... 41</p>
+<p style="text-indent: 1.5cm;">- Biểu đồ thành phần (Component Diagram) .................... 42</p>
+<p style="text-indent: 1.5cm;">- Biểu đồ triển khai (Deployment Diagram) ...................... 43</p>
+<p style="text-indent: 1cm;">4.2.3 Thiết kế API ..................................................................... 44</p>
+<p style="text-indent: 1cm;">4.2.4 Thiết kế giao diện ............................................................ 46</p>
+<p style="text-indent: 0.5cm;">4.3 Xây dựng ứng dụng .................................................................. 47</p>
+<p style="text-indent: 0.5cm;">4.4 Kiểm thử ................................................................................... 53</p>
+<p style="text-indent: 0.5cm;">4.5 Triển khai .................................................................................. 55</p>
+<p style="text-indent: 0;">CHƯƠNG 5. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN ........................ 58</p>
+<p style="text-indent: 0.5cm;">5.1 Kết luận ..................................................................................... 58</p>
+<p style="text-indent: 0.5cm;">5.2 Hướng phát triển ....................................................................... 59</p>
+<p style="text-indent: 0;">TÀI LIỆU THAM KHẢO ...................................................................... 60</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- CHƯƠNG 1 -->
+<h1>CHƯƠNG 1. GIỚI THIỆU ĐỀ TÀI</h1>
+
+<h2>1.1 Đặt vấn đề</h2>
+<p>Trong bối cảnh kinh tế ngày càng phát triển, các doanh nghiệp sản xuất, kinh doanh và phân phối hàng hóa đang phải đối mặt với thách thức lớn trong việc quản lý kho hàng một cách hiệu quả. Kho hàng là nơi lưu trữ nguyên vật liệu, thành phẩm và bán thành phẩm, đóng vai trò quan trọng trong chuỗi cung ứng của doanh nghiệp.</p>
+
+<p>Hiện nay, nhiều doanh nghiệp vừa và nhỏ vẫn còn sử dụng phương pháp quản lý kho truyền thống như ghi chép sổ sách, sử dụng Excel để theo dõi hàng hóa. Phương pháp này tồn tại nhiều hạn chế:</p>
+
+<ul>
+<li>Khó kiểm soát số lượng hàng tồn kho chính xác theo thời gian thực</li>
+<li>Dễ xảy ra sai sót trong quá trình nhập xuất kho</li>
+<li>Mất nhiều thời gian để tìm kiếm, tra cứu thông tin</li>
+<li>Khó khăn trong việc lập báo cáo thống kê</li>
+<li>Không theo dõi được lịch sử thay đổi của hàng hóa</li>
+<li>Khó phân quyền và quản lý nhiều người dùng</li>
+</ul>
+
+<p>Trước thực trạng đó, việc xây dựng một hệ thống quản lý kho hàng tự động, hiện đại là vô cùng cấp thiết. Hệ thống này sẽ giúp doanh nghiệp quản lý hiệu quả hơn các hoạt động nhập kho, xuất kho, theo dõi tồn kho và lập báo cáo một cách nhanh chóng, chính xác.</p>
+
+<h2>1.2 Mục tiêu và phạm vi đề tài</h2>
+
+<h3>1.2.1 Mục tiêu</h3>
+<p><strong>Mục tiêu tổng quát:</strong> Xây dựng hệ thống quản lý kho hàng trực tuyến (web-based) giúp doanh nghiệp quản lý toàn bộ hoạt động nhập xuất kho, theo dõi tồn kho và lập báo cáo thống kê một cách hiệu quả.</p>
+
+<p><strong>Mục tiêu cụ thể:</strong></p>
+<ul>
+<li>Xây dựng module quản lý sản phẩm với đầy đủ thông tin: mã SKU, tên, danh mục, giá, hình ảnh</li>
+<li>Xây dựng module quản lý danh mục sản phẩm theo cấu trúc phân cấp</li>
+<li>Xây dựng module nhập kho với phiếu nhập chi tiết, liên kết nhà cung cấp</li>
+<li>Xây dựng module xuất kho với phiếu xuất chi tiết, liên kết khách hàng</li>
+<li>Xây dựng module quản lý nhà cung cấp và khách hàng</li>
+<li>Xây dựng module theo dõi tồn kho theo thời gian thực với cảnh báo hết hàng</li>
+<li>Xây dựng module báo cáo thống kê: báo cáo tồn kho, báo cáo nhập xuất</li>
+<li>Xây dựng module quản lý người dùng với phân quyền Admin/Staff</li>
+<li>Xây dựng chức năng ghi log hoạt động (Audit Log) để theo dõi lịch sử</li>
+<li>Xây dựng chức năng in phiếu nhập/xuất kho</li>
+<li>Xây dựng chức năng xuất báo cáo ra file Excel</li>
+</ul>
+
+<h3>1.2.2 Phạm vi đề tài</h3>
+<p><strong>Phạm vi nghiên cứu:</strong></p>
+<ul>
+<li>Nghiên cứu quy trình quản lý kho hàng trong doanh nghiệp</li>
+<li>Nghiên cứu các công nghệ web hiện đại: Node.js, React.js, MySQL</li>
+<li>Nghiên cứu kiến trúc phần mềm MVC và RESTful API</li>
+</ul>
+
+<p><strong>Phạm vi ứng dụng:</strong></p>
+<ul>
+<li>Hệ thống phù hợp với doanh nghiệp vừa và nhỏ</li>
+<li>Hỗ trợ quản lý một kho hàng duy nhất</li>
+<li>Hỗ trợ truy cập qua trình duyệt web trên máy tính</li>
+</ul>
+
+<h2>1.3 Định hướng giải pháp</h2>
+<p>Để giải quyết các vấn đề đã nêu, đề tài đề xuất xây dựng hệ thống quản lý kho hàng với các đặc điểm sau:</p>
+
+<p><strong>Về kiến trúc hệ thống:</strong></p>
+<ul>
+<li>Sử dụng kiến trúc Client-Server với RESTful API</li>
+<li>Frontend và Backend tách biệt, dễ bảo trì và mở rộng</li>
+<li>Áp dụng mô hình MVC (Model-View-Controller) cho backend</li>
+</ul>
+
+<p><strong>Về công nghệ:</strong></p>
+<ul>
+<li>Backend: Node.js + Express.js - nền tảng JavaScript phổ biến, hiệu suất cao</li>
+<li>Frontend: React.js + Vite - thư viện UI hiện đại, trải nghiệm người dùng tốt</li>
+<li>Database: MySQL - hệ quản trị CSDL quan hệ ổn định, phổ biến</li>
+<li>Authentication: JWT (JSON Web Token) - bảo mật, không cần session server</li>
+</ul>
+
+<p><strong>Về tính năng:</strong></p>
+<ul>
+<li>Giao diện thân thiện, dễ sử dụng với thiết kế responsive</li>
+<li>Tìm kiếm nhanh với Global Search</li>
+<li>Cập nhật tồn kho tự động khi nhập/xuất</li>
+<li>Cảnh báo hàng sắp hết với ngưỡng tùy chỉnh</li>
+<li>Ghi log mọi hoạt động để truy vết</li>
+</ul>
+
+<h2>1.4 Bố cục đồ án</h2>
+<p>Đồ án được trình bày thành 5 chương với nội dung như sau:</p>
+
+<p><strong>Chương 1 - Giới thiệu đề tài:</strong> Trình bày lý do chọn đề tài, đặt vấn đề, mục tiêu và phạm vi nghiên cứu, định hướng giải pháp.</p>
+
+<p><strong>Chương 2 - Khảo sát và phân tích yêu cầu:</strong> Khảo sát thực trạng, phân tích yêu cầu chức năng thông qua các biểu đồ Use Case, đặc tả chi tiết các chức năng và yêu cầu phi chức năng.</p>
+
+<p><strong>Chương 3 - Công nghệ sử dụng:</strong> Giới thiệu các công nghệ được sử dụng trong đề tài: Node.js, Express.js, MySQL, React.js, JWT và các thư viện liên quan.</p>
+
+<p><strong>Chương 4 - Thiết kế, triển khai và đánh giá:</strong> Trình bày thiết kế kiến trúc hệ thống, thiết kế cơ sở dữ liệu, thiết kế giao diện, quá trình xây dựng ứng dụng và kiểm thử.</p>
+
+<p><strong>Chương 5 - Kết luận và hướng phát triển:</strong> Tổng kết kết quả đạt được, những hạn chế và đề xuất hướng phát triển trong tương lai.</p>
+
+<div class="page-break"></div>
+
+<!-- CHƯƠNG 2 -->
+<h1>CHƯƠNG 2. KHẢO SÁT VÀ PHÂN TÍCH YÊU CẦU</h1>
+
+<h2>2.1 Khảo sát thực trạng</h2>
+
+<h3>2.1.1 Quy trình quản lý kho truyền thống</h3>
+<p>Qua khảo sát thực tế tại một số doanh nghiệp vừa và nhỏ, quy trình quản lý kho truyền thống thường bao gồm các bước sau:</p>
+
+<p><strong>Quy trình nhập kho:</strong></p>
+<ol>
+<li>Nhận hàng từ nhà cung cấp</li>
+<li>Kiểm tra số lượng, chất lượng hàng hóa</li>
+<li>Ghi chép vào sổ kho hoặc file Excel</li>
+<li>Lưu trữ hàng hóa vào vị trí trong kho</li>
+<li>Lưu chứng từ nhập kho</li>
+</ol>
+
+<p><strong>Quy trình xuất kho:</strong></p>
+<ol>
+<li>Nhận yêu cầu xuất hàng từ bộ phận kinh doanh</li>
+<li>Kiểm tra tồn kho</li>
+<li>Lập phiếu xuất kho</li>
+<li>Xuất hàng và ghi chép vào sổ</li>
+<li>Cập nhật số lượng tồn</li>
+</ol>
+
+<h3>2.1.2 Những vấn đề tồn tại</h3>
+<table>
+<tr>
+<th>STT</th>
+<th>Vấn đề</th>
+<th>Hậu quả</th>
+</tr>
+<tr>
+<td>1</td>
+<td>Ghi chép thủ công, dễ sai sót</td>
+<td>Số liệu không chính xác, khó đối chiếu</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Không cập nhật tồn kho theo thời gian thực</td>
+<td>Không biết chính xác còn bao nhiêu hàng</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Khó tìm kiếm thông tin</td>
+<td>Mất thời gian tra cứu</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Báo cáo thủ công</td>
+<td>Chậm trễ trong việc ra quyết định</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Không có cảnh báo hết hàng</td>
+<td>Bị động trong việc đặt hàng bổ sung</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Không theo dõi được ai thực hiện thao tác</td>
+<td>Khó quy trách nhiệm khi có sự cố</td>
+</tr>
+</table>
+
+<h2>2.2 Tổng quan chức năng</h2>
+
+<h3>2.2.1 Biểu đồ Use Case tổng quát</h3>
+<p>Hệ thống có 2 loại người dùng (Actor) chính:</p>
+<ul>
+<li><strong>Admin (Quản trị viên):</strong> Có toàn quyền quản lý hệ thống</li>
+<li><strong>Staff (Nhân viên kho):</strong> Thực hiện các nghiệp vụ nhập xuất kho</li>
+</ul>
+
+<div class="figure">
+<svg width="750" height="580" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="120" y="10" width="510" height="560" fill="#fafafa" stroke="#333" stroke-width="2" rx="5"/>
+  <text x="375" y="35" text-anchor="middle" font-weight="bold" font-size="14">Hệ Thống Quản Lý Kho</text>
+
+  <!-- Actor Admin -->
+  <circle cx="50" cy="200" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="215" x2="50" y2="260" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="230" x2="25" y2="250" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="230" x2="75" y2="250" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="260" x2="25" y2="290" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="260" x2="75" y2="290" stroke="#333" stroke-width="2"/>
+  <text x="50" y="310" text-anchor="middle" font-weight="bold" font-size="12">Admin</text>
+
+  <!-- Actor Staff -->
+  <circle cx="700" cy="300" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="700" y1="315" x2="700" y2="360" stroke="#333" stroke-width="2"/>
+  <line x1="700" y1="330" x2="675" y2="350" stroke="#333" stroke-width="2"/>
+  <line x1="700" y1="330" x2="725" y2="350" stroke="#333" stroke-width="2"/>
+  <line x1="700" y1="360" x2="675" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="700" y1="360" x2="725" y2="390" stroke="#333" stroke-width="2"/>
+  <text x="700" y="410" text-anchor="middle" font-weight="bold" font-size="12">Staff</text>
+
+  <!-- Use Cases -->
+  <!-- UC1: Đăng nhập -->
+  <ellipse cx="375" cy="60" rx="80" ry="25" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="375" y="65" text-anchor="middle" font-size="11">Đăng nhập</text>
+
+  <!-- UC2: Quản lý người dùng -->
+  <ellipse cx="220" cy="110" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="115" text-anchor="middle" font-size="11">Quản lý người dùng</text>
+
+  <!-- UC3: Quản lý danh mục -->
+  <ellipse cx="220" cy="165" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="170" text-anchor="middle" font-size="11">Quản lý danh mục</text>
+
+  <!-- UC4: Quản lý sản phẩm -->
+  <ellipse cx="375" cy="165" rx="85" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="375" y="170" text-anchor="middle" font-size="11">Quản lý sản phẩm</text>
+
+  <!-- UC5: Quản lý NCC -->
+  <ellipse cx="220" cy="220" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="225" text-anchor="middle" font-size="11">Quản lý nhà cung cấp</text>
+
+  <!-- UC6: Quản lý KH -->
+  <ellipse cx="220" cy="275" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="280" text-anchor="middle" font-size="11">Quản lý khách hàng</text>
+
+  <!-- UC7: Nhập kho -->
+  <ellipse cx="375" cy="275" rx="85" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="375" y="280" text-anchor="middle" font-size="11">Quản lý nhập kho</text>
+
+  <!-- UC8: Xuất kho -->
+  <ellipse cx="530" cy="275" rx="85" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="530" y="280" text-anchor="middle" font-size="11">Quản lý xuất kho</text>
+
+  <!-- UC9: Xem tồn kho -->
+  <ellipse cx="530" cy="330" rx="85" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="530" y="335" text-anchor="middle" font-size="11">Xem tồn kho</text>
+
+  <!-- UC10: Báo cáo -->
+  <ellipse cx="220" cy="385" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="390" text-anchor="middle" font-size="11">Xem báo cáo</text>
+
+  <!-- UC11: Audit Log -->
+  <ellipse cx="220" cy="440" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="445" text-anchor="middle" font-size="11">Xem lịch sử hoạt động</text>
+
+  <!-- UC12: Xuất Excel -->
+  <ellipse cx="220" cy="495" rx="85" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="220" y="500" text-anchor="middle" font-size="11">Xuất báo cáo Excel</text>
+
+  <!-- UC13: Dashboard -->
+  <ellipse cx="530" cy="385" rx="85" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="530" y="390" text-anchor="middle" font-size="11">Xem Dashboard</text>
+
+  <!-- Admin connections -->
+  <line x1="75" y1="200" x2="135" y2="110" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="200" x2="135" y2="165" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="200" x2="135" y2="220" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="200" x2="135" y2="275" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="220" x2="290" y2="165" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="220" x2="290" y2="275" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="250" x2="135" y2="385" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="250" x2="135" y2="440" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="250" x2="135" y2="495" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="200" x2="295" y2="60" stroke="#333" stroke-width="1"/>
+
+  <!-- Staff connections -->
+  <line x1="675" y1="300" x2="615" y2="275" stroke="#333" stroke-width="1"/>
+  <line x1="675" y1="300" x2="615" y2="330" stroke="#333" stroke-width="1"/>
+  <line x1="675" y1="300" x2="615" y2="385" stroke="#333" stroke-width="1"/>
+  <line x1="675" y1="300" x2="460" y2="275" stroke="#333" stroke-width="1"/>
+  <line x1="675" y1="300" x2="460" y2="165" stroke="#333" stroke-width="1"/>
+  <line x1="675" y1="280" x2="455" y2="60" stroke="#333" stroke-width="1"/>
+
+  <!-- Legend -->
+  <rect x="130" y="525" width="15" height="15" fill="#fff3e0" stroke="#f57c00" stroke-width="1"/>
+  <text x="150" y="537" font-size="10">Chỉ Admin</text>
+  <rect x="230" y="525" width="15" height="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="1"/>
+  <text x="250" y="537" font-size="10">Admin & Staff</text>
+  <rect x="350" y="525" width="15" height="15" fill="#e3f2fd" stroke="#1976d2" stroke-width="1"/>
+  <text x="370" y="537" font-size="10">Tất cả</text>
+</svg>
+<p class="figure-caption">Hình 2.1: Biểu đồ Use Case tổng quát của hệ thống</p>
+</div>
+
+<table>
+<tr>
+<th>Actor</th>
+<th>Chức năng</th>
+</tr>
+<tr>
+<td rowspan="12">Admin</td>
+<td>Đăng nhập / Đăng xuất</td>
+</tr>
+<tr><td>Quản lý người dùng (CRUD)</td></tr>
+<tr><td>Quản lý danh mục sản phẩm (CRUD)</td></tr>
+<tr><td>Quản lý sản phẩm (CRUD)</td></tr>
+<tr><td>Quản lý nhà cung cấp (CRUD)</td></tr>
+<tr><td>Quản lý khách hàng (CRUD)</td></tr>
+<tr><td>Quản lý nhập kho</td></tr>
+<tr><td>Quản lý xuất kho</td></tr>
+<tr><td>Xem tồn kho</td></tr>
+<tr><td>Xem báo cáo thống kê</td></tr>
+<tr><td>Xem lịch sử hoạt động (Audit Log)</td></tr>
+<tr><td>Xuất báo cáo Excel</td></tr>
+<tr>
+<td rowspan="8">Staff</td>
+<td>Đăng nhập / Đăng xuất</td>
+</tr>
+<tr><td>Xem danh mục sản phẩm</td></tr>
+<tr><td>Xem sản phẩm</td></tr>
+<tr><td>Xem nhà cung cấp</td></tr>
+<tr><td>Xem khách hàng</td></tr>
+<tr><td>Tạo phiếu nhập kho</td></tr>
+<tr><td>Tạo phiếu xuất kho</td></tr>
+<tr><td>Xem tồn kho</td></tr>
+</table>
+
+<h3>2.2.2 Biểu đồ Use Case phân rã - Quản lý sản phẩm</h3>
+<div class="figure">
+<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="120" y="10" width="360" height="330" fill="#fafafa" stroke="#333" stroke-width="2" rx="5"/>
+  <text x="300" y="35" text-anchor="middle" font-weight="bold" font-size="13">Quản lý sản phẩm</text>
+
+  <!-- Actor Admin -->
+  <circle cx="50" cy="150" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="165" x2="50" y2="210" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="25" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="75" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="210" x2="25" y2="240" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="210" x2="75" y2="240" stroke="#333" stroke-width="2"/>
+  <text x="50" y="260" text-anchor="middle" font-weight="bold" font-size="11">Admin</text>
+
+  <!-- Actor Staff -->
+  <circle cx="550" cy="100" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="115" x2="550" y2="160" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="130" x2="525" y2="150" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="130" x2="575" y2="150" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="160" x2="525" y2="190" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="160" x2="575" y2="190" stroke="#333" stroke-width="2"/>
+  <text x="550" y="210" text-anchor="middle" font-weight="bold" font-size="11">Staff</text>
+
+  <!-- Use Cases -->
+  <ellipse cx="300" cy="70" rx="90" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="75" text-anchor="middle" font-size="11">Xem danh sách SP</text>
+
+  <ellipse cx="300" cy="130" rx="90" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="135" text-anchor="middle" font-size="11">Tìm kiếm sản phẩm</text>
+
+  <ellipse cx="300" cy="190" rx="90" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="300" y="195" text-anchor="middle" font-size="11">Thêm sản phẩm</text>
+
+  <ellipse cx="300" cy="250" rx="90" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="300" y="255" text-anchor="middle" font-size="11">Sửa sản phẩm</text>
+
+  <ellipse cx="300" cy="310" rx="90" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="300" y="315" text-anchor="middle" font-size="11">Xóa sản phẩm</text>
+
+  <!-- Include: Upload ảnh -->
+  <ellipse cx="180" cy="250" rx="55" ry="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="180" y="254" text-anchor="middle" font-size="9">Upload ảnh</text>
+
+  <!-- Admin connections -->
+  <line x1="75" y1="150" x2="210" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="150" x2="210" y2="130" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="150" x2="210" y2="190" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="150" x2="210" y2="250" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="170" x2="210" y2="310" stroke="#333" stroke-width="1"/>
+
+  <!-- Staff connections -->
+  <line x1="525" y1="100" x2="390" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="100" x2="390" y2="130" stroke="#333" stroke-width="1"/>
+
+  <!-- Include relationship -->
+  <line x1="235" y1="250" x2="210" y2="250" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="225" y="240" font-size="8" fill="#666">&lt;&lt;include&gt;&gt;</text>
+</svg>
+<p class="figure-caption">Hình 2.2: Biểu đồ Use Case phân rã - Quản lý sản phẩm</p>
+</div>
+
+<table>
+<tr>
+<th>Use Case</th>
+<th>Mô tả</th>
+<th>Actor</th>
+</tr>
+<tr>
+<td>Xem danh sách sản phẩm</td>
+<td>Hiển thị danh sách sản phẩm với phân trang, tìm kiếm, lọc theo danh mục</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Thêm sản phẩm</td>
+<td>Thêm sản phẩm mới với thông tin: SKU, tên, danh mục, giá, mô tả, hình ảnh</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Sửa sản phẩm</td>
+<td>Cập nhật thông tin sản phẩm</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Xóa sản phẩm</td>
+<td>Xóa sản phẩm khỏi hệ thống (soft delete)</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Upload hình ảnh</td>
+<td>Tải lên hình ảnh minh họa cho sản phẩm</td>
+<td>Admin</td>
+</tr>
+</table>
+
+<h3>2.2.3 Biểu đồ Use Case phân rã - Quản lý người dùng</h3>
+<div class="figure">
+<svg width="500" height="320" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="120" y="10" width="280" height="300" fill="#fafafa" stroke="#333" stroke-width="2" rx="5"/>
+  <text x="260" y="35" text-anchor="middle" font-weight="bold" font-size="13">Quản lý người dùng</text>
+
+  <!-- Actor Admin -->
+  <circle cx="50" cy="150" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="165" x2="50" y2="210" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="25" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="75" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="210" x2="25" y2="240" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="210" x2="75" y2="240" stroke="#333" stroke-width="2"/>
+  <text x="50" y="260" text-anchor="middle" font-weight="bold" font-size="11">Admin</text>
+
+  <!-- Use Cases -->
+  <ellipse cx="260" cy="70" rx="95" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="260" y="75" text-anchor="middle" font-size="11">Xem danh sách người dùng</text>
+
+  <ellipse cx="260" cy="130" rx="95" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="260" y="135" text-anchor="middle" font-size="11">Thêm người dùng</text>
+
+  <ellipse cx="260" cy="190" rx="95" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="260" y="195" text-anchor="middle" font-size="11">Sửa thông tin người dùng</text>
+
+  <ellipse cx="260" cy="250" rx="95" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="260" y="255" text-anchor="middle" font-size="11">Kích hoạt/Vô hiệu hóa</text>
+
+  <!-- Admin connections -->
+  <line x1="75" y1="140" x2="165" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="150" x2="165" y2="130" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="160" x2="165" y2="190" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="170" x2="165" y2="250" stroke="#333" stroke-width="1"/>
+</svg>
+<p class="figure-caption">Hình 2.3: Biểu đồ Use Case phân rã - Quản lý người dùng</p>
+</div>
+
+<table>
+<tr>
+<th>Use Case</th>
+<th>Mô tả</th>
+<th>Actor</th>
+</tr>
+<tr>
+<td>Xem danh sách người dùng</td>
+<td>Hiển thị danh sách tài khoản trong hệ thống</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Thêm người dùng</td>
+<td>Tạo tài khoản mới với vai trò Admin hoặc Staff</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Sửa thông tin người dùng</td>
+<td>Cập nhật thông tin tài khoản</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Kích hoạt/Vô hiệu hóa</td>
+<td>Bật/tắt trạng thái hoạt động của tài khoản</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Xóa người dùng</td>
+<td>Xóa tài khoản khỏi hệ thống</td>
+<td>Admin</td>
+</tr>
+</table>
+
+<h3>2.2.4 Biểu đồ Use Case phân rã - Quản lý nhập kho</h3>
+<div class="figure">
+<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="120" y="10" width="360" height="330" fill="#fafafa" stroke="#333" stroke-width="2" rx="5"/>
+  <text x="300" y="35" text-anchor="middle" font-weight="bold" font-size="13">Quản lý nhập kho</text>
+
+  <!-- Actor Admin -->
+  <circle cx="50" cy="120" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="135" x2="50" y2="180" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="150" x2="25" y2="170" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="150" x2="75" y2="170" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="25" y2="210" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="75" y2="210" stroke="#333" stroke-width="2"/>
+  <text x="50" y="230" text-anchor="middle" font-weight="bold" font-size="11">Admin</text>
+
+  <!-- Actor Staff -->
+  <circle cx="550" cy="150" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="165" x2="550" y2="210" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="180" x2="525" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="180" x2="575" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="210" x2="525" y2="240" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="210" x2="575" y2="240" stroke="#333" stroke-width="2"/>
+  <text x="550" y="260" text-anchor="middle" font-weight="bold" font-size="11">Staff</text>
+
+  <!-- Use Cases -->
+  <ellipse cx="300" cy="70" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="75" text-anchor="middle" font-size="11">Xem DS phiếu nhập</text>
+
+  <ellipse cx="300" cy="130" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="135" text-anchor="middle" font-size="11">Tạo phiếu nhập kho</text>
+
+  <ellipse cx="300" cy="190" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="195" text-anchor="middle" font-size="11">Xem chi tiết phiếu nhập</text>
+
+  <ellipse cx="300" cy="250" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="255" text-anchor="middle" font-size="11">In phiếu nhập</text>
+
+  <ellipse cx="300" cy="310" rx="100" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="300" y="315" text-anchor="middle" font-size="11">Xóa phiếu nhập</text>
+
+  <!-- Include: Chọn NCC, Chọn SP -->
+  <ellipse cx="180" cy="170" rx="50" ry="18" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="180" y="174" text-anchor="middle" font-size="9">Chọn NCC</text>
+
+  <ellipse cx="420" cy="170" rx="50" ry="18" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="420" y="174" text-anchor="middle" font-size="9">Chọn SP</text>
+
+  <!-- Admin connections -->
+  <line x1="75" y1="120" x2="200" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="120" x2="200" y2="130" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="130" x2="200" y2="190" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="140" x2="200" y2="250" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="150" x2="200" y2="310" stroke="#333" stroke-width="1"/>
+
+  <!-- Staff connections -->
+  <line x1="525" y1="140" x2="400" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="150" x2="400" y2="130" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="160" x2="400" y2="190" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="170" x2="400" y2="250" stroke="#333" stroke-width="1"/>
+
+  <!-- Include relationships -->
+  <line x1="230" y1="170" x2="250" y2="145" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="370" y1="170" x2="350" y2="145" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+</svg>
+<p class="figure-caption">Hình 2.4: Biểu đồ Use Case phân rã - Quản lý nhập kho</p>
+</div>
+
+<table>
+<tr>
+<th>Use Case</th>
+<th>Mô tả</th>
+<th>Actor</th>
+</tr>
+<tr>
+<td>Xem danh sách phiếu nhập</td>
+<td>Hiển thị các phiếu nhập kho với thông tin tổng quan</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Tạo phiếu nhập</td>
+<td>Tạo phiếu nhập kho mới với danh sách sản phẩm, nhà cung cấp</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Xem chi tiết phiếu nhập</td>
+<td>Xem thông tin chi tiết của phiếu nhập</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>In phiếu nhập</td>
+<td>In phiếu nhập kho ra giấy</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Xóa phiếu nhập</td>
+<td>Xóa phiếu nhập và hoàn trả tồn kho</td>
+<td>Admin</td>
+</tr>
+</table>
+
+<h3>2.2.5 Biểu đồ Use Case phân rã - Quản lý xuất kho</h3>
+<div class="figure">
+<svg width="600" height="380" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect x="120" y="10" width="360" height="360" fill="#fafafa" stroke="#333" stroke-width="2" rx="5"/>
+  <text x="300" y="35" text-anchor="middle" font-weight="bold" font-size="13">Quản lý xuất kho</text>
+
+  <!-- Actor Admin -->
+  <circle cx="50" cy="150" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="165" x2="50" y2="210" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="25" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="180" x2="75" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="210" x2="25" y2="240" stroke="#333" stroke-width="2"/>
+  <line x1="50" y1="210" x2="75" y2="240" stroke="#333" stroke-width="2"/>
+  <text x="50" y="260" text-anchor="middle" font-weight="bold" font-size="11">Admin</text>
+
+  <!-- Actor Staff -->
+  <circle cx="550" cy="180" r="15" fill="none" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="195" x2="550" y2="240" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="210" x2="525" y2="230" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="210" x2="575" y2="230" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="240" x2="525" y2="270" stroke="#333" stroke-width="2"/>
+  <line x1="550" y1="240" x2="575" y2="270" stroke="#333" stroke-width="2"/>
+  <text x="550" y="290" text-anchor="middle" font-weight="bold" font-size="11">Staff</text>
+
+  <!-- Use Cases -->
+  <ellipse cx="300" cy="70" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="75" text-anchor="middle" font-size="11">Xem DS phiếu xuất</text>
+
+  <ellipse cx="300" cy="130" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="135" text-anchor="middle" font-size="11">Tạo phiếu xuất kho</text>
+
+  <ellipse cx="300" cy="190" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="195" text-anchor="middle" font-size="11">Xem chi tiết phiếu xuất</text>
+
+  <ellipse cx="300" cy="250" rx="100" ry="25" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="300" y="255" text-anchor="middle" font-size="11">In phiếu xuất</text>
+
+  <ellipse cx="300" cy="310" rx="100" ry="25" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="300" y="315" text-anchor="middle" font-size="11">Xóa phiếu xuất</text>
+
+  <!-- Include: Chọn KH, Kiểm tra tồn kho -->
+  <ellipse cx="170" cy="170" rx="45" ry="18" fill="#e3f2fd" stroke="#1976d2" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="170" y="174" text-anchor="middle" font-size="9">Chọn KH</text>
+
+  <ellipse cx="430" cy="170" rx="55" ry="18" fill="#ffebee" stroke="#c62828" stroke-width="1" stroke-dasharray="3,3"/>
+  <text x="430" y="174" text-anchor="middle" font-size="9">Kiểm tra tồn</text>
+
+  <!-- Admin connections -->
+  <line x1="75" y1="140" x2="200" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="150" x2="200" y2="130" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="160" x2="200" y2="190" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="170" x2="200" y2="250" stroke="#333" stroke-width="1"/>
+  <line x1="75" y1="180" x2="200" y2="310" stroke="#333" stroke-width="1"/>
+
+  <!-- Staff connections -->
+  <line x1="525" y1="170" x2="400" y2="70" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="180" x2="400" y2="130" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="190" x2="400" y2="190" stroke="#333" stroke-width="1"/>
+  <line x1="525" y1="200" x2="400" y2="250" stroke="#333" stroke-width="1"/>
+
+  <!-- Include relationships -->
+  <line x1="215" y1="170" x2="240" y2="145" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="375" y1="170" x2="355" y2="145" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="395" y="155" font-size="8" fill="#c62828">&lt;&lt;include&gt;&gt;</text>
+</svg>
+<p class="figure-caption">Hình 2.5: Biểu đồ Use Case phân rã - Quản lý xuất kho</p>
+</div>
+
+<table>
+<tr>
+<th>Use Case</th>
+<th>Mô tả</th>
+<th>Actor</th>
+</tr>
+<tr>
+<td>Xem danh sách phiếu xuất</td>
+<td>Hiển thị các phiếu xuất kho với thông tin tổng quan</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Tạo phiếu xuất</td>
+<td>Tạo phiếu xuất kho với kiểm tra tồn kho, liên kết khách hàng</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Xem chi tiết phiếu xuất</td>
+<td>Xem thông tin chi tiết của phiếu xuất</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>In phiếu xuất</td>
+<td>In phiếu xuất kho ra giấy</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Xóa phiếu xuất</td>
+<td>Xóa phiếu xuất và hoàn trả tồn kho</td>
+<td>Admin</td>
+</tr>
+</table>
+
+<h3>2.2.6 Biểu đồ Use Case phân rã - Quản lý nhà cung cấp</h3>
+<table>
+<tr>
+<th>Use Case</th>
+<th>Mô tả</th>
+<th>Actor</th>
+</tr>
+<tr>
+<td>Xem danh sách NCC</td>
+<td>Hiển thị danh sách nhà cung cấp</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Thêm NCC</td>
+<td>Thêm nhà cung cấp mới</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Sửa NCC</td>
+<td>Cập nhật thông tin NCC</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Kích hoạt/Vô hiệu hóa</td>
+<td>Bật/tắt trạng thái hoạt động</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Xóa NCC</td>
+<td>Xóa nhà cung cấp</td>
+<td>Admin</td>
+</tr>
+</table>
+
+<h3>2.2.7 Biểu đồ Use Case phân rã - Quản lý khách hàng</h3>
+<table>
+<tr>
+<th>Use Case</th>
+<th>Mô tả</th>
+<th>Actor</th>
+</tr>
+<tr>
+<td>Xem danh sách KH</td>
+<td>Hiển thị danh sách khách hàng</td>
+<td>Admin, Staff</td>
+</tr>
+<tr>
+<td>Thêm KH</td>
+<td>Thêm khách hàng mới</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Sửa KH</td>
+<td>Cập nhật thông tin KH</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Kích hoạt/Vô hiệu hóa</td>
+<td>Bật/tắt trạng thái hoạt động</td>
+<td>Admin</td>
+</tr>
+<tr>
+<td>Xóa KH</td>
+<td>Xóa khách hàng</td>
+<td>Admin</td>
+</tr>
+</table>
+
+<h3>2.2.8 Biểu đồ hoạt động (Activity Diagram)</h3>
+<p>Biểu đồ hoạt động mô tả luồng xử lý của các quy trình nghiệp vụ trong hệ thống.</p>
+
+<h4>a) Biểu đồ hoạt động - Đăng nhập hệ thống</h4>
+<div class="figure">
+<svg width="500" height="550" xmlns="http://www.w3.org/2000/svg">
+  <!-- Start -->
+  <circle cx="250" cy="25" r="12" fill="#333"/>
+
+  <!-- Activity 1: Mở trang đăng nhập -->
+  <rect x="150" y="50" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="75" text-anchor="middle" font-size="11">Mở trang đăng nhập</text>
+  <line x1="250" y1="37" x2="250" y2="50" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 2: Nhập username/password -->
+  <rect x="150" y="110" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="135" text-anchor="middle" font-size="11">Nhập username và password</text>
+  <line x1="250" y1="90" x2="250" y2="110" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 3: Click đăng nhập -->
+  <rect x="150" y="170" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="195" text-anchor="middle" font-size="11">Nhấn nút Đăng nhập</text>
+  <line x1="250" y1="150" x2="250" y2="170" stroke="#333" stroke-width="2"/>
+
+  <!-- Decision: Validate input -->
+  <polygon points="250,230 310,265 250,300 190,265" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="250" y="262" text-anchor="middle" font-size="10">Dữ liệu</text>
+  <text x="250" y="275" text-anchor="middle" font-size="10">hợp lệ?</text>
+  <line x1="250" y1="210" x2="250" y2="230" stroke="#333" stroke-width="2"/>
+
+  <!-- Invalid input path -->
+  <rect x="360" y="245" width="120" height="35" rx="15" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="420" y="267" text-anchor="middle" font-size="10">Hiển thị lỗi</text>
+  <line x1="310" y1="265" x2="360" y2="265" stroke="#333" stroke-width="2"/>
+  <text x="330" y="255" font-size="9">Không</text>
+
+  <!-- Loop back from error -->
+  <line x1="420" y1="280" x2="420" y2="130" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="420" y1="130" x2="350" y2="130" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- API call -->
+  <rect x="150" y="320" width="200" height="40" rx="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="250" y="345" text-anchor="middle" font-size="11">Gọi API xác thực</text>
+  <line x1="250" y1="300" x2="250" y2="320" stroke="#333" stroke-width="2"/>
+  <text x="210" y="313" font-size="9">Có</text>
+
+  <!-- Decision: Auth success -->
+  <polygon points="250,380 310,415 250,450 190,415" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="250" y="412" text-anchor="middle" font-size="10">Xác thực</text>
+  <text x="250" y="425" text-anchor="middle" font-size="10">thành công?</text>
+  <line x1="250" y1="360" x2="250" y2="380" stroke="#333" stroke-width="2"/>
+
+  <!-- Auth failed -->
+  <rect x="30" y="395" width="120" height="35" rx="15" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="90" y="417" text-anchor="middle" font-size="10">Báo lỗi 401</text>
+  <line x1="190" y1="415" x2="150" y2="415" stroke="#333" stroke-width="2"/>
+  <text x="165" y="405" font-size="9">Không</text>
+
+  <!-- Loop back -->
+  <line x1="90" y1="430" x2="90" y2="130" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="90" y1="130" x2="150" y2="130" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- Success path -->
+  <rect x="150" y="470" width="200" height="40" rx="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="250" y="495" text-anchor="middle" font-size="11">Lưu token, chuyển Dashboard</text>
+  <line x1="250" y1="450" x2="250" y2="470" stroke="#333" stroke-width="2"/>
+  <text x="275" y="463" font-size="9">Có</text>
+
+  <!-- End -->
+  <circle cx="250" cy="535" r="12" fill="none" stroke="#333" stroke-width="2"/>
+  <circle cx="250" cy="535" r="7" fill="#333"/>
+  <line x1="250" y1="510" x2="250" y2="523" stroke="#333" stroke-width="2"/>
+</svg>
+<p class="figure-caption">Hình 2.6: Biểu đồ hoạt động - Đăng nhập hệ thống</p>
+</div>
+
+<p>Quy trình đăng nhập:</p>
+<ol>
+<li>Người dùng truy cập trang đăng nhập</li>
+<li>Nhập username và password</li>
+<li>Hệ thống validate dữ liệu đầu vào</li>
+<li>Gọi API xác thực với backend</li>
+<li>Nếu thành công: lưu JWT token và chuyển đến Dashboard</li>
+<li>Nếu thất bại: hiển thị thông báo lỗi</li>
+</ol>
+
+<h4>b) Biểu đồ hoạt động - Quản lý sản phẩm (Thêm mới)</h4>
+<div class="figure">
+<svg width="550" height="620" xmlns="http://www.w3.org/2000/svg">
+  <!-- Swimlanes -->
+  <rect x="20" y="20" width="240" height="580" fill="#f5f5f5" stroke="#ccc" stroke-width="1"/>
+  <text x="140" y="45" text-anchor="middle" font-weight="bold" font-size="11" fill="#666">Admin</text>
+  <line x1="20" y1="55" x2="260" y2="55" stroke="#ccc" stroke-width="1"/>
+
+  <rect x="280" y="20" width="240" height="580" fill="#e8f5e9" stroke="#ccc" stroke-width="1"/>
+  <text x="400" y="45" text-anchor="middle" font-weight="bold" font-size="11" fill="#666">Hệ thống</text>
+  <line x1="280" y1="55" x2="520" y2="55" stroke="#ccc" stroke-width="1"/>
+
+  <!-- Start -->
+  <circle cx="140" cy="80" r="12" fill="#333"/>
+
+  <!-- Activity 1: Mở form thêm sản phẩm -->
+  <rect x="50" y="105" width="180" height="35" rx="15" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="140" y="128" text-anchor="middle" font-size="10">Mở form thêm sản phẩm</text>
+  <line x1="140" y1="92" x2="140" y2="105" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 2: Nhập thông tin -->
+  <rect x="50" y="160" width="180" height="35" rx="15" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="140" y="183" text-anchor="middle" font-size="10">Nhập thông tin sản phẩm</text>
+  <line x1="140" y1="140" x2="140" y2="160" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 3: Upload ảnh -->
+  <rect x="50" y="215" width="180" height="35" rx="15" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="140" y="238" text-anchor="middle" font-size="10">Upload hình ảnh (tùy chọn)</text>
+  <line x1="140" y1="195" x2="140" y2="215" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 4: Click Submit -->
+  <rect x="50" y="270" width="180" height="35" rx="15" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="140" y="293" text-anchor="middle" font-size="10">Nhấn nút Lưu</text>
+  <line x1="140" y1="250" x2="140" y2="270" stroke="#333" stroke-width="2"/>
+
+  <!-- Transfer to system -->
+  <line x1="230" y1="287" x2="290" y2="287" stroke="#333" stroke-width="2"/>
+
+  <!-- System: Validate -->
+  <polygon points="400,270 455,305 400,340 345,305" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="400" y="302" text-anchor="middle" font-size="9">Validate</text>
+  <text x="400" y="315" text-anchor="middle" font-size="9">dữ liệu?</text>
+
+  <!-- Invalid path -->
+  <rect x="310" y="360" width="180" height="35" rx="15" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="400" y="383" text-anchor="middle" font-size="10">Trả về lỗi validation</text>
+  <line x1="400" y1="340" x2="400" y2="360" stroke="#333" stroke-width="2"/>
+  <text x="415" y="353" font-size="9">Không</text>
+
+  <!-- Return error to user -->
+  <line x1="310" y1="377" x2="230" y2="377" stroke="#333" stroke-width="2"/>
+  <rect x="50" y="360" width="180" height="35" rx="15" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="140" y="383" text-anchor="middle" font-size="10">Hiển thị thông báo lỗi</text>
+
+  <!-- Loop back -->
+  <line x1="140" y1="360" x2="140" y2="345" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="140" y1="345" x2="35" y2="345" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="35" y1="345" x2="35" y2="177" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="35" y1="177" x2="50" y2="177" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- Valid path: Check SKU -->
+  <polygon points="400,420 455,455 400,490 345,455" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="400" y="452" text-anchor="middle" font-size="9">SKU</text>
+  <text x="400" y="465" text-anchor="middle" font-size="9">trùng?</text>
+  <line x1="455" y1="305" x2="490" y2="305" stroke="#333" stroke-width="2"/>
+  <line x1="490" y1="305" x2="490" y2="455" stroke="#333" stroke-width="2"/>
+  <line x1="490" y1="455" x2="455" y2="455" stroke="#333" stroke-width="2"/>
+  <text x="475" y="295" font-size="9">Có</text>
+
+  <!-- SKU duplicate error -->
+  <line x1="345" y1="455" x2="230" y2="455" stroke="#333" stroke-width="2"/>
+  <rect x="50" y="438" width="180" height="35" rx="15" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="140" y="461" text-anchor="middle" font-size="10">Báo lỗi SKU đã tồn tại</text>
+  <text x="280" y="445" font-size="9">Có</text>
+
+  <!-- Success path -->
+  <rect x="310" y="510" width="180" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="400" y="533" text-anchor="middle" font-size="10">Lưu vào CSDL, tạo Stock</text>
+  <line x1="400" y1="490" x2="400" y2="510" stroke="#333" stroke-width="2"/>
+  <text x="415" y="503" font-size="9">Không</text>
+
+  <!-- Return success -->
+  <line x1="310" y1="527" x2="230" y2="527" stroke="#333" stroke-width="2"/>
+  <rect x="50" y="510" width="180" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="140" y="533" text-anchor="middle" font-size="10">Thông báo thành công</text>
+
+  <!-- End -->
+  <circle cx="140" cy="575" r="12" fill="none" stroke="#333" stroke-width="2"/>
+  <circle cx="140" cy="575" r="7" fill="#333"/>
+  <line x1="140" y1="545" x2="140" y2="563" stroke="#333" stroke-width="2"/>
+</svg>
+<p class="figure-caption">Hình 2.7: Biểu đồ hoạt động - Thêm sản phẩm mới</p>
+</div>
+
+<h4>c) Biểu đồ hoạt động - Quy trình nhập kho</h4>
+<div class="figure">
+<svg width="500" height="650" xmlns="http://www.w3.org/2000/svg">
+  <!-- Start -->
+  <circle cx="250" cy="30" r="15" fill="#333"/>
+
+  <!-- Activity 1 -->
+  <rect x="150" y="60" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="85" text-anchor="middle" font-size="11">Truy cập chức năng Nhập kho</text>
+  <line x1="250" y1="45" x2="250" y2="60" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Activity 2 -->
+  <rect x="150" y="120" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="145" text-anchor="middle" font-size="11">Chọn nhà cung cấp</text>
+  <line x1="250" y1="100" x2="250" y2="120" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 3 -->
+  <rect x="150" y="180" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="205" text-anchor="middle" font-size="11">Thêm sản phẩm vào DS</text>
+  <line x1="250" y1="160" x2="250" y2="180" stroke="#333" stroke-width="2"/>
+
+  <!-- Decision: Thêm SP khác? -->
+  <polygon points="250,240 310,280 250,320 190,280" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="250" y="285" text-anchor="middle" font-size="10">Thêm SP</text>
+  <text x="250" y="297" text-anchor="middle" font-size="10">khác?</text>
+  <line x1="250" y1="220" x2="250" y2="240" stroke="#333" stroke-width="2"/>
+
+  <!-- Loop back -->
+  <line x1="190" y1="280" x2="100" y2="280" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="280" x2="100" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="100" y1="200" x2="150" y2="200" stroke="#333" stroke-width="2"/>
+  <text x="140" y="270" font-size="10">Có</text>
+
+  <!-- Activity 4 -->
+  <rect x="150" y="340" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="365" text-anchor="middle" font-size="11">Nhập ghi chú</text>
+  <line x1="250" y1="320" x2="250" y2="340" stroke="#333" stroke-width="2"/>
+  <text x="270" y="333" font-size="10">Không</text>
+
+  <!-- Activity 5 -->
+  <rect x="150" y="400" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="250" y="425" text-anchor="middle" font-size="11">Xác nhận tạo phiếu</text>
+  <line x1="250" y1="380" x2="250" y2="400" stroke="#333" stroke-width="2"/>
+
+  <!-- Fork -->
+  <rect x="150" y="460" width="200" height="5" fill="#333"/>
+  <line x1="250" y1="440" x2="250" y2="460" stroke="#333" stroke-width="2"/>
+
+  <!-- Parallel activities -->
+  <rect x="70" y="485" width="140" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="140" y="507" text-anchor="middle" font-size="10">Tạo mã phiếu nhập</text>
+  <line x1="140" y1="465" x2="140" y2="485" stroke="#333" stroke-width="2"/>
+
+  <rect x="290" y="485" width="140" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="360" y="507" text-anchor="middle" font-size="10">Cập nhật tồn kho</text>
+  <line x1="360" y1="465" x2="360" y2="485" stroke="#333" stroke-width="2"/>
+
+  <!-- Join -->
+  <rect x="150" y="540" width="200" height="5" fill="#333"/>
+  <line x1="140" y1="520" x2="140" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="360" y1="520" x2="360" y2="540" stroke="#333" stroke-width="2"/>
+  <line x1="140" y1="540" x2="140" y2="542" stroke="#333" stroke-width="2"/>
+  <line x1="360" y1="540" x2="360" y2="542" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 6 -->
+  <rect x="150" y="565" width="200" height="40" rx="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="250" y="590" text-anchor="middle" font-size="11">Ghi log hoạt động</text>
+  <line x1="250" y1="545" x2="250" y2="565" stroke="#333" stroke-width="2"/>
+
+  <!-- End -->
+  <circle cx="250" cy="635" r="12" fill="none" stroke="#333" stroke-width="2"/>
+  <circle cx="250" cy="635" r="8" fill="#333"/>
+  <line x1="250" y1="605" x2="250" y2="623" stroke="#333" stroke-width="2"/>
+</svg>
+<p class="figure-caption">Hình 2.8: Biểu đồ hoạt động - Quy trình nhập kho</p>
+</div>
+
+<ol>
+<li>Người dùng truy cập chức năng Nhập kho</li>
+<li>Chọn nhà cung cấp từ danh sách hoặc nhập thông tin thủ công</li>
+<li>Thêm sản phẩm vào danh sách nhập:
+  <ul>
+    <li>Chọn sản phẩm từ dropdown</li>
+    <li>Nhập số lượng và đơn giá nhập</li>
+    <li>Hệ thống tự động tính thành tiền</li>
+  </ul>
+</li>
+<li>Nhập ghi chú (nếu có)</li>
+<li>Xác nhận tạo phiếu nhập</li>
+<li>Hệ thống tự động:
+  <ul>
+    <li>Tạo mã phiếu nhập (IMP-XXXXXX)</li>
+    <li>Cập nhật số lượng tồn kho</li>
+    <li>Ghi log hoạt động</li>
+  </ul>
+</li>
+<li>Có thể in phiếu nhập</li>
+</ol>
+
+<h4>d) Biểu đồ hoạt động - Quy trình xuất kho</h4>
+<div class="figure">
+<svg width="550" height="750" xmlns="http://www.w3.org/2000/svg">
+  <!-- Start -->
+  <circle cx="275" cy="30" r="15" fill="#333"/>
+
+  <!-- Activity 1 -->
+  <rect x="175" y="60" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="275" y="85" text-anchor="middle" font-size="11">Truy cập chức năng Xuất kho</text>
+  <line x1="275" y1="45" x2="275" y2="60" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 2 -->
+  <rect x="175" y="120" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="275" y="145" text-anchor="middle" font-size="11">Chọn khách hàng</text>
+  <line x1="275" y1="100" x2="275" y2="120" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 3 -->
+  <rect x="175" y="180" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="275" y="205" text-anchor="middle" font-size="11">Chọn sản phẩm & số lượng</text>
+  <line x1="275" y1="160" x2="275" y2="180" stroke="#333" stroke-width="2"/>
+
+  <!-- Decision: Kiểm tra tồn kho -->
+  <polygon points="275,240 345,285 275,330 205,285" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="275" y="280" text-anchor="middle" font-size="10">Tồn kho</text>
+  <text x="275" y="295" text-anchor="middle" font-size="10">đủ?</text>
+  <line x1="275" y1="220" x2="275" y2="240" stroke="#333" stroke-width="2"/>
+
+  <!-- No path - Error -->
+  <rect x="380" y="265" width="140" height="35" rx="15" fill="#ffebee" stroke="#c62828" stroke-width="2"/>
+  <text x="450" y="287" text-anchor="middle" font-size="10">Hiển thị cảnh báo</text>
+  <line x1="345" y1="285" x2="380" y2="285" stroke="#333" stroke-width="2"/>
+  <text x="360" y="275" font-size="10">Không</text>
+
+  <!-- Loop back from error -->
+  <line x1="450" y1="300" x2="450" y2="320" stroke="#333" stroke-width="2"/>
+  <line x1="450" y1="320" x2="500" y2="320" stroke="#333" stroke-width="2"/>
+  <line x1="500" y1="320" x2="500" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="500" y1="200" x2="375" y2="200" stroke="#333" stroke-width="2"/>
+
+  <!-- Decision: Thêm SP khác? -->
+  <polygon points="275,350 335,390 275,430 215,390" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+  <text x="275" y="388" text-anchor="middle" font-size="10">Thêm SP</text>
+  <text x="275" y="402" text-anchor="middle" font-size="10">khác?</text>
+  <line x1="275" y1="330" x2="275" y2="350" stroke="#333" stroke-width="2"/>
+  <text x="295" y="343" font-size="10">Có</text>
+
+  <!-- Loop back for more products -->
+  <line x1="215" y1="390" x2="120" y2="390" stroke="#333" stroke-width="2"/>
+  <line x1="120" y1="390" x2="120" y2="200" stroke="#333" stroke-width="2"/>
+  <line x1="120" y1="200" x2="175" y2="200" stroke="#333" stroke-width="2"/>
+  <text x="160" y="382" font-size="10">Có</text>
+
+  <!-- Activity 4 -->
+  <rect x="175" y="450" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="275" y="475" text-anchor="middle" font-size="11">Nhập ghi chú</text>
+  <line x1="275" y1="430" x2="275" y2="450" stroke="#333" stroke-width="2"/>
+  <text x="295" y="443" font-size="10">Không</text>
+
+  <!-- Activity 5 -->
+  <rect x="175" y="510" width="200" height="40" rx="20" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+  <text x="275" y="535" text-anchor="middle" font-size="11">Xác nhận tạo phiếu</text>
+  <line x1="275" y1="490" x2="275" y2="510" stroke="#333" stroke-width="2"/>
+
+  <!-- Fork -->
+  <rect x="150" y="570" width="250" height="5" fill="#333"/>
+  <line x1="275" y1="550" x2="275" y2="570" stroke="#333" stroke-width="2"/>
+
+  <!-- Parallel activities -->
+  <rect x="70" y="595" width="130" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="135" y="617" text-anchor="middle" font-size="10">Tạo mã phiếu</text>
+  <line x1="175" y1="575" x2="135" y2="595" stroke="#333" stroke-width="2"/>
+
+  <rect x="210" y="595" width="130" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="275" y="617" text-anchor="middle" font-size="10">Trừ tồn kho</text>
+  <line x1="275" y1="575" x2="275" y2="595" stroke="#333" stroke-width="2"/>
+
+  <rect x="350" y="595" width="130" height="35" rx="15" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="415" y="617" text-anchor="middle" font-size="10">Ghi log</text>
+  <line x1="375" y1="575" x2="415" y2="595" stroke="#333" stroke-width="2"/>
+
+  <!-- Join -->
+  <rect x="150" y="650" width="250" height="5" fill="#333"/>
+  <line x1="135" y1="630" x2="135" y2="650" stroke="#333" stroke-width="2"/>
+  <line x1="275" y1="630" x2="275" y2="650" stroke="#333" stroke-width="2"/>
+  <line x1="415" y1="630" x2="415" y2="650" stroke="#333" stroke-width="2"/>
+
+  <!-- Activity 6 -->
+  <rect x="175" y="675" width="200" height="40" rx="20" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+  <text x="275" y="700" text-anchor="middle" font-size="11">Hiển thị thông báo thành công</text>
+  <line x1="275" y1="655" x2="275" y2="675" stroke="#333" stroke-width="2"/>
+
+  <!-- End -->
+  <circle cx="275" cy="740" r="12" fill="none" stroke="#333" stroke-width="2"/>
+  <circle cx="275" cy="740" r="8" fill="#333"/>
+  <line x1="275" y1="715" x2="275" y2="728" stroke="#333" stroke-width="2"/>
+</svg>
+<p class="figure-caption">Hình 2.9: Biểu đồ hoạt động - Quy trình xuất kho</p>
+</div>
+
+<ol>
+<li>Người dùng truy cập chức năng Xuất kho</li>
+<li>Chọn khách hàng từ danh sách hoặc nhập thông tin thủ công</li>
+<li>Thêm sản phẩm vào danh sách xuất:
+  <ul>
+    <li>Chọn sản phẩm từ dropdown</li>
+    <li>Hệ thống hiển thị số lượng tồn kho hiện tại</li>
+    <li>Nhập số lượng xuất (không được vượt quá tồn kho)</li>
+    <li>Nhập đơn giá xuất</li>
+  </ul>
+</li>
+<li>Nếu số lượng vượt quá tồn kho → Hiển thị cảnh báo</li>
+<li>Xác nhận tạo phiếu xuất</li>
+<li>Hệ thống tự động:
+  <ul>
+    <li>Tạo mã phiếu xuất (EXP-XXXXXX)</li>
+    <li>Trừ số lượng tồn kho</li>
+    <li>Ghi log hoạt động</li>
+  </ul>
+</li>
+<li>Có thể in phiếu xuất</li>
+</ol>
+
+<h2>2.3 Đặc tả chức năng</h2>
+
+<h3>2.3.1 Đặc tả Use Case Đăng nhập</h3>
+<table>
+<tr><th colspan="2">UC01: Đăng nhập hệ thống</th></tr>
+<tr><td><strong>Mô tả</strong></td><td>Cho phép người dùng đăng nhập vào hệ thống</td></tr>
+<tr><td><strong>Actor</strong></td><td>Admin, Staff</td></tr>
+<tr><td><strong>Tiền điều kiện</strong></td><td>Người dùng đã có tài khoản trong hệ thống</td></tr>
+<tr><td><strong>Hậu điều kiện</strong></td><td>Người dùng đăng nhập thành công, được chuyển đến Dashboard</td></tr>
+<tr><td><strong>Luồng chính</strong></td><td>
+1. Người dùng truy cập trang đăng nhập<br>
+2. Nhập tên đăng nhập và mật khẩu<br>
+3. Nhấn nút Đăng nhập<br>
+4. Hệ thống xác thực thông tin<br>
+5. Nếu hợp lệ, tạo JWT token và chuyển đến Dashboard<br>
+6. Ghi log đăng nhập
+</td></tr>
+<tr><td><strong>Luồng thay thế</strong></td><td>
+4a. Thông tin không hợp lệ:<br>
+- Hiển thị thông báo lỗi "Tên đăng nhập hoặc mật khẩu không đúng"<br>
+- Quay lại bước 2<br><br>
+4b. Tài khoản bị vô hiệu hóa:<br>
+- Hiển thị thông báo "Tài khoản đã bị khóa"
+</td></tr>
+</table>
+
+<h3>2.3.2 Đặc tả Use Case Quản lý sản phẩm</h3>
+<table>
+<tr><th colspan="2">UC02: Thêm sản phẩm</th></tr>
+<tr><td><strong>Mô tả</strong></td><td>Cho phép Admin thêm sản phẩm mới vào hệ thống</td></tr>
+<tr><td><strong>Actor</strong></td><td>Admin</td></tr>
+<tr><td><strong>Tiền điều kiện</strong></td><td>Đã đăng nhập với quyền Admin</td></tr>
+<tr><td><strong>Hậu điều kiện</strong></td><td>Sản phẩm mới được tạo trong CSDL</td></tr>
+<tr><td><strong>Luồng chính</strong></td><td>
+1. Admin truy cập trang Quản lý sản phẩm<br>
+2. Nhấn nút "Thêm sản phẩm"<br>
+3. Nhập thông tin: SKU, tên, danh mục, giá, mô tả<br>
+4. Upload hình ảnh (tùy chọn)<br>
+5. Nhấn nút Lưu<br>
+6. Hệ thống validate và lưu vào CSDL<br>
+7. Hiển thị thông báo thành công
+</td></tr>
+<tr><td><strong>Luồng thay thế</strong></td><td>
+6a. SKU đã tồn tại:<br>
+- Hiển thị lỗi "Mã SKU đã tồn tại"<br><br>
+6b. Thiếu thông tin bắt buộc:<br>
+- Hiển thị lỗi validate
+</td></tr>
+</table>
+
+<h3>2.3.3 Đặc tả Use Case Tạo phiếu nhập</h3>
+<table>
+<tr><th colspan="2">UC03: Tạo phiếu nhập kho</th></tr>
+<tr><td><strong>Mô tả</strong></td><td>Cho phép tạo phiếu nhập kho mới</td></tr>
+<tr><td><strong>Actor</strong></td><td>Admin, Staff</td></tr>
+<tr><td><strong>Tiền điều kiện</strong></td><td>Đã đăng nhập, có sản phẩm trong hệ thống</td></tr>
+<tr><td><strong>Hậu điều kiện</strong></td><td>Phiếu nhập được tạo, tồn kho được cập nhật</td></tr>
+<tr><td><strong>Luồng chính</strong></td><td>
+1. Người dùng truy cập trang Nhập kho<br>
+2. Nhấn nút "Tạo phiếu nhập"<br>
+3. Chọn nhà cung cấp (hoặc nhập tay)<br>
+4. Thêm sản phẩm vào danh sách:<br>
+   - Chọn sản phẩm<br>
+   - Nhập số lượng, đơn giá<br>
+5. Nhập ghi chú (tùy chọn)<br>
+6. Nhấn nút Tạo phiếu<br>
+7. Hệ thống tạo phiếu và cập nhật tồn kho<br>
+8. Ghi log hoạt động<br>
+9. Hiển thị thông báo thành công
+</td></tr>
+<tr><td><strong>Luồng thay thế</strong></td><td>
+6a. Danh sách sản phẩm rỗng:<br>
+- Hiển thị lỗi "Vui lòng thêm ít nhất một sản phẩm"
+</td></tr>
+</table>
+
+<h3>2.3.4 Đặc tả Use Case Tạo phiếu xuất</h3>
+<table>
+<tr><th colspan="2">UC04: Tạo phiếu xuất kho</th></tr>
+<tr><td><strong>Mô tả</strong></td><td>Cho phép tạo phiếu xuất kho với kiểm tra tồn kho</td></tr>
+<tr><td><strong>Actor</strong></td><td>Admin, Staff</td></tr>
+<tr><td><strong>Tiền điều kiện</strong></td><td>Đã đăng nhập, có hàng trong kho</td></tr>
+<tr><td><strong>Hậu điều kiện</strong></td><td>Phiếu xuất được tạo, tồn kho được trừ đi</td></tr>
+<tr><td><strong>Luồng chính</strong></td><td>
+1. Người dùng truy cập trang Xuất kho<br>
+2. Nhấn nút "Tạo phiếu xuất"<br>
+3. Chọn khách hàng (hoặc nhập tay)<br>
+4. Thêm sản phẩm vào danh sách:<br>
+   - Chọn sản phẩm<br>
+   - Xem số lượng tồn kho hiện tại<br>
+   - Nhập số lượng xuất, đơn giá<br>
+5. Nhập ghi chú (tùy chọn)<br>
+6. Nhấn nút Tạo phiếu<br>
+7. Hệ thống kiểm tra tồn kho, tạo phiếu và trừ tồn<br>
+8. Ghi log hoạt động<br>
+9. Hiển thị thông báo thành công
+</td></tr>
+<tr><td><strong>Luồng thay thế</strong></td><td>
+7a. Số lượng xuất vượt quá tồn kho:<br>
+- Hiển thị cảnh báo và không cho phép xuất
+</td></tr>
+</table>
+
+<h3>2.3.5 Đặc tả Use Case Xem báo cáo</h3>
+<table>
+<tr><th colspan="2">UC05: Xem báo cáo tồn kho</th></tr>
+<tr><td><strong>Mô tả</strong></td><td>Hiển thị báo cáo tồn kho với khả năng xuất Excel</td></tr>
+<tr><td><strong>Actor</strong></td><td>Admin</td></tr>
+<tr><td><strong>Tiền điều kiện</strong></td><td>Đã đăng nhập với quyền Admin</td></tr>
+<tr><td><strong>Hậu điều kiện</strong></td><td>Hiển thị báo cáo hoặc tải file Excel</td></tr>
+<tr><td><strong>Luồng chính</strong></td><td>
+1. Admin truy cập trang Báo cáo<br>
+2. Chọn tab "Báo cáo tồn kho"<br>
+3. Hệ thống hiển thị bảng tồn kho với các cột:<br>
+   - Mã SKU, Tên SP, Danh mục<br>
+   - Số lượng tồn, Giá trị tồn<br>
+4. Admin có thể lọc theo danh mục<br>
+5. Nhấn "Xuất Excel" để tải báo cáo
+</td></tr>
+</table>
+
+<h2>2.4 Yêu cầu phi chức năng</h2>
+
+<h3>2.4.1 Yêu cầu về hiệu năng</h3>
+<ul>
+<li>Thời gian phản hồi của các API không quá 2 giây</li>
+<li>Hỗ trợ tối thiểu 50 người dùng đồng thời</li>
+<li>Trang web tải xong trong vòng 3 giây với kết nối 3G</li>
+</ul>
+
+<h3>2.4.2 Yêu cầu về giao diện</h3>
+<ul>
+<li>Giao diện thân thiện, dễ sử dụng</li>
+<li>Sử dụng tiếng Việt</li>
+<li>Responsive design (tương thích đa thiết bị)</li>
+<li>Có hệ thống thông báo toast cho các thao tác</li>
+<li>Có xác nhận trước khi xóa dữ liệu</li>
+</ul>
+
+<h3>2.4.3 Yêu cầu về bảo mật</h3>
+<ul>
+<li>Mật khẩu phải được mã hóa bằng bcrypt</li>
+<li>Xác thực bằng JWT với thời hạn token</li>
+<li>Phân quyền rõ ràng giữa Admin và Staff</li>
+<li>Ghi log mọi hoạt động quan trọng</li>
+<li>Bảo vệ khỏi tấn công SQL Injection, XSS</li>
+<li>Sử dụng HTTPS trong môi trường production</li>
+</ul>
+
+<h3>2.4.4 Yêu cầu về tính toàn vẹn dữ liệu</h3>
+<ul>
+<li>Đảm bảo tồn kho không âm</li>
+<li>Sử dụng transaction cho các thao tác phức tạp</li>
+<li>Ràng buộc khóa ngoại trong CSDL</li>
+<li>Validate dữ liệu ở cả frontend và backend</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- CHƯƠNG 3 -->
+<h1>CHƯƠNG 3. CÔNG NGHỆ SỬ DỤNG</h1>
+
+<h2>3.1 Node.js và Express.js</h2>
+
+<h3>3.1.1 Node.js</h3>
+<p>Node.js là một nền tảng phát triển ứng dụng JavaScript phía server, được xây dựng trên Chrome V8 JavaScript Engine. Node.js sử dụng mô hình event-driven, non-blocking I/O, giúp xử lý nhiều kết nối đồng thời một cách hiệu quả.</p>
+
+<p><strong>Ưu điểm của Node.js:</strong></p>
+<ul>
+<li>Hiệu suất cao với V8 Engine</li>
+<li>Non-blocking I/O phù hợp với ứng dụng real-time</li>
+<li>Sử dụng JavaScript cho cả frontend và backend</li>
+<li>Hệ sinh thái npm phong phú với hàng triệu package</li>
+<li>Cộng đồng lớn, nhiều tài liệu hỗ trợ</li>
+</ul>
+
+<h3>3.1.2 Express.js</h3>
+<p>Express.js là framework web phổ biến nhất cho Node.js. Express cung cấp các tính năng để xây dựng web server một cách nhanh chóng và dễ dàng.</p>
+
+<p><strong>Tính năng chính:</strong></p>
+<ul>
+<li>Routing mạnh mẽ và linh hoạt</li>
+<li>Hỗ trợ middleware để xử lý request/response</li>
+<li>Dễ dàng tích hợp với các template engine</li>
+<li>Hỗ trợ xây dựng RESTful API</li>
+</ul>
+
+<p><strong>Ví dụ cấu trúc route trong project:</strong></p>
+<pre><code>
+// routes/productRoutes.js
+const express = require('express');
+const router = express.Router();
+const productController = require('../controllers/productController');
+const auth = require('../middlewares/auth');
+
+router.use(auth);
+router.get('/', productController.getProducts);
+router.post('/', productController.createProduct);
+router.put('/:id', productController.updateProduct);
+router.delete('/:id', productController.deleteProduct);
+
+module.exports = router;
+</code></pre>
+
+<h2>3.2 MySQL</h2>
+<p>MySQL là hệ quản trị cơ sở dữ liệu quan hệ (RDBMS) mã nguồn mở phổ biến nhất thế giới. MySQL được sử dụng rộng rãi trong các ứng dụng web nhờ hiệu suất cao, độ tin cậy và dễ sử dụng.</p>
+
+<p><strong>Lý do chọn MySQL:</strong></p>
+<ul>
+<li>Miễn phí và mã nguồn mở</li>
+<li>Hiệu suất cao, ổn định</li>
+<li>Hỗ trợ ACID transactions</li>
+<li>Dễ cài đặt và cấu hình</li>
+<li>Tương thích tốt với Node.js thông qua mysql2 package</li>
+<li>Có nhiều công cụ quản lý trực quan (MySQL Workbench, phpMyAdmin)</li>
+</ul>
+
+<p><strong>Kết nối MySQL trong project:</strong></p>
+<pre><code>
+// config/database.js
+const mysql = require('mysql2/promise');
+
+const pool = mysql.createPool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  waitForConnections: true,
+  connectionLimit: 10
+});
+
+module.exports = pool;
+</code></pre>
+
+<h2>3.3 React.js</h2>
+<p>React.js là thư viện JavaScript để xây dựng giao diện người dùng, được phát triển bởi Facebook. React sử dụng component-based architecture giúp tái sử dụng code và quản lý state hiệu quả.</p>
+
+<p><strong>Đặc điểm chính:</strong></p>
+<ul>
+<li><strong>Virtual DOM:</strong> Tối ưu hiệu suất render</li>
+<li><strong>Component-based:</strong> Chia nhỏ UI thành các component độc lập</li>
+<li><strong>One-way data binding:</strong> Luồng dữ liệu một chiều dễ debug</li>
+<li><strong>JSX:</strong> Cú pháp kết hợp JavaScript và HTML</li>
+<li><strong>Hooks:</strong> Quản lý state và lifecycle dễ dàng</li>
+</ul>
+
+<p><strong>Ví dụ component trong project:</strong></p>
+<pre><code>
+// pages/products/ProductList.jsx
+import React, { useState, useEffect } from 'react';
+import api from '../../config/api';
+
+const ProductList = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const res = await api.get('/products');
+      setProducts(res.data);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    &lt;div&gt;
+      {products.map(p =&gt; (
+        &lt;div key={p.id}&gt;{p.name}&lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};
+</code></pre>
+
+<h2>3.4 Vite</h2>
+<p>Vite là build tool thế hệ mới cho frontend, được tạo bởi Evan You (tác giả Vue.js). Vite cung cấp trải nghiệm phát triển nhanh hơn nhiều so với các bundler truyền thống như Webpack.</p>
+
+<p><strong>Ưu điểm:</strong></p>
+<ul>
+<li>Dev server khởi động gần như tức thì</li>
+<li>Hot Module Replacement (HMR) cực nhanh</li>
+<li>Build production với Rollup, tối ưu kích thước</li>
+<li>Hỗ trợ TypeScript, JSX, CSS out of the box</li>
+</ul>
+
+<h2>3.5 Các công nghệ khác</h2>
+
+<h3>3.5.1 JSON Web Token (JWT)</h3>
+<p>JWT là tiêu chuẩn mở (RFC 7519) để truyền thông tin an toàn giữa các bên dưới dạng JSON object. JWT được sử dụng cho authentication trong project.</p>
+
+<p><strong>Cấu trúc JWT:</strong></p>
+<ul>
+<li><strong>Header:</strong> Chứa loại token và thuật toán mã hóa</li>
+<li><strong>Payload:</strong> Chứa thông tin user (claims)</li>
+<li><strong>Signature:</strong> Chữ ký để xác thực token</li>
+</ul>
+
+<pre><code>
+// Tạo JWT token
+const jwt = require('jsonwebtoken');
+
+const token = jwt.sign(
+  { id: user.id, role: user.role },
+  process.env.JWT_SECRET,
+  { expiresIn: '24h' }
+);
+</code></pre>
+
+<h3>3.5.2 Bcrypt</h3>
+<p>Bcrypt là thuật toán băm mật khẩu được thiết kế để bảo vệ mật khẩu người dùng. Bcrypt tự động tạo salt và thực hiện nhiều vòng hash để chống brute-force attack.</p>
+
+<pre><code>
+const bcrypt = require('bcryptjs');
+
+// Hash mật khẩu
+const hashedPassword = await bcrypt.hash(password, 10);
+
+// So sánh mật khẩu
+const isMatch = await bcrypt.compare(password, hashedPassword);
+</code></pre>
+
+<h3>3.5.3 Multer</h3>
+<p>Multer là middleware cho Express.js để xử lý multipart/form-data, chủ yếu dùng cho upload file.</p>
+
+<pre><code>
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: 'uploads/',
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage });
+</code></pre>
+
+<h3>3.5.4 Axios</h3>
+<p>Axios là HTTP client phổ biến cho browser và Node.js. Axios hỗ trợ Promise API và có thể interceptors để xử lý request/response.</p>
+
+<h3>3.5.5 XLSX</h3>
+<p>XLSX là thư viện để đọc và ghi file Excel (.xlsx, .xls). Được sử dụng để xuất báo cáo ra định dạng Excel.</p>
+
+<h3>3.5.6 React Toastify</h3>
+<p>React Toastify là thư viện hiển thị thông báo toast cho React, với nhiều tùy chỉnh về style và animation.</p>
+
+<h3>3.5.7 Lucide React</h3>
+<p>Lucide React là bộ icon SVG đẹp và nhất quán, được sử dụng cho giao diện người dùng.</p>
+
+<div class="page-break"></div>
+
+<!-- CHƯƠNG 4 -->
+<h1>CHƯƠNG 4. THIẾT KẾ, TRIỂN KHAI VÀ ĐÁNH GIÁ HỆ THỐNG</h1>
+
+<h2>4.1 Thiết kế kiến trúc</h2>
+
+<h3>4.1.1 Lựa chọn kiến trúc phần mềm</h3>
+<p>Hệ thống được xây dựng theo kiến trúc <strong>Client-Server</strong> với <strong>RESTful API</strong>. Frontend và Backend được tách biệt hoàn toàn, giao tiếp thông qua HTTP/HTTPS.</p>
+
+<div class="figure">
+<svg width="700" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="350" y="25" text-anchor="middle" font-weight="bold" font-size="14">Kiến trúc tổng quan hệ thống</text>
+
+  <!-- Client Layer -->
+  <rect x="50" y="50" width="600" height="70" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+  <text x="350" y="75" text-anchor="middle" font-weight="bold" font-size="12">Client Layer</text>
+
+  <rect x="70" y="85" width="120" height="30" fill="#fff" stroke="#1976d2" stroke-width="1" rx="3"/>
+  <text x="130" y="105" text-anchor="middle" font-size="10">Web Browser</text>
+
+  <rect x="210" y="85" width="120" height="30" fill="#fff" stroke="#1976d2" stroke-width="1" rx="3"/>
+  <text x="270" y="105" text-anchor="middle" font-size="10">React.js + Vite</text>
+
+  <rect x="350" y="85" width="120" height="30" fill="#fff" stroke="#1976d2" stroke-width="1" rx="3"/>
+  <text x="410" y="105" text-anchor="middle" font-size="10">Axios HTTP</text>
+
+  <rect x="490" y="85" width="140" height="30" fill="#fff" stroke="#1976d2" stroke-width="1" rx="3"/>
+  <text x="560" y="105" text-anchor="middle" font-size="10">React Router</text>
+
+  <!-- Arrow -->
+  <line x1="350" y1="120" x2="350" y2="150" stroke="#333" stroke-width="2"/>
+  <polygon points="350,160 345,150 355,150" fill="#333"/>
+  <text x="380" y="145" font-size="10">HTTP/HTTPS</text>
+
+  <!-- API Layer -->
+  <rect x="50" y="165" width="600" height="90" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+  <text x="350" y="185" text-anchor="middle" font-weight="bold" font-size="12">API Layer (Backend)</text>
+
+  <rect x="70" y="195" width="100" height="50" fill="#fff" stroke="#388e3c" stroke-width="1" rx="3"/>
+  <text x="120" y="215" text-anchor="middle" font-size="10">Express.js</text>
+  <text x="120" y="230" text-anchor="middle" font-size="9">Router</text>
+
+  <rect x="180" y="195" width="100" height="50" fill="#fff" stroke="#388e3c" stroke-width="1" rx="3"/>
+  <text x="230" y="215" text-anchor="middle" font-size="10">Controllers</text>
+  <text x="230" y="230" text-anchor="middle" font-size="9">Logic</text>
+
+  <rect x="290" y="195" width="100" height="50" fill="#fff" stroke="#388e3c" stroke-width="1" rx="3"/>
+  <text x="340" y="215" text-anchor="middle" font-size="10">Models</text>
+  <text x="340" y="230" text-anchor="middle" font-size="9">Data Access</text>
+
+  <rect x="400" y="195" width="100" height="50" fill="#fff" stroke="#388e3c" stroke-width="1" rx="3"/>
+  <text x="450" y="215" text-anchor="middle" font-size="10">Middlewares</text>
+  <text x="450" y="230" text-anchor="middle" font-size="9">Auth, Validate</text>
+
+  <rect x="510" y="195" width="120" height="50" fill="#fff" stroke="#388e3c" stroke-width="1" rx="3"/>
+  <text x="570" y="215" text-anchor="middle" font-size="10">Utils</text>
+  <text x="570" y="230" text-anchor="middle" font-size="9">JWT, bcrypt</text>
+
+  <!-- Arrow -->
+  <line x1="350" y1="255" x2="350" y2="285" stroke="#333" stroke-width="2"/>
+  <polygon points="350,295 345,285 355,285" fill="#333"/>
+  <text x="380" y="280" font-size="10">mysql2</text>
+
+  <!-- Database Layer -->
+  <rect x="150" y="300" width="400" height="80" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="5"/>
+  <text x="350" y="325" text-anchor="middle" font-weight="bold" font-size="12">Database Layer</text>
+
+  <!-- Database icon -->
+  <ellipse cx="250" cy="355" rx="40" ry="15" fill="#fff" stroke="#f57c00" stroke-width="2"/>
+  <rect x="210" y="340" width="80" height="25" fill="#fff" stroke="#f57c00" stroke-width="2"/>
+  <ellipse cx="250" cy="340" rx="40" ry="15" fill="#fff" stroke="#f57c00" stroke-width="2"/>
+  <text x="250" y="345" text-anchor="middle" font-size="10">MySQL 8.0</text>
+
+  <!-- File Storage -->
+  <rect x="380" y="335" width="120" height="40" fill="#fff" stroke="#f57c00" stroke-width="1" rx="3"/>
+  <text x="440" y="355" text-anchor="middle" font-size="10">File Storage</text>
+  <text x="440" y="368" text-anchor="middle" font-size="9">(uploads/)</text>
+</svg>
+<p class="figure-caption">Hình 4.1: Kiến trúc tổng quan hệ thống</p>
+</div>
+
+<table>
+<tr>
+<th>Thành phần</th>
+<th>Công nghệ</th>
+<th>Vai trò</th>
+</tr>
+<tr>
+<td>Frontend</td>
+<td>React.js + Vite</td>
+<td>Giao diện người dùng (SPA)</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Node.js + Express.js</td>
+<td>API Server, xử lý logic nghiệp vụ</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>MySQL</td>
+<td>Lưu trữ dữ liệu</td>
+</tr>
+<tr>
+<td>File Storage</td>
+<td>Local filesystem</td>
+<td>Lưu trữ hình ảnh sản phẩm</td>
+</tr>
+</table>
+
+<h3>4.1.2 Thiết kế theo mô hình MVC</h3>
+<p>Backend được thiết kế theo mô hình MVC mở rộng với Service Layer:</p>
+
+<ul>
+<li><strong>Model:</strong> Tương tác với database, thực hiện các truy vấn SQL</li>
+<li><strong>Controller:</strong> Nhận request, gọi model/service, trả về response</li>
+<li><strong>Routes:</strong> Định nghĩa các endpoint API</li>
+<li><strong>Middleware:</strong> Xử lý authentication, authorization, validation</li>
+<li><strong>Utils:</strong> Các hàm tiện ích dùng chung</li>
+</ul>
+
+<h3>4.1.3 Cấu trúc thư mục Backend</h3>
+<pre><code>
+backend/
+├── src/
+│   ├── config/
+│   │   └── database.js          # Kết nối MySQL
+│   ├── controllers/
+│   │   ├── authController.js    # Xử lý đăng nhập
+│   │   ├── productController.js # Xử lý sản phẩm
+│   │   ├── importController.js  # Xử lý nhập kho
+│   │   ├── exportController.js  # Xử lý xuất kho
+│   │   └── ...
+│   ├── middlewares/
+│   │   ├── auth.js              # Xác thực JWT
+│   │   ├── roleCheck.js         # Phân quyền
+│   │   └── errorHandler.js      # Xử lý lỗi
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Product.js
+│   │   ├── ImportReceipt.js
+│   │   └── ...
+│   ├── routes/
+│   │   ├── index.js             # Tổng hợp routes
+│   │   ├── authRoutes.js
+│   │   ├── productRoutes.js
+│   │   └── ...
+│   ├── utils/
+│   │   └── responseHelper.js    # Format response
+│   └── app.js                   # Express app
+├── uploads/                     # Thư mục chứa file upload
+├── .env                         # Biến môi trường
+└── server.js                    # Entry point
+</code></pre>
+
+<h3>4.1.4 Cấu trúc thư mục Frontend</h3>
+<pre><code>
+frontend/
+├── src/
+│   ├── components/
+│   │   ├── common/
+│   │   │   ├── Modal.jsx
+│   │   │   ├── Pagination.jsx
+│   │   │   └── ConfirmDialog.jsx
+│   │   └── layout/
+│   │       └── Layout.jsx       # Layout chính
+│   ├── config/
+│   │   └── api.js               # Axios instance
+│   ├── contexts/
+│   │   └── AuthContext.jsx      # Context xác thực
+│   ├── pages/
+│   │   ├── auth/
+│   │   │   └── Login.jsx
+│   │   ├── dashboard/
+│   │   │   └── Dashboard.jsx
+│   │   ├── products/
+│   │   │   └── ProductList.jsx
+│   │   ├── imports/
+│   │   │   └── ImportList.jsx
+│   │   ├── exports/
+│   │   │   └── ExportList.jsx
+│   │   └── ...
+│   ├── App.jsx                  # Router chính
+│   ├── main.jsx                 # Entry point
+│   └── index.css                # CSS toàn cục
+├── index.html
+├── vite.config.js
+└── package.json
+</code></pre>
+
+<h2>4.2 Thiết kế chi tiết</h2>
+
+<h3>4.2.1 Biểu đồ tuần tự (Sequence Diagram)</h3>
+<p>Biểu đồ tuần tự mô tả trình tự tương tác giữa các đối tượng trong hệ thống theo thời gian.</p>
+
+<h4>a) Biểu đồ tuần tự - Đăng nhập hệ thống</h4>
+<div class="figure">
+<svg width="700" height="450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="350" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Đăng nhập hệ thống</text>
+
+  <!-- Actors/Objects -->
+  <rect x="50" y="40" width="80" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="90" y="63" text-anchor="middle" font-size="11">User</text>
+  <line x1="90" y1="75" x2="90" y2="420" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="180" y="40" width="80" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="220" y="63" text-anchor="middle" font-size="11">LoginPage</text>
+  <line x1="220" y1="75" x2="220" y2="420" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="310" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="350" y="63" text-anchor="middle" font-size="11">API Client</text>
+  <line x1="350" y1="75" x2="350" y2="420" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="440" y="40" width="100" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="490" y="63" text-anchor="middle" font-size="11">AuthController</text>
+  <line x1="490" y1="75" x2="490" y2="420" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="590" y="40" width="80" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="630" y="63" text-anchor="middle" font-size="11">UserModel</text>
+  <line x1="630" y1="75" x2="630" y2="420" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Message 1: Enter credentials -->
+  <line x1="90" y1="110" x2="220" y2="110" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="155" y="105" text-anchor="middle" font-size="9">1. Nhập username, password</text>
+
+  <!-- Message 2: Submit login -->
+  <line x1="220" y1="140" x2="350" y2="140" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="285" y="135" text-anchor="middle" font-size="9">2. POST /api/auth/login</text>
+
+  <!-- Message 3: Call controller -->
+  <line x1="350" y1="170" x2="490" y2="170" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="420" y="165" text-anchor="middle" font-size="9">3. login(credentials)</text>
+
+  <!-- Message 4: Find user -->
+  <line x1="490" y1="200" x2="630" y2="200" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="560" y="195" text-anchor="middle" font-size="9">4. findByUsername()</text>
+
+  <!-- Message 5: Return user -->
+  <line x1="630" y1="230" x2="490" y2="230" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="560" y="225" text-anchor="middle" font-size="9">5. user data</text>
+
+  <!-- Alt box -->
+  <rect x="380" y="250" width="280" height="80" fill="none" stroke="#333" stroke-width="1"/>
+  <text x="390" y="265" font-size="9" font-weight="bold">[alt] Password valid</text>
+  <line x1="380" y1="270" x2="660" y2="270" stroke="#333" stroke-width="1"/>
+
+  <!-- Message 6: Compare password -->
+  <text x="500" y="290" text-anchor="middle" font-size="9">6. bcrypt.compare()</text>
+
+  <!-- Message 7: Generate JWT -->
+  <text x="500" y="310" text-anchor="middle" font-size="9">7. jwt.sign(payload)</text>
+
+  <!-- Message 8: Return token -->
+  <line x1="490" y1="350" x2="350" y2="350" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="420" y="345" text-anchor="middle" font-size="9">8. {token, user}</text>
+
+  <!-- Message 9: Store token -->
+  <line x1="350" y1="380" x2="220" y2="380" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="285" y="375" text-anchor="middle" font-size="9">9. localStorage.setItem()</text>
+
+  <!-- Message 10: Redirect -->
+  <line x1="220" y1="410" x2="90" y2="410" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="155" y="405" text-anchor="middle" font-size="9">10. Redirect to Dashboard</text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+</svg>
+<p class="figure-caption">Hình 4.8: Biểu đồ tuần tự - Đăng nhập hệ thống</p>
+</div>
+
+<h4>b) Biểu đồ tuần tự - Tạo phiếu nhập kho</h4>
+<div class="figure">
+<svg width="750" height="520" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="375" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Tạo phiếu nhập kho</text>
+
+  <!-- Actors/Objects -->
+  <rect x="30" y="40" width="70" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="65" y="63" text-anchor="middle" font-size="10">Staff</text>
+  <line x1="65" y1="75" x2="65" y2="490" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="130" y="40" width="80" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="170" y="63" text-anchor="middle" font-size="10">ImportPage</text>
+  <line x1="170" y1="75" x2="170" y2="490" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="240" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="280" y="63" text-anchor="middle" font-size="10">API Client</text>
+  <line x1="280" y1="75" x2="280" y2="490" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="350" y="40" width="90" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="395" y="63" text-anchor="middle" font-size="10">ImportController</text>
+  <line x1="395" y1="75" x2="395" y2="490" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="470" y="40" width="90" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="515" y="63" text-anchor="middle" font-size="10">ImportModel</text>
+  <line x1="515" y1="75" x2="515" y2="490" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="590" y="40" width="70" height="35" fill="#e0f2f1" stroke="#00796b" stroke-width="2" rx="3"/>
+  <text x="625" y="63" text-anchor="middle" font-size="10">StockModel</text>
+  <line x1="625" y1="75" x2="625" y2="490" stroke="#00796b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="680" y="40" width="60" height="35" fill="#fff8e1" stroke="#ffa000" stroke-width="2" rx="3"/>
+  <text x="710" y="63" text-anchor="middle" font-size="10">AuditLog</text>
+  <line x1="710" y1="75" x2="710" y2="490" stroke="#ffa000" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Messages -->
+  <line x1="65" y1="100" x2="170" y2="100" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="117" y="95" text-anchor="middle" font-size="8">1. Mở form nhập kho</text>
+
+  <line x1="65" y1="130" x2="170" y2="130" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="117" y="125" text-anchor="middle" font-size="8">2. Chọn NCC, thêm SP</text>
+
+  <line x1="65" y1="160" x2="170" y2="160" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="117" y="155" text-anchor="middle" font-size="8">3. Submit form</text>
+
+  <line x1="170" y1="190" x2="280" y2="190" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="225" y="185" text-anchor="middle" font-size="8">4. POST /api/imports</text>
+
+  <line x1="280" y1="220" x2="395" y2="220" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="337" y="215" text-anchor="middle" font-size="8">5. createImport(data)</text>
+
+  <!-- Transaction box -->
+  <rect x="310" y="240" width="420" height="150" fill="#f5f5f5" stroke="#333" stroke-width="1"/>
+  <text x="320" y="255" font-size="9" font-weight="bold">[Transaction]</text>
+
+  <line x1="395" y1="270" x2="515" y2="270" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="455" y="265" text-anchor="middle" font-size="8">6. create(receipt)</text>
+
+  <line x1="515" y1="295" x2="395" y2="295" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="455" y="290" text-anchor="middle" font-size="8">7. receipt_id</text>
+
+  <!-- Loop -->
+  <rect x="380" y="305" width="260" height="40" fill="none" stroke="#666" stroke-width="1"/>
+  <text x="390" y="318" font-size="8" font-style="italic">[loop] for each product</text>
+
+  <line x1="395" y1="335" x2="625" y2="335" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="510" y="330" text-anchor="middle" font-size="8">8. updateStock(+qty)</text>
+
+  <line x1="395" y1="365" x2="710" y2="365" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="552" y="360" text-anchor="middle" font-size="8">9. log(CREATE, IMPORT)</text>
+
+  <!-- Return -->
+  <line x1="395" y1="410" x2="280" y2="410" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="337" y="405" text-anchor="middle" font-size="8">10. {success, receipt}</text>
+
+  <line x1="280" y1="440" x2="170" y2="440" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="225" y="435" text-anchor="middle" font-size="8">11. Response JSON</text>
+
+  <line x1="170" y1="470" x2="65" y2="470" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="117" y="465" text-anchor="middle" font-size="8">12. Toast "Thành công"</text>
+</svg>
+<p class="figure-caption">Hình 4.9: Biểu đồ tuần tự - Tạo phiếu nhập kho</p>
+</div>
+
+<h4>c) Biểu đồ tuần tự - Tạo phiếu xuất kho</h4>
+<div class="figure">
+<svg width="750" height="580" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="375" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Tạo phiếu xuất kho</text>
+
+  <!-- Actors/Objects -->
+  <rect x="30" y="40" width="70" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="65" y="63" text-anchor="middle" font-size="10">Staff</text>
+  <line x1="65" y1="75" x2="65" y2="550" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="130" y="40" width="80" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="170" y="63" text-anchor="middle" font-size="10">ExportPage</text>
+  <line x1="170" y1="75" x2="170" y2="550" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="240" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="280" y="63" text-anchor="middle" font-size="10">API Client</text>
+  <line x1="280" y1="75" x2="280" y2="550" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="350" y="40" width="90" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="395" y="63" text-anchor="middle" font-size="10">ExportController</text>
+  <line x1="395" y1="75" x2="395" y2="550" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="470" y="40" width="70" height="35" fill="#e0f2f1" stroke="#00796b" stroke-width="2" rx="3"/>
+  <text x="505" y="63" text-anchor="middle" font-size="10">StockModel</text>
+  <line x1="505" y1="75" x2="505" y2="550" stroke="#00796b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="570" y="40" width="90" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="615" y="63" text-anchor="middle" font-size="10">ExportModel</text>
+  <line x1="615" y1="75" x2="615" y2="550" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="680" y="40" width="60" height="35" fill="#fff8e1" stroke="#ffa000" stroke-width="2" rx="3"/>
+  <text x="710" y="63" text-anchor="middle" font-size="10">AuditLog</text>
+  <line x1="710" y1="75" x2="710" y2="550" stroke="#ffa000" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Messages -->
+  <line x1="65" y1="100" x2="170" y2="100" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="117" y="95" text-anchor="middle" font-size="8">1. Mở form xuất kho</text>
+
+  <line x1="65" y1="130" x2="170" y2="130" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="117" y="125" text-anchor="middle" font-size="8">2. Chọn KH, thêm SP</text>
+
+  <line x1="170" y1="160" x2="280" y2="160" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="225" y="155" text-anchor="middle" font-size="8">3. GET /api/stocks</text>
+
+  <line x1="280" y1="185" x2="170" y2="185" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="225" y="180" text-anchor="middle" font-size="8">4. stock data</text>
+
+  <line x1="170" y1="210" x2="65" y2="210" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="117" y="205" text-anchor="middle" font-size="8">5. Hiển thị tồn kho</text>
+
+  <line x1="65" y1="240" x2="170" y2="240" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="117" y="235" text-anchor="middle" font-size="8">6. Submit form</text>
+
+  <line x1="170" y1="270" x2="280" y2="270" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="225" y="265" text-anchor="middle" font-size="8">7. POST /api/exports</text>
+
+  <line x1="280" y1="300" x2="395" y2="300" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="337" y="295" text-anchor="middle" font-size="8">8. createExport(data)</text>
+
+  <!-- Alt box - Check stock -->
+  <rect x="310" y="315" width="420" height="60" fill="none" stroke="#c62828" stroke-width="1"/>
+  <text x="320" y="330" font-size="8" font-weight="bold" fill="#c62828">[alt] Kiểm tra tồn kho</text>
+
+  <line x1="395" y1="345" x2="505" y2="345" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="450" y="340" text-anchor="middle" font-size="8">9. checkStock(items)</text>
+
+  <line x1="505" y1="365" x2="395" y2="365" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="450" y="360" text-anchor="middle" font-size="8">10. isValid: true/false</text>
+
+  <!-- Transaction box -->
+  <rect x="310" y="385" width="420" height="100" fill="#f5f5f5" stroke="#333" stroke-width="1"/>
+  <text x="320" y="400" font-size="9" font-weight="bold">[if valid] Transaction</text>
+
+  <line x1="395" y1="415" x2="615" y2="415" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="505" y="410" text-anchor="middle" font-size="8">11. create(receipt)</text>
+
+  <!-- Loop -->
+  <rect x="380" y="425" width="260" height="30" fill="none" stroke="#666" stroke-width="1"/>
+  <text x="390" y="438" font-size="8" font-style="italic">[loop] for each product</text>
+
+  <line x1="395" y1="455" x2="505" y2="455" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="450" y="450" text-anchor="middle" font-size="8">12. updateStock(-qty)</text>
+
+  <line x1="395" y1="475" x2="710" y2="475" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="552" y="470" text-anchor="middle" font-size="8">13. log(CREATE, EXPORT)</text>
+
+  <!-- Return -->
+  <line x1="395" y1="505" x2="280" y2="505" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="337" y="500" text-anchor="middle" font-size="8">14. {success, receipt}</text>
+
+  <line x1="280" y1="525" x2="170" y2="525" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="225" y="520" text-anchor="middle" font-size="8">15. Response JSON</text>
+
+  <line x1="170" y1="545" x2="65" y2="545" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="117" y="540" text-anchor="middle" font-size="8">16. Toast "Thành công"</text>
+</svg>
+<p class="figure-caption">Hình 4.10: Biểu đồ tuần tự - Tạo phiếu xuất kho</p>
+</div>
+
+<h4>d) Biểu đồ tuần tự - Xem báo cáo tồn kho</h4>
+<div class="figure">
+<svg width="650" height="380" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="325" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Xem báo cáo tồn kho</text>
+
+  <!-- Actors/Objects -->
+  <rect x="40" y="40" width="70" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="75" y="63" text-anchor="middle" font-size="10">Admin</text>
+  <line x1="75" y1="75" x2="75" y2="350" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="150" y="40" width="80" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="190" y="63" text-anchor="middle" font-size="10">ReportPage</text>
+  <line x1="190" y1="75" x2="190" y2="350" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="270" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="310" y="63" text-anchor="middle" font-size="10">API Client</text>
+  <line x1="310" y1="75" x2="310" y2="350" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="390" y="40" width="100" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="440" y="63" text-anchor="middle" font-size="10">ReportController</text>
+  <line x1="440" y1="75" x2="440" y2="350" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="530" y="40" width="80" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="570" y="63" text-anchor="middle" font-size="10">Database</text>
+  <line x1="570" y1="75" x2="570" y2="350" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Messages -->
+  <line x1="75" y1="110" x2="190" y2="110" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="132" y="105" text-anchor="middle" font-size="9">1. Mở trang Báo cáo</text>
+
+  <line x1="190" y1="140" x2="310" y2="140" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="250" y="135" text-anchor="middle" font-size="9">2. GET /api/reports/inventory</text>
+
+  <line x1="310" y1="170" x2="440" y2="170" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="375" y="165" text-anchor="middle" font-size="9">3. getInventoryReport()</text>
+
+  <line x1="440" y1="200" x2="570" y2="200" stroke="#333" stroke-width="1" marker-end="url(#arrowhead)"/>
+  <text x="505" y="195" text-anchor="middle" font-size="9">4. SELECT JOIN query</text>
+
+  <line x1="570" y1="230" x2="440" y2="230" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="505" y="225" text-anchor="middle" font-size="9">5. Result set</text>
+
+  <line x1="440" y1="260" x2="310" y2="260" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="375" y="255" text-anchor="middle" font-size="9">6. {data, summary}</text>
+
+  <line x1="310" y1="290" x2="190" y2="290" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="250" y="285" text-anchor="middle" font-size="9">7. Response JSON</text>
+
+  <line x1="190" y1="320" x2="75" y2="320" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead)"/>
+  <text x="132" y="315" text-anchor="middle" font-size="9">8. Render bảng báo cáo</text>
+
+  <!-- Note -->
+  <rect x="75" y="335" width="150" height="20" fill="#fff3cd" stroke="#ffc107" rx="3"/>
+  <text x="150" y="350" text-anchor="middle" font-size="8">Có thể xuất Excel</text>
+</svg>
+<p class="figure-caption">Hình 4.11: Biểu đồ tuần tự - Xem báo cáo tồn kho</p>
+</div>
+
+<h4>e) Biểu đồ tuần tự - Thêm sản phẩm mới</h4>
+<div class="figure">
+<svg width="750" height="520" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="375" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Thêm sản phẩm mới</text>
+
+  <!-- Actors/Objects -->
+  <rect x="30" y="40" width="70" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="65" y="63" text-anchor="middle" font-size="10">Admin</text>
+  <line x1="65" y1="75" x2="65" y2="490" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="130" y="40" width="90" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="175" y="63" text-anchor="middle" font-size="10">ProductPage</text>
+  <line x1="175" y1="75" x2="175" y2="490" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="250" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="290" y="63" text-anchor="middle" font-size="10">API Client</text>
+  <line x1="290" y1="75" x2="290" y2="490" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="360" y="40" width="100" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="410" y="63" text-anchor="middle" font-size="10">ProductController</text>
+  <line x1="410" y1="75" x2="410" y2="490" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="490" y="40" width="80" height="35" fill="#e0f2f1" stroke="#00796b" stroke-width="2" rx="3"/>
+  <text x="530" y="63" text-anchor="middle" font-size="10">Validator</text>
+  <line x1="530" y1="75" x2="530" y2="490" stroke="#00796b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="600" y="40" width="90" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="645" y="63" text-anchor="middle" font-size="10">ProductModel</text>
+  <line x1="645" y1="75" x2="645" y2="490" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrowhead2" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Messages -->
+  <line x1="65" y1="100" x2="175" y2="100" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="95" text-anchor="middle" font-size="8">1. Mở form thêm SP</text>
+
+  <line x1="65" y1="130" x2="175" y2="130" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="125" text-anchor="middle" font-size="8">2. Nhập thông tin SP</text>
+
+  <line x1="65" y1="160" x2="175" y2="160" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="155" text-anchor="middle" font-size="8">3. Upload ảnh (optional)</text>
+
+  <line x1="65" y1="190" x2="175" y2="190" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="185" text-anchor="middle" font-size="8">4. Click Lưu</text>
+
+  <line x1="175" y1="220" x2="290" y2="220" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="232" y="215" text-anchor="middle" font-size="8">5. POST /api/products</text>
+
+  <line x1="290" y1="250" x2="410" y2="250" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="350" y="245" text-anchor="middle" font-size="8">6. create(productData)</text>
+
+  <!-- Validation box -->
+  <rect x="380" y="265" width="280" height="70" fill="#f5f5f5" stroke="#333" stroke-width="1"/>
+  <text x="390" y="280" font-size="9" font-weight="bold">[Validation]</text>
+
+  <line x1="410" y1="295" x2="530" y2="295" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="470" y="290" text-anchor="middle" font-size="8">7. validate(data)</text>
+
+  <line x1="530" y1="320" x2="410" y2="320" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="470" y="315" text-anchor="middle" font-size="8">8. isValid: true</text>
+
+  <!-- Check SKU unique -->
+  <line x1="410" y1="355" x2="645" y2="355" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="527" y="350" text-anchor="middle" font-size="8">9. findBySKU(sku)</text>
+
+  <line x1="645" y1="380" x2="410" y2="380" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="527" y="375" text-anchor="middle" font-size="8">10. null (not found)</text>
+
+  <!-- Create product -->
+  <line x1="410" y1="410" x2="645" y2="410" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="527" y="405" text-anchor="middle" font-size="8">11. create(product)</text>
+
+  <line x1="645" y1="435" x2="410" y2="435" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="527" y="430" text-anchor="middle" font-size="8">12. newProduct</text>
+
+  <!-- Return responses -->
+  <line x1="410" y1="460" x2="290" y2="460" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="350" y="455" text-anchor="middle" font-size="8">13. {success, product}</text>
+
+  <line x1="290" y1="480" x2="175" y2="480" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="232" y="475" text-anchor="middle" font-size="8">14. Toast thành công</text>
+</svg>
+<p class="figure-caption">Hình 4.15: Biểu đồ tuần tự - Thêm sản phẩm mới</p>
+</div>
+
+<h4>f) Biểu đồ tuần tự - Cập nhật sản phẩm</h4>
+<div class="figure">
+<svg width="700" height="480" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="350" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Cập nhật sản phẩm</text>
+
+  <!-- Actors/Objects -->
+  <rect x="30" y="40" width="70" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="65" y="63" text-anchor="middle" font-size="10">Admin</text>
+  <line x1="65" y1="75" x2="65" y2="450" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="130" y="40" width="90" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="175" y="63" text-anchor="middle" font-size="10">ProductPage</text>
+  <line x1="175" y1="75" x2="175" y2="450" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="250" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="290" y="63" text-anchor="middle" font-size="10">API Client</text>
+  <line x1="290" y1="75" x2="290" y2="450" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="360" y="40" width="100" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="410" y="63" text-anchor="middle" font-size="10">ProductController</text>
+  <line x1="410" y1="75" x2="410" y2="450" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="490" y="40" width="90" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="535" y="63" text-anchor="middle" font-size="10">ProductModel</text>
+  <line x1="535" y1="75" x2="535" y2="450" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="610" y="40" width="70" height="35" fill="#fff8e1" stroke="#ffa000" stroke-width="2" rx="3"/>
+  <text x="645" y="63" text-anchor="middle" font-size="10">AuditLog</text>
+  <line x1="645" y1="75" x2="645" y2="450" stroke="#ffa000" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Messages -->
+  <line x1="65" y1="100" x2="175" y2="100" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="95" text-anchor="middle" font-size="8">1. Click nút Sửa</text>
+
+  <line x1="175" y1="130" x2="290" y2="130" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="232" y="125" text-anchor="middle" font-size="8">2. GET /api/products/:id</text>
+
+  <line x1="290" y1="155" x2="410" y2="155" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="350" y="150" text-anchor="middle" font-size="8">3. getById(id)</text>
+
+  <line x1="410" y1="180" x2="535" y2="180" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="472" y="175" text-anchor="middle" font-size="8">4. findById(id)</text>
+
+  <line x1="535" y1="205" x2="290" y2="205" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="412" y="200" text-anchor="middle" font-size="8">5. product data</text>
+
+  <line x1="290" y1="225" x2="175" y2="225" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="232" y="220" text-anchor="middle" font-size="8">6. Hiển thị form edit</text>
+
+  <line x1="65" y1="255" x2="175" y2="255" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="250" text-anchor="middle" font-size="8">7. Sửa thông tin</text>
+
+  <line x1="65" y1="285" x2="175" y2="285" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="280" text-anchor="middle" font-size="8">8. Click Lưu</text>
+
+  <line x1="175" y1="310" x2="290" y2="310" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="232" y="305" text-anchor="middle" font-size="8">9. PUT /api/products/:id</text>
+
+  <line x1="290" y1="335" x2="410" y2="335" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="350" y="330" text-anchor="middle" font-size="8">10. update(id, data)</text>
+
+  <line x1="410" y1="360" x2="535" y2="360" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="472" y="355" text-anchor="middle" font-size="8">11. update(id, data)</text>
+
+  <line x1="410" y1="385" x2="645" y2="385" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="527" y="380" text-anchor="middle" font-size="8">12. log(UPDATE, PRODUCT)</text>
+
+  <line x1="535" y1="410" x2="290" y2="410" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="412" y="405" text-anchor="middle" font-size="8">13. updated product</text>
+
+  <line x1="290" y1="435" x2="175" y2="435" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="232" y="430" text-anchor="middle" font-size="8">14. Toast thành công</text>
+</svg>
+<p class="figure-caption">Hình 4.16: Biểu đồ tuần tự - Cập nhật sản phẩm</p>
+</div>
+
+<h4>g) Biểu đồ tuần tự - Xóa sản phẩm</h4>
+<div class="figure">
+<svg width="700" height="420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Title -->
+  <text x="350" y="20" text-anchor="middle" font-weight="bold" font-size="13">Biểu đồ tuần tự: Xóa sản phẩm</text>
+
+  <!-- Actors/Objects -->
+  <rect x="30" y="40" width="70" height="35" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="3"/>
+  <text x="65" y="63" text-anchor="middle" font-size="10">Admin</text>
+  <line x1="65" y1="75" x2="65" y2="390" stroke="#1976d2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="130" y="40" width="90" height="35" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="3"/>
+  <text x="175" y="63" text-anchor="middle" font-size="10">ProductPage</text>
+  <line x1="175" y1="75" x2="175" y2="390" stroke="#388e3c" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="250" y="40" width="90" height="35" fill="#ffebee" stroke="#c62828" stroke-width="2" rx="3"/>
+  <text x="295" y="63" text-anchor="middle" font-size="10">ConfirmDialog</text>
+  <line x1="295" y1="75" x2="295" y2="390" stroke="#c62828" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="370" y="40" width="80" height="35" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="3"/>
+  <text x="410" y="63" text-anchor="middle" font-size="10">API Client</text>
+  <line x1="410" y1="75" x2="410" y2="390" stroke="#f57c00" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="480" y="40" width="100" height="35" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="3"/>
+  <text x="530" y="63" text-anchor="middle" font-size="10">ProductController</text>
+  <line x1="530" y1="75" x2="530" y2="390" stroke="#c2185b" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <rect x="610" y="40" width="70" height="35" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2" rx="3"/>
+  <text x="645" y="63" text-anchor="middle" font-size="10">Database</text>
+  <line x1="645" y1="75" x2="645" y2="390" stroke="#7b1fa2" stroke-width="1" stroke-dasharray="5,5"/>
+
+  <!-- Messages -->
+  <line x1="65" y1="100" x2="175" y2="100" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="95" text-anchor="middle" font-size="8">1. Click nút Xóa</text>
+
+  <line x1="175" y1="130" x2="295" y2="130" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="235" y="125" text-anchor="middle" font-size="8">2. Hiển thị dialog xác nhận</text>
+
+  <line x1="295" y1="155" x2="65" y2="155" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="180" y="150" text-anchor="middle" font-size="8">3. "Bạn có chắc muốn xóa?"</text>
+
+  <!-- Alt box -->
+  <rect x="40" y="170" width="640" height="130" fill="none" stroke="#333" stroke-width="1"/>
+  <text x="50" y="185" font-size="9" font-weight="bold">[alt] Người dùng xác nhận</text>
+  <line x1="40" y1="190" x2="680" y2="190" stroke="#333" stroke-width="1"/>
+
+  <line x1="65" y1="210" x2="295" y2="210" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="180" y="205" text-anchor="middle" font-size="8">4. Click "Xác nhận"</text>
+
+  <line x1="295" y1="235" x2="410" y2="235" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="352" y="230" text-anchor="middle" font-size="8">5. DELETE /api/products/:id</text>
+
+  <line x1="410" y1="260" x2="530" y2="260" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="470" y="255" text-anchor="middle" font-size="8">6. delete(id)</text>
+
+  <line x1="530" y1="285" x2="645" y2="285" stroke="#333" stroke-width="1" marker-end="url(#arrowhead2)"/>
+  <text x="587" y="280" text-anchor="middle" font-size="8">7. DELETE (soft)</text>
+
+  <!-- Separator for else -->
+  <line x1="40" y1="300" x2="680" y2="300" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="50" y="315" font-size="9">[else] Hủy bỏ</text>
+
+  <!-- Return responses -->
+  <line x1="645" y1="335" x2="410" y2="335" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="527" y="330" text-anchor="middle" font-size="8">8. {success: true}</text>
+
+  <line x1="410" y1="360" x2="175" y2="360" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="292" y="355" text-anchor="middle" font-size="8">9. Cập nhật danh sách</text>
+
+  <line x1="175" y1="385" x2="65" y2="385" stroke="#333" stroke-width="1" stroke-dasharray="4,2" marker-end="url(#arrowhead2)"/>
+  <text x="120" y="380" text-anchor="middle" font-size="8">10. Toast "Đã xóa"</text>
+</svg>
+<p class="figure-caption">Hình 4.17: Biểu đồ tuần tự - Xóa sản phẩm</p>
+</div>
+
+<h3>4.2.2 Thiết kế cơ sở dữ liệu</h3>
+
+<h4>a) Danh sách các bảng</h4>
+<table>
+<tr>
+<th>STT</th>
+<th>Tên bảng</th>
+<th>Mô tả</th>
+</tr>
+<tr><td>1</td><td>users</td><td>Thông tin người dùng hệ thống</td></tr>
+<tr><td>2</td><td>categories</td><td>Danh mục sản phẩm</td></tr>
+<tr><td>3</td><td>products</td><td>Thông tin sản phẩm</td></tr>
+<tr><td>4</td><td>stocks</td><td>Tồn kho theo sản phẩm</td></tr>
+<tr><td>5</td><td>suppliers</td><td>Thông tin nhà cung cấp</td></tr>
+<tr><td>6</td><td>customers</td><td>Thông tin khách hàng</td></tr>
+<tr><td>7</td><td>import_receipts</td><td>Phiếu nhập kho</td></tr>
+<tr><td>8</td><td>import_receipt_details</td><td>Chi tiết phiếu nhập</td></tr>
+<tr><td>9</td><td>export_receipts</td><td>Phiếu xuất kho</td></tr>
+<tr><td>10</td><td>export_receipt_details</td><td>Chi tiết phiếu xuất</td></tr>
+<tr><td>11</td><td>audit_logs</td><td>Lịch sử hoạt động</td></tr>
+</table>
+
+<h4>b) Chi tiết các bảng</h4>
+
+<p><strong>Bảng users:</strong></p>
+<table>
+<tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Mô tả</th></tr>
+<tr><td>id</td><td>INT AUTO_INCREMENT</td><td>Khóa chính</td></tr>
+<tr><td>username</td><td>VARCHAR(50) UNIQUE</td><td>Tên đăng nhập</td></tr>
+<tr><td>password</td><td>VARCHAR(255)</td><td>Mật khẩu đã hash</td></tr>
+<tr><td>full_name</td><td>VARCHAR(100)</td><td>Họ tên</td></tr>
+<tr><td>email</td><td>VARCHAR(100)</td><td>Email</td></tr>
+<tr><td>role</td><td>ENUM('ADMIN','STAFF')</td><td>Vai trò</td></tr>
+<tr><td>is_active</td><td>BOOLEAN DEFAULT TRUE</td><td>Trạng thái</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Ngày tạo</td></tr>
+<tr><td>updated_at</td><td>TIMESTAMP</td><td>Ngày cập nhật</td></tr>
+</table>
+
+<p><strong>Bảng products:</strong></p>
+<table>
+<tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Mô tả</th></tr>
+<tr><td>id</td><td>INT AUTO_INCREMENT</td><td>Khóa chính</td></tr>
+<tr><td>sku</td><td>VARCHAR(50) UNIQUE</td><td>Mã sản phẩm</td></tr>
+<tr><td>name</td><td>VARCHAR(200)</td><td>Tên sản phẩm</td></tr>
+<tr><td>category_id</td><td>INT</td><td>FK đến categories</td></tr>
+<tr><td>price</td><td>DECIMAL(15,2)</td><td>Giá bán</td></tr>
+<tr><td>description</td><td>TEXT</td><td>Mô tả</td></tr>
+<tr><td>image</td><td>VARCHAR(255)</td><td>Đường dẫn ảnh</td></tr>
+<tr><td>min_stock</td><td>INT DEFAULT 10</td><td>Ngưỡng cảnh báo</td></tr>
+<tr><td>is_active</td><td>BOOLEAN DEFAULT TRUE</td><td>Trạng thái</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Ngày tạo</td></tr>
+</table>
+
+<p><strong>Bảng stocks:</strong></p>
+<table>
+<tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Mô tả</th></tr>
+<tr><td>id</td><td>INT AUTO_INCREMENT</td><td>Khóa chính</td></tr>
+<tr><td>product_id</td><td>INT UNIQUE</td><td>FK đến products</td></tr>
+<tr><td>quantity</td><td>INT DEFAULT 0</td><td>Số lượng tồn</td></tr>
+<tr><td>updated_at</td><td>TIMESTAMP</td><td>Cập nhật lần cuối</td></tr>
+</table>
+
+<p><strong>Bảng import_receipts:</strong></p>
+<table>
+<tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Mô tả</th></tr>
+<tr><td>id</td><td>INT AUTO_INCREMENT</td><td>Khóa chính</td></tr>
+<tr><td>receipt_code</td><td>VARCHAR(50) UNIQUE</td><td>Mã phiếu (IMP-XXXXXX)</td></tr>
+<tr><td>supplier_id</td><td>INT</td><td>FK đến suppliers</td></tr>
+<tr><td>supplier_name</td><td>VARCHAR(200)</td><td>Tên NCC</td></tr>
+<tr><td>supplier_phone</td><td>VARCHAR(20)</td><td>SĐT NCC</td></tr>
+<tr><td>import_date</td><td>DATETIME</td><td>Ngày nhập</td></tr>
+<tr><td>total_amount</td><td>DECIMAL(15,2)</td><td>Tổng tiền</td></tr>
+<tr><td>note</td><td>TEXT</td><td>Ghi chú</td></tr>
+<tr><td>created_by</td><td>INT</td><td>FK đến users</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Ngày tạo</td></tr>
+</table>
+
+<p><strong>Bảng import_receipt_details:</strong></p>
+<table>
+<tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Mô tả</th></tr>
+<tr><td>id</td><td>INT AUTO_INCREMENT</td><td>Khóa chính</td></tr>
+<tr><td>import_receipt_id</td><td>INT</td><td>FK đến import_receipts</td></tr>
+<tr><td>product_id</td><td>INT</td><td>FK đến products</td></tr>
+<tr><td>quantity</td><td>INT</td><td>Số lượng nhập</td></tr>
+<tr><td>unit_price</td><td>DECIMAL(15,2)</td><td>Đơn giá nhập</td></tr>
+<tr><td>subtotal</td><td>DECIMAL(15,2)</td><td>Thành tiền</td></tr>
+<tr><td>note</td><td>VARCHAR(255)</td><td>Ghi chú</td></tr>
+</table>
+
+<p><strong>Bảng audit_logs:</strong></p>
+<table>
+<tr><th>Cột</th><th>Kiểu dữ liệu</th><th>Mô tả</th></tr>
+<tr><td>id</td><td>INT AUTO_INCREMENT</td><td>Khóa chính</td></tr>
+<tr><td>user_id</td><td>INT</td><td>FK đến users</td></tr>
+<tr><td>action</td><td>VARCHAR(50)</td><td>Hành động (CREATE, UPDATE, DELETE)</td></tr>
+<tr><td>entity_type</td><td>VARCHAR(50)</td><td>Loại đối tượng</td></tr>
+<tr><td>entity_id</td><td>INT</td><td>ID đối tượng</td></tr>
+<tr><td>entity_name</td><td>VARCHAR(200)</td><td>Tên đối tượng</td></tr>
+<tr><td>details</td><td>JSON</td><td>Chi tiết thay đổi</td></tr>
+<tr><td>ip_address</td><td>VARCHAR(45)</td><td>Địa chỉ IP</td></tr>
+<tr><td>created_at</td><td>TIMESTAMP</td><td>Thời gian</td></tr>
+</table>
+
+<h4>c) Biểu đồ ERD</h4>
+<div class="figure">
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .entity { fill: #e3f2fd; stroke: #1976d2; stroke-width: 2; }
+    .entity-header { fill: #1976d2; }
+    .pk { font-weight: bold; }
+    .fk { font-style: italic; color: #666; }
+  </style>
+
+  <!-- users table -->
+  <rect x="20" y="20" width="150" height="140" class="entity" rx="3"/>
+  <rect x="20" y="20" width="150" height="25" fill="#1976d2" rx="3"/>
+  <text x="95" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">users</text>
+  <text x="30" y="55" font-size="9" class="pk">PK id</text>
+  <text x="30" y="70" font-size="9">username</text>
+  <text x="30" y="85" font-size="9">password</text>
+  <text x="30" y="100" font-size="9">full_name</text>
+  <text x="30" y="115" font-size="9">email</text>
+  <text x="30" y="130" font-size="9">role</text>
+  <text x="30" y="145" font-size="9">is_active</text>
+
+  <!-- categories table -->
+  <rect x="200" y="20" width="150" height="100" class="entity" rx="3"/>
+  <rect x="200" y="20" width="150" height="25" fill="#1976d2" rx="3"/>
+  <text x="275" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">categories</text>
+  <text x="210" y="55" font-size="9" class="pk">PK id</text>
+  <text x="210" y="70" font-size="9">name</text>
+  <text x="210" y="85" font-size="9">description</text>
+  <text x="210" y="100" font-size="9">is_active</text>
+
+  <!-- products table -->
+  <rect x="380" y="20" width="150" height="160" class="entity" rx="3"/>
+  <rect x="380" y="20" width="150" height="25" fill="#1976d2" rx="3"/>
+  <text x="455" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">products</text>
+  <text x="390" y="55" font-size="9" class="pk">PK id</text>
+  <text x="390" y="70" font-size="9">sku</text>
+  <text x="390" y="85" font-size="9">name</text>
+  <text x="390" y="100" font-size="9" class="fk">FK category_id</text>
+  <text x="390" y="115" font-size="9">price</text>
+  <text x="390" y="130" font-size="9">description</text>
+  <text x="390" y="145" font-size="9">image</text>
+  <text x="390" y="160" font-size="9">min_stock</text>
+
+  <!-- stocks table -->
+  <rect x="560" y="20" width="150" height="80" class="entity" rx="3"/>
+  <rect x="560" y="20" width="150" height="25" fill="#1976d2" rx="3"/>
+  <text x="635" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">stocks</text>
+  <text x="570" y="55" font-size="9" class="pk">PK id</text>
+  <text x="570" y="70" font-size="9" class="fk">FK product_id</text>
+  <text x="570" y="85" font-size="9">quantity</text>
+
+  <!-- suppliers table -->
+  <rect x="20" y="200" width="150" height="140" class="entity" rx="3"/>
+  <rect x="20" y="200" width="150" height="25" fill="#388e3c" rx="3"/>
+  <text x="95" y="218" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">suppliers</text>
+  <text x="30" y="235" font-size="9" class="pk">PK id</text>
+  <text x="30" y="250" font-size="9">code</text>
+  <text x="30" y="265" font-size="9">name</text>
+  <text x="30" y="280" font-size="9">phone</text>
+  <text x="30" y="295" font-size="9">email</text>
+  <text x="30" y="310" font-size="9">address</text>
+  <text x="30" y="325" font-size="9">is_active</text>
+
+  <!-- customers table -->
+  <rect x="20" y="380" width="150" height="140" class="entity" rx="3"/>
+  <rect x="20" y="380" width="150" height="25" fill="#f57c00" rx="3"/>
+  <text x="95" y="398" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">customers</text>
+  <text x="30" y="415" font-size="9" class="pk">PK id</text>
+  <text x="30" y="430" font-size="9">code</text>
+  <text x="30" y="445" font-size="9">name</text>
+  <text x="30" y="460" font-size="9">phone</text>
+  <text x="30" y="475" font-size="9">email</text>
+  <text x="30" y="490" font-size="9">address</text>
+  <text x="30" y="505" font-size="9">is_active</text>
+
+  <!-- import_receipts table -->
+  <rect x="220" y="200" width="160" height="140" class="entity" rx="3"/>
+  <rect x="220" y="200" width="160" height="25" fill="#388e3c" rx="3"/>
+  <text x="300" y="218" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">import_receipts</text>
+  <text x="230" y="235" font-size="9" class="pk">PK id</text>
+  <text x="230" y="250" font-size="9">receipt_code</text>
+  <text x="230" y="265" font-size="9" class="fk">FK supplier_id</text>
+  <text x="230" y="280" font-size="9">supplier_name</text>
+  <text x="230" y="295" font-size="9">import_date</text>
+  <text x="230" y="310" font-size="9">total_amount</text>
+  <text x="230" y="325" font-size="9" class="fk">FK created_by</text>
+
+  <!-- import_receipt_details table -->
+  <rect x="420" y="200" width="170" height="120" class="entity" rx="3"/>
+  <rect x="420" y="200" width="170" height="25" fill="#388e3c" rx="3"/>
+  <text x="505" y="218" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">import_receipt_details</text>
+  <text x="430" y="235" font-size="9" class="pk">PK id</text>
+  <text x="430" y="250" font-size="9" class="fk">FK import_receipt_id</text>
+  <text x="430" y="265" font-size="9" class="fk">FK product_id</text>
+  <text x="430" y="280" font-size="9">quantity</text>
+  <text x="430" y="295" font-size="9">unit_price</text>
+  <text x="430" y="310" font-size="9">subtotal</text>
+
+  <!-- export_receipts table -->
+  <rect x="220" y="380" width="160" height="140" class="entity" rx="3"/>
+  <rect x="220" y="380" width="160" height="25" fill="#f57c00" rx="3"/>
+  <text x="300" y="398" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">export_receipts</text>
+  <text x="230" y="415" font-size="9" class="pk">PK id</text>
+  <text x="230" y="430" font-size="9">receipt_code</text>
+  <text x="230" y="445" font-size="9" class="fk">FK customer_id</text>
+  <text x="230" y="460" font-size="9">customer_name</text>
+  <text x="230" y="475" font-size="9">export_date</text>
+  <text x="230" y="490" font-size="9">total_amount</text>
+  <text x="230" y="505" font-size="9" class="fk">FK created_by</text>
+
+  <!-- export_receipt_details table -->
+  <rect x="420" y="380" width="170" height="120" class="entity" rx="3"/>
+  <rect x="420" y="380" width="170" height="25" fill="#f57c00" rx="3"/>
+  <text x="505" y="398" text-anchor="middle" fill="#fff" font-weight="bold" font-size="10">export_receipt_details</text>
+  <text x="430" y="415" font-size="9" class="pk">PK id</text>
+  <text x="430" y="430" font-size="9" class="fk">FK export_receipt_id</text>
+  <text x="430" y="445" font-size="9" class="fk">FK product_id</text>
+  <text x="430" y="460" font-size="9">quantity</text>
+  <text x="430" y="475" font-size="9">unit_price</text>
+  <text x="430" y="490" font-size="9">subtotal</text>
+
+  <!-- audit_logs table -->
+  <rect x="620" y="200" width="160" height="140" class="entity" rx="3"/>
+  <rect x="620" y="200" width="160" height="25" fill="#9c27b0" rx="3"/>
+  <text x="700" y="218" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">audit_logs</text>
+  <text x="630" y="235" font-size="9" class="pk">PK id</text>
+  <text x="630" y="250" font-size="9" class="fk">FK user_id</text>
+  <text x="630" y="265" font-size="9">action</text>
+  <text x="630" y="280" font-size="9">entity_type</text>
+  <text x="630" y="295" font-size="9">entity_id</text>
+  <text x="630" y="310" font-size="9">details</text>
+  <text x="630" y="325" font-size="9">created_at</text>
+
+  <!-- Relationships -->
+  <!-- categories -> products -->
+  <line x1="350" y1="70" x2="380" y2="70" stroke="#333" stroke-width="1"/>
+  <text x="365" y="65" font-size="8">1:N</text>
+
+  <!-- products -> stocks -->
+  <line x1="530" y1="70" x2="560" y2="70" stroke="#333" stroke-width="1"/>
+  <text x="545" y="65" font-size="8">1:1</text>
+
+  <!-- suppliers -> import_receipts -->
+  <line x1="170" y1="270" x2="220" y2="270" stroke="#333" stroke-width="1"/>
+  <text x="195" y="265" font-size="8">1:N</text>
+
+  <!-- import_receipts -> import_receipt_details -->
+  <line x1="380" y1="270" x2="420" y2="270" stroke="#333" stroke-width="1"/>
+  <text x="400" y="265" font-size="8">1:N</text>
+
+  <!-- products -> import_receipt_details -->
+  <line x1="455" y1="180" x2="505" y2="200" stroke="#333" stroke-width="1"/>
+  <text x="480" y="185" font-size="8">1:N</text>
+
+  <!-- customers -> export_receipts -->
+  <line x1="170" y1="450" x2="220" y2="450" stroke="#333" stroke-width="1"/>
+  <text x="195" y="445" font-size="8">1:N</text>
+
+  <!-- export_receipts -> export_receipt_details -->
+  <line x1="380" y1="450" x2="420" y2="450" stroke="#333" stroke-width="1"/>
+  <text x="400" y="445" font-size="8">1:N</text>
+
+  <!-- products -> export_receipt_details -->
+  <line x1="455" y1="180" x2="505" y2="380" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- users -> audit_logs -->
+  <line x1="95" y1="160" x2="95" y2="170" stroke="#333" stroke-width="1"/>
+  <line x1="95" y1="170" x2="700" y2="170" stroke="#333" stroke-width="1"/>
+  <line x1="700" y1="170" x2="700" y2="200" stroke="#333" stroke-width="1"/>
+  <text x="400" y="165" font-size="8">1:N</text>
+
+  <!-- users -> import_receipts (created_by) -->
+  <line x1="95" y1="160" x2="300" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- users -> export_receipts (created_by) -->
+  <line x1="95" y1="160" x2="300" y2="380" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- Legend -->
+  <rect x="620" y="400" width="160" height="80" fill="#f5f5f5" stroke="#999" stroke-width="1" rx="3"/>
+  <text x="700" y="420" text-anchor="middle" font-weight="bold" font-size="10">Chú thích</text>
+  <text x="630" y="440" font-size="9" class="pk">PK: Primary Key</text>
+  <text x="630" y="455" font-size="9" class="fk">FK: Foreign Key</text>
+  <line x1="630" y1="465" x2="660" y2="465" stroke="#333" stroke-width="1"/>
+  <text x="665" y="468" font-size="8">Quan hệ</text>
+</svg>
+<p class="figure-caption">Hình 4.2: Biểu đồ ERD - Entity Relationship Diagram</p>
+</div>
+
+<h4>d) Biểu đồ lớp (Class Diagram)</h4>
+<p>Biểu đồ lớp mô tả cấu trúc tĩnh của hệ thống, thể hiện các lớp, thuộc tính, phương thức và mối quan hệ giữa chúng.</p>
+
+<div class="figure">
+<svg width="850" height="750" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .class-box { fill: #fff; stroke: #333; stroke-width: 2; }
+    .class-header { fill: #4a69bd; }
+    .interface-header { fill: #38ada9; }
+    .attr { font-size: 9px; }
+    .method { font-size: 9px; font-style: italic; }
+  </style>
+
+  <!-- User Class -->
+  <rect x="20" y="20" width="180" height="160" class="class-box" rx="3"/>
+  <rect x="20" y="20" width="180" height="25" class="class-header" rx="3"/>
+  <text x="110" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">User</text>
+  <line x1="20" y1="70" x2="200" y2="70" stroke="#333"/>
+  <text x="30" y="55" class="attr">- id: Integer</text>
+  <text x="30" y="85" class="attr">- username: String</text>
+  <text x="30" y="98" class="attr">- password: String</text>
+  <text x="30" y="111" class="attr">- fullName: String</text>
+  <text x="30" y="124" class="attr">- email: String</text>
+  <text x="30" y="137" class="attr">- role: Enum(ADMIN, STAFF)</text>
+  <text x="30" y="150" class="attr">- isActive: Boolean</text>
+  <line x1="20" y1="155" x2="200" y2="155" stroke="#333"/>
+  <text x="30" y="172" class="method">+ login(credentials): Token</text>
+
+  <!-- Category Class -->
+  <rect x="230" y="20" width="180" height="130" class="class-box" rx="3"/>
+  <rect x="230" y="20" width="180" height="25" class="class-header" rx="3"/>
+  <text x="320" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Category</text>
+  <line x1="230" y1="70" x2="410" y2="70" stroke="#333"/>
+  <text x="240" y="55" class="attr">- id: Integer</text>
+  <text x="240" y="85" class="attr">- name: String</text>
+  <text x="240" y="98" class="attr">- description: String</text>
+  <text x="240" y="111" class="attr">- isActive: Boolean</text>
+  <line x1="230" y1="120" x2="410" y2="120" stroke="#333"/>
+  <text x="240" y="137" class="method">+ getProducts(): List&lt;Product&gt;</text>
+
+  <!-- Product Class -->
+  <rect x="440" y="20" width="190" height="190" class="class-box" rx="3"/>
+  <rect x="440" y="20" width="190" height="25" class="class-header" rx="3"/>
+  <text x="535" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Product</text>
+  <line x1="440" y1="70" x2="630" y2="70" stroke="#333"/>
+  <text x="450" y="55" class="attr">- id: Integer</text>
+  <text x="450" y="85" class="attr">- sku: String</text>
+  <text x="450" y="98" class="attr">- name: String</text>
+  <text x="450" y="111" class="attr">- categoryId: Integer</text>
+  <text x="450" y="124" class="attr">- price: Decimal</text>
+  <text x="450" y="137" class="attr">- description: String</text>
+  <text x="450" y="150" class="attr">- image: String</text>
+  <text x="450" y="163" class="attr">- minStock: Integer</text>
+  <line x1="440" y1="172" x2="630" y2="172" stroke="#333"/>
+  <text x="450" y="189" class="method">+ getStock(): Stock</text>
+  <text x="450" y="202" class="method">+ isLowStock(): Boolean</text>
+
+  <!-- Stock Class -->
+  <rect x="660" y="20" width="170" height="120" class="class-box" rx="3"/>
+  <rect x="660" y="20" width="170" height="25" class="class-header" rx="3"/>
+  <text x="745" y="38" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Stock</text>
+  <line x1="660" y1="70" x2="830" y2="70" stroke="#333"/>
+  <text x="670" y="55" class="attr">- id: Integer</text>
+  <text x="670" y="85" class="attr">- productId: Integer</text>
+  <text x="670" y="98" class="attr">- quantity: Integer</text>
+  <text x="670" y="111" class="attr">- updatedAt: DateTime</text>
+  <line x1="660" y1="118" x2="830" y2="118" stroke="#333"/>
+  <text x="670" y="135" class="method">+ updateQuantity(qty): void</text>
+
+  <!-- Supplier Class -->
+  <rect x="20" y="220" width="180" height="150" class="class-box" rx="3"/>
+  <rect x="20" y="220" width="180" height="25" class="class-header" rx="3"/>
+  <text x="110" y="238" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Supplier</text>
+  <line x1="20" y1="270" x2="200" y2="270" stroke="#333"/>
+  <text x="30" y="255" class="attr">- id: Integer</text>
+  <text x="30" y="285" class="attr">- code: String</text>
+  <text x="30" y="298" class="attr">- name: String</text>
+  <text x="30" y="311" class="attr">- phone: String</text>
+  <text x="30" y="324" class="attr">- email: String</text>
+  <text x="30" y="337" class="attr">- address: String</text>
+  <line x1="20" y1="345" x2="200" y2="345" stroke="#333"/>
+  <text x="30" y="362" class="method">+ getImportReceipts(): List</text>
+
+  <!-- Customer Class -->
+  <rect x="20" y="400" width="180" height="150" class="class-box" rx="3"/>
+  <rect x="20" y="400" width="180" height="25" class="class-header" rx="3"/>
+  <text x="110" y="418" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">Customer</text>
+  <line x1="20" y1="450" x2="200" y2="450" stroke="#333"/>
+  <text x="30" y="435" class="attr">- id: Integer</text>
+  <text x="30" y="465" class="attr">- code: String</text>
+  <text x="30" y="478" class="attr">- name: String</text>
+  <text x="30" y="491" class="attr">- phone: String</text>
+  <text x="30" y="504" class="attr">- email: String</text>
+  <text x="30" y="517" class="attr">- address: String</text>
+  <line x1="20" y1="525" x2="200" y2="525" stroke="#333"/>
+  <text x="30" y="542" class="method">+ getExportReceipts(): List</text>
+
+  <!-- ImportReceipt Class -->
+  <rect x="230" y="220" width="200" height="180" class="class-box" rx="3"/>
+  <rect x="230" y="220" width="200" height="25" class="class-header" rx="3"/>
+  <text x="330" y="238" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">ImportReceipt</text>
+  <line x1="230" y1="270" x2="430" y2="270" stroke="#333"/>
+  <text x="240" y="255" class="attr">- id: Integer</text>
+  <text x="240" y="285" class="attr">- receiptCode: String</text>
+  <text x="240" y="298" class="attr">- supplierId: Integer</text>
+  <text x="240" y="311" class="attr">- importDate: DateTime</text>
+  <text x="240" y="324" class="attr">- totalAmount: Decimal</text>
+  <text x="240" y="337" class="attr">- note: String</text>
+  <text x="240" y="350" class="attr">- createdBy: Integer</text>
+  <line x1="230" y1="358" x2="430" y2="358" stroke="#333"/>
+  <text x="240" y="375" class="method">+ getItems(): List&lt;ImportItem&gt;</text>
+  <text x="240" y="388" class="method">+ calculateTotal(): Decimal</text>
+
+  <!-- ImportReceiptItem Class -->
+  <rect x="460" y="220" width="180" height="150" class="class-box" rx="3"/>
+  <rect x="460" y="220" width="180" height="25" class="class-header" rx="3"/>
+  <text x="550" y="238" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">ImportReceiptItem</text>
+  <line x1="460" y1="270" x2="640" y2="270" stroke="#333"/>
+  <text x="470" y="255" class="attr">- id: Integer</text>
+  <text x="470" y="285" class="attr">- importReceiptId: Integer</text>
+  <text x="470" y="298" class="attr">- productId: Integer</text>
+  <text x="470" y="311" class="attr">- quantity: Integer</text>
+  <text x="470" y="324" class="attr">- unitPrice: Decimal</text>
+  <text x="470" y="337" class="attr">- subtotal: Decimal</text>
+  <line x1="460" y1="345" x2="640" y2="345" stroke="#333"/>
+  <text x="470" y="362" class="method">+ calculateSubtotal(): Decimal</text>
+
+  <!-- ExportReceipt Class -->
+  <rect x="230" y="430" width="200" height="180" class="class-box" rx="3"/>
+  <rect x="230" y="430" width="200" height="25" class="class-header" rx="3"/>
+  <text x="330" y="448" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">ExportReceipt</text>
+  <line x1="230" y1="480" x2="430" y2="480" stroke="#333"/>
+  <text x="240" y="465" class="attr">- id: Integer</text>
+  <text x="240" y="495" class="attr">- receiptCode: String</text>
+  <text x="240" y="508" class="attr">- customerId: Integer</text>
+  <text x="240" y="521" class="attr">- exportDate: DateTime</text>
+  <text x="240" y="534" class="attr">- totalAmount: Decimal</text>
+  <text x="240" y="547" class="attr">- note: String</text>
+  <text x="240" y="560" class="attr">- createdBy: Integer</text>
+  <line x1="230" y1="568" x2="430" y2="568" stroke="#333"/>
+  <text x="240" y="585" class="method">+ getItems(): List&lt;ExportItem&gt;</text>
+  <text x="240" y="598" class="method">+ validateStock(): Boolean</text>
+
+  <!-- ExportReceiptItem Class -->
+  <rect x="460" y="430" width="180" height="150" class="class-box" rx="3"/>
+  <rect x="460" y="430" width="180" height="25" class="class-header" rx="3"/>
+  <text x="550" y="448" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">ExportReceiptItem</text>
+  <line x1="460" y1="480" x2="640" y2="480" stroke="#333"/>
+  <text x="470" y="465" class="attr">- id: Integer</text>
+  <text x="470" y="495" class="attr">- exportReceiptId: Integer</text>
+  <text x="470" y="508" class="attr">- productId: Integer</text>
+  <text x="470" y="521" class="attr">- quantity: Integer</text>
+  <text x="470" y="534" class="attr">- unitPrice: Decimal</text>
+  <text x="470" y="547" class="attr">- subtotal: Decimal</text>
+  <line x1="460" y1="555" x2="640" y2="555" stroke="#333"/>
+  <text x="470" y="572" class="method">+ calculateSubtotal(): Decimal</text>
+
+  <!-- AuditLog Class -->
+  <rect x="660" y="180" width="170" height="160" class="class-box" rx="3"/>
+  <rect x="660" y="180" width="170" height="25" class="class-header" rx="3"/>
+  <text x="745" y="198" text-anchor="middle" fill="#fff" font-weight="bold" font-size="11">AuditLog</text>
+  <line x1="660" y1="230" x2="830" y2="230" stroke="#333"/>
+  <text x="670" y="215" class="attr">- id: Integer</text>
+  <text x="670" y="245" class="attr">- userId: Integer</text>
+  <text x="670" y="258" class="attr">- action: String</text>
+  <text x="670" y="271" class="attr">- entityType: String</text>
+  <text x="670" y="284" class="attr">- entityId: Integer</text>
+  <text x="670" y="297" class="attr">- details: JSON</text>
+  <text x="670" y="310" class="attr">- ipAddress: String</text>
+  <line x1="660" y1="318" x2="830" y2="318" stroke="#333"/>
+  <text x="670" y="335" class="method">+ log(action, entity): void</text>
+
+  <!-- Relationships -->
+  <!-- Category 1--* Product -->
+  <line x1="410" y1="85" x2="440" y2="85" stroke="#333" stroke-width="1"/>
+  <text x="420" y="80" font-size="8">1</text>
+  <text x="432" y="80" font-size="8">*</text>
+
+  <!-- Product 1--1 Stock -->
+  <line x1="630" y1="80" x2="660" y2="80" stroke="#333" stroke-width="1"/>
+  <text x="635" y="75" font-size="8">1</text>
+  <text x="652" y="75" font-size="8">1</text>
+
+  <!-- Supplier 1--* ImportReceipt -->
+  <line x1="200" y1="295" x2="230" y2="295" stroke="#333" stroke-width="1"/>
+  <text x="205" y="290" font-size="8">1</text>
+  <text x="222" y="290" font-size="8">*</text>
+
+  <!-- Customer 1--* ExportReceipt -->
+  <line x1="200" y1="475" x2="230" y2="510" stroke="#333" stroke-width="1"/>
+  <text x="205" y="485" font-size="8">1</text>
+  <text x="222" y="505" font-size="8">*</text>
+
+  <!-- ImportReceipt 1--* ImportReceiptItem -->
+  <line x1="430" y1="310" x2="460" y2="310" stroke="#333" stroke-width="1"/>
+  <text x="435" y="305" font-size="8">1</text>
+  <text x="452" y="305" font-size="8">*</text>
+
+  <!-- ExportReceipt 1--* ExportReceiptItem -->
+  <line x1="430" y1="520" x2="460" y2="520" stroke="#333" stroke-width="1"/>
+  <text x="435" y="515" font-size="8">1</text>
+  <text x="452" y="515" font-size="8">*</text>
+
+  <!-- Product --* ImportReceiptItem -->
+  <line x1="535" y1="210" x2="535" y2="220" stroke="#333" stroke-width="1"/>
+  <text x="540" y="218" font-size="8">*</text>
+
+  <!-- Product --* ExportReceiptItem -->
+  <line x1="550" y1="370" x2="550" y2="430" stroke="#333" stroke-width="1"/>
+  <text x="555" y="400" font-size="8">*</text>
+
+  <!-- User --* ImportReceipt (createdBy) -->
+  <line x1="110" y1="180" x2="110" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="110" y1="200" x2="330" y2="200" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="330" y1="200" x2="330" y2="220" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+
+  <!-- User --* AuditLog -->
+  <line x1="200" y1="90" x2="220" y2="90" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="220" y1="90" x2="220" y2="160" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="220" y1="160" x2="745" y2="160" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <line x1="745" y1="160" x2="745" y2="180" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="500" y="155" font-size="8">logs</text>
+
+  <!-- Legend -->
+  <rect x="660" y="380" width="170" height="90" fill="#f9f9f9" stroke="#ccc" rx="5"/>
+  <text x="745" y="400" text-anchor="middle" font-weight="bold" font-size="10">Chú thích</text>
+  <line x1="670" y1="415" x2="700" y2="415" stroke="#333" stroke-width="1"/>
+  <text x="705" y="418" font-size="8">Quan hệ</text>
+  <line x1="670" y1="435" x2="700" y2="435" stroke="#333" stroke-width="1" stroke-dasharray="4,2"/>
+  <text x="705" y="438" font-size="8">Phụ thuộc</text>
+  <text x="670" y="458" font-size="8">1 -- * : Một - Nhiều</text>
+  <text x="670" y="468" font-size="8">1 -- 1 : Một - Một</text>
+</svg>
+<p class="figure-caption">Hình 4.12: Biểu đồ lớp (Class Diagram) của hệ thống</p>
+</div>
+
+<p>Biểu đồ lớp thể hiện các thực thể chính trong hệ thống và mối quan hệ giữa chúng:</p>
+<ul>
+<li><strong>User:</strong> Quản lý thông tin người dùng, phân quyền Admin/Staff</li>
+<li><strong>Category - Product:</strong> Quan hệ 1-N, một danh mục có nhiều sản phẩm</li>
+<li><strong>Product - Stock:</strong> Quan hệ 1-1, mỗi sản phẩm có một bản ghi tồn kho</li>
+<li><strong>Supplier - ImportReceipt:</strong> Quan hệ 1-N, một NCC có nhiều phiếu nhập</li>
+<li><strong>Customer - ExportReceipt:</strong> Quan hệ 1-N, một KH có nhiều phiếu xuất</li>
+<li><strong>Receipt - ReceiptItem:</strong> Quan hệ 1-N, một phiếu có nhiều chi tiết</li>
+<li><strong>AuditLog:</strong> Ghi lại mọi hoạt động của người dùng</li>
+</ul>
+
+<h4>e) Biểu đồ thành phần (Component Diagram)</h4>
+<p>Biểu đồ thành phần mô tả cách các thành phần phần mềm được tổ chức và phụ thuộc lẫn nhau.</p>
+
+<div class="figure">
+<svg width="800" height="500" xmlns="http://www.w3.org/2000/svg">
+  <!-- Frontend Package -->
+  <rect x="20" y="20" width="350" height="200" fill="#e3f2fd" stroke="#1976d2" stroke-width="2" rx="5"/>
+  <text x="195" y="45" text-anchor="middle" font-weight="bold" font-size="12" fill="#1976d2">«subsystem» Frontend (React.js)</text>
+
+  <!-- Frontend components -->
+  <rect x="40" y="60" width="100" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="35" y="55" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="35" y="68" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="90" y="85" text-anchor="middle" font-size="9">Pages</text>
+
+  <rect x="160" y="60" width="100" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="155" y="55" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="155" y="68" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="210" y="85" text-anchor="middle" font-size="9">Components</text>
+
+  <rect x="40" y="120" width="100" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="35" y="115" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="35" y="128" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="90" y="145" text-anchor="middle" font-size="9">Services (API)</text>
+
+  <rect x="160" y="120" width="100" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="155" y="115" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="155" y="128" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="210" y="145" text-anchor="middle" font-size="9">Context/Store</text>
+
+  <rect x="280" y="90" width="70" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="275" y="85" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="275" y="98" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="315" y="115" text-anchor="middle" font-size="9">Utils</text>
+
+  <!-- Arrows inside frontend -->
+  <line x1="90" y1="100" x2="90" y2="120" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="140" y1="80" x2="160" y2="80" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="210" y1="100" x2="210" y2="120" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Backend Package -->
+  <rect x="420" y="20" width="360" height="280" fill="#e8f5e9" stroke="#388e3c" stroke-width="2" rx="5"/>
+  <text x="600" y="45" text-anchor="middle" font-weight="bold" font-size="12" fill="#388e3c">«subsystem» Backend (Node.js/Express)</text>
+
+  <!-- Backend components -->
+  <rect x="440" y="60" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="435" y="55" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="435" y="68" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="485" y="85" text-anchor="middle" font-size="9">Routes</text>
+
+  <rect x="550" y="60" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="545" y="55" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="545" y="68" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="595" y="85" text-anchor="middle" font-size="9">Controllers</text>
+
+  <rect x="660" y="60" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="655" y="55" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="655" y="68" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="705" y="85" text-anchor="middle" font-size="9">Middlewares</text>
+
+  <rect x="440" y="130" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="435" y="125" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="435" y="138" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="485" y="155" text-anchor="middle" font-size="9">Services</text>
+
+  <rect x="550" y="130" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="545" y="125" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="545" y="138" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="595" y="155" text-anchor="middle" font-size="9">Models</text>
+
+  <rect x="660" y="130" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="655" y="125" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="655" y="138" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="705" y="155" text-anchor="middle" font-size="9">Validators</text>
+
+  <rect x="495" y="200" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="490" y="195" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="490" y="208" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="540" y="225" text-anchor="middle" font-size="9">Utils</text>
+
+  <rect x="605" y="200" width="90" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+  <rect x="600" y="195" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="600" y="208" width="15" height="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="650" y="225" text-anchor="middle" font-size="9">Config</text>
+
+  <!-- Backend internal arrows -->
+  <line x1="530" y1="80" x2="550" y2="80" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="595" y1="100" x2="595" y2="130" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="485" y1="100" x2="485" y2="130" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+  <line x1="530" y1="150" x2="550" y2="150" stroke="#666" stroke-width="1" marker-end="url(#arrow)"/>
+
+  <!-- Database Package -->
+  <rect x="420" y="330" width="180" height="80" fill="#fff3e0" stroke="#f57c00" stroke-width="2" rx="5"/>
+  <text x="510" y="355" text-anchor="middle" font-weight="bold" font-size="12" fill="#f57c00">«database» MySQL</text>
+
+  <!-- Database icon -->
+  <ellipse cx="510" cy="380" rx="30" ry="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="480" y="380" width="60" height="20" fill="#fff" stroke="#333" stroke-width="1"/>
+  <ellipse cx="510" cy="400" rx="30" ry="10" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="510" y="393" text-anchor="middle" font-size="8">warehouse_db</text>
+
+  <!-- External Services -->
+  <rect x="620" y="330" width="160" height="80" fill="#fce4ec" stroke="#c2185b" stroke-width="2" rx="5"/>
+  <text x="700" y="355" text-anchor="middle" font-weight="bold" font-size="11" fill="#c2185b">«external»</text>
+  <text x="700" y="380" text-anchor="middle" font-size="9">File Storage</text>
+  <text x="700" y="395" text-anchor="middle" font-size="9">(Product Images)</text>
+
+  <!-- Connection arrows -->
+  <!-- Frontend to Backend -->
+  <line x1="370" y1="140" x2="420" y2="80" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="385" y="100" font-size="9" fill="#333">HTTP/REST</text>
+
+  <!-- Backend to Database -->
+  <line x1="595" y1="260" x2="510" y2="330" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="530" y="290" font-size="9" fill="#333">mysql2</text>
+
+  <!-- Backend to File Storage -->
+  <line x1="705" y1="260" x2="705" y2="330" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="720" y="295" font-size="9" fill="#333">multer</text>
+
+  <!-- Arrow marker -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#333"/>
+    </marker>
+  </defs>
+
+  <!-- Legend -->
+  <rect x="20" y="420" width="200" height="70" fill="#f9f9f9" stroke="#ccc" rx="5"/>
+  <text x="120" y="440" text-anchor="middle" font-weight="bold" font-size="10">Chú thích</text>
+  <rect x="30" y="450" width="30" height="15" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="28" y="448" width="8" height="5" fill="#fff" stroke="#333" stroke-width="1"/>
+  <rect x="28" y="456" width="8" height="5" fill="#fff" stroke="#333" stroke-width="1"/>
+  <text x="70" y="462" font-size="9">Component</text>
+  <line x1="130" y1="458" x2="160" y2="458" stroke="#333" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="170" y="462" font-size="9">Phụ thuộc</text>
+</svg>
+<p class="figure-caption">Hình 4.13: Biểu đồ thành phần (Component Diagram)</p>
+</div>
+
+<p>Biểu đồ thành phần thể hiện kiến trúc phần mềm theo các tầng:</p>
+<ul>
+<li><strong>Frontend (React.js):</strong> Gồm Pages, Components, Services API, Context/Store và Utils</li>
+<li><strong>Backend (Node.js/Express):</strong> Gồm Routes, Controllers, Services, Models, Middlewares, Validators, Utils và Config</li>
+<li><strong>Database (MySQL):</strong> Lưu trữ dữ liệu warehouse_db</li>
+<li><strong>File Storage:</strong> Lưu trữ hình ảnh sản phẩm</li>
+</ul>
+
+<h4>f) Biểu đồ triển khai (Deployment Diagram)</h4>
+<p>Biểu đồ triển khai mô tả cách hệ thống được triển khai trên các node vật lý/ảo.</p>
+
+<div class="figure">
+<svg width="800" height="450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Client Node -->
+  <g transform="translate(20, 20)">
+    <path d="M0,20 L10,0 L210,0 L200,20 Z" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <rect x="0" y="20" width="200" height="120" fill="#e3f2fd" stroke="#1976d2" stroke-width="2"/>
+    <text x="100" y="15" text-anchor="middle" font-size="10" fill="#1976d2">«device»</text>
+    <text x="100" y="50" text-anchor="middle" font-weight="bold" font-size="11">Client Browser</text>
+
+    <rect x="20" y="65" width="160" height="55" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="100" y="85" text-anchor="middle" font-size="9">«artifact»</text>
+    <text x="100" y="100" text-anchor="middle" font-size="10" font-weight="bold">React SPA</text>
+    <text x="100" y="115" text-anchor="middle" font-size="8" fill="#666">HTML, CSS, JavaScript</text>
+  </g>
+
+  <!-- Web Server Node -->
+  <g transform="translate(300, 20)">
+    <path d="M0,20 L10,0 L230,0 L220,20 Z" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <rect x="0" y="20" width="220" height="180" fill="#e8f5e9" stroke="#388e3c" stroke-width="2"/>
+    <text x="110" y="15" text-anchor="middle" font-size="10" fill="#388e3c">«execution environment»</text>
+    <text x="110" y="50" text-anchor="middle" font-weight="bold" font-size="11">Application Server</text>
+    <text x="110" y="65" text-anchor="middle" font-size="9" fill="#666">Node.js v18+</text>
+
+    <rect x="15" y="80" width="90" height="50" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="60" y="100" text-anchor="middle" font-size="9">«artifact»</text>
+    <text x="60" y="115" text-anchor="middle" font-size="9" font-weight="bold">Express API</text>
+
+    <rect x="115" y="80" width="90" height="50" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="160" y="100" text-anchor="middle" font-size="9">«artifact»</text>
+    <text x="160" y="115" text-anchor="middle" font-size="9" font-weight="bold">Static Files</text>
+
+    <rect x="15" y="145" width="190" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="110" y="162" text-anchor="middle" font-size="9">«artifact»</text>
+    <text x="110" y="177" text-anchor="middle" font-size="9" font-weight="bold">JWT Authentication</text>
+  </g>
+
+  <!-- Database Server Node -->
+  <g transform="translate(580, 20)">
+    <path d="M0,20 L10,0 L190,0 L180,20 Z" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <rect x="0" y="20" width="180" height="130" fill="#fff3e0" stroke="#f57c00" stroke-width="2"/>
+    <text x="90" y="15" text-anchor="middle" font-size="10" fill="#f57c00">«database server»</text>
+    <text x="90" y="50" text-anchor="middle" font-weight="bold" font-size="11">Database Server</text>
+    <text x="90" y="65" text-anchor="middle" font-size="9" fill="#666">MySQL 8.0</text>
+
+    <!-- Database icon -->
+    <ellipse cx="90" cy="95" rx="40" ry="12" fill="#fff" stroke="#333" stroke-width="1"/>
+    <rect x="50" y="95" width="80" height="30" fill="#fff" stroke="#333" stroke-width="1"/>
+    <ellipse cx="90" cy="125" rx="40" ry="12" fill="#fff" stroke="#333" stroke-width="1"/>
+    <text x="90" y="115" text-anchor="middle" font-size="9" font-weight="bold">warehouse_db</text>
+  </g>
+
+  <!-- Development Environment -->
+  <g transform="translate(20, 270)">
+    <path d="M0,20 L10,0 L260,0 L250,20 Z" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <rect x="0" y="20" width="250" height="140" fill="#f3e5f5" stroke="#7b1fa2" stroke-width="2"/>
+    <text x="125" y="15" text-anchor="middle" font-size="10" fill="#7b1fa2">«device»</text>
+    <text x="125" y="50" text-anchor="middle" font-weight="bold" font-size="11">Development Machine</text>
+
+    <rect x="15" y="65" width="105" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="67" y="82" text-anchor="middle" font-size="9">VS Code</text>
+    <text x="67" y="97" text-anchor="middle" font-size="8" fill="#666">IDE</text>
+
+    <rect x="130" y="65" width="105" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="182" y="82" text-anchor="middle" font-size="9">Git</text>
+    <text x="182" y="97" text-anchor="middle" font-size="8" fill="#666">Version Control</text>
+
+    <rect x="15" y="115" width="105" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="67" y="132" text-anchor="middle" font-size="9">npm/pnpm</text>
+    <text x="67" y="147" text-anchor="middle" font-size="8" fill="#666">Package Manager</text>
+
+    <rect x="130" y="115" width="105" height="40" fill="#fff" stroke="#333" stroke-width="1" rx="3"/>
+    <text x="182" y="132" text-anchor="middle" font-size="9">Postman</text>
+    <text x="182" y="147" text-anchor="middle" font-size="8" fill="#666">API Testing</text>
+  </g>
+
+  <!-- Production Environment Note -->
+  <g transform="translate(300, 270)">
+    <rect x="0" y="0" width="460" height="160" fill="#fffde7" stroke="#fbc02d" stroke-width="2" rx="5"/>
+    <text x="230" y="25" text-anchor="middle" font-weight="bold" font-size="12" fill="#f57f17">Môi trường triển khai (Production)</text>
+
+    <text x="20" y="50" font-size="10">• <tspan font-weight="bold">Frontend:</tspan> Build static files, serve via Nginx/CDN</text>
+    <text x="20" y="70" font-size="10">• <tspan font-weight="bold">Backend:</tspan> Node.js với PM2 process manager</text>
+    <text x="20" y="90" font-size="10">• <tspan font-weight="bold">Database:</tspan> MySQL với connection pooling</text>
+    <text x="20" y="110" font-size="10">• <tspan font-weight="bold">Reverse Proxy:</tspan> Nginx cho load balancing</text>
+    <text x="20" y="130" font-size="10">• <tspan font-weight="bold">SSL/TLS:</tspan> Let's Encrypt certificate</text>
+    <text x="20" y="150" font-size="10">• <tspan font-weight="bold">Monitoring:</tspan> PM2 logs, database monitoring</text>
+  </g>
+
+  <!-- Connections -->
+  <!-- Client to Web Server -->
+  <line x1="220" y1="100" x2="300" y2="100" stroke="#333" stroke-width="2"/>
+  <text x="260" y="90" text-anchor="middle" font-size="9">HTTPS</text>
+  <text x="260" y="115" text-anchor="middle" font-size="8" fill="#666">Port 443</text>
+
+  <!-- Web Server to Database -->
+  <line x1="520" y1="100" x2="580" y2="100" stroke="#333" stroke-width="2"/>
+  <text x="550" y="90" text-anchor="middle" font-size="9">TCP</text>
+  <text x="550" y="115" text-anchor="middle" font-size="8" fill="#666">Port 3306</text>
+</svg>
+<p class="figure-caption">Hình 4.14: Biểu đồ triển khai (Deployment Diagram)</p>
+</div>
+
+<p>Biểu đồ triển khai mô tả cấu trúc hạ tầng:</p>
+<ul>
+<li><strong>Client Browser:</strong> Chạy React SPA, giao tiếp qua HTTPS</li>
+<li><strong>Application Server:</strong> Node.js v18+ chạy Express API và serve static files</li>
+<li><strong>Database Server:</strong> MySQL 8.0 lưu trữ dữ liệu warehouse_db</li>
+<li><strong>Development Machine:</strong> Môi trường phát triển với VS Code, Git, npm</li>
+</ul>
+
+<h3>4.2.3 Thiết kế API</h3>
+
+<h4>a) Danh sách API Endpoints</h4>
+
+<p><strong>Authentication APIs:</strong></p>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr>
+<tr><td>POST</td><td>/api/auth/login</td><td>Đăng nhập</td></tr>
+<tr><td>GET</td><td>/api/auth/me</td><td>Lấy thông tin user hiện tại</td></tr>
+<tr><td>PUT</td><td>/api/auth/change-password</td><td>Đổi mật khẩu</td></tr>
+</table>
+
+<p><strong>User APIs:</strong></p>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr>
+<tr><td>GET</td><td>/api/users</td><td>Lấy danh sách users</td></tr>
+<tr><td>POST</td><td>/api/users</td><td>Tạo user mới</td></tr>
+<tr><td>PUT</td><td>/api/users/:id</td><td>Cập nhật user</td></tr>
+<tr><td>DELETE</td><td>/api/users/:id</td><td>Xóa user</td></tr>
+<tr><td>PATCH</td><td>/api/users/:id/toggle-status</td><td>Bật/tắt trạng thái</td></tr>
+</table>
+
+<p><strong>Product APIs:</strong></p>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr>
+<tr><td>GET</td><td>/api/products</td><td>Lấy danh sách sản phẩm (phân trang)</td></tr>
+<tr><td>GET</td><td>/api/products/all</td><td>Lấy tất cả sản phẩm (cho dropdown)</td></tr>
+<tr><td>GET</td><td>/api/products/:id</td><td>Lấy chi tiết sản phẩm</td></tr>
+<tr><td>POST</td><td>/api/products</td><td>Tạo sản phẩm mới</td></tr>
+<tr><td>PUT</td><td>/api/products/:id</td><td>Cập nhật sản phẩm</td></tr>
+<tr><td>DELETE</td><td>/api/products/:id</td><td>Xóa sản phẩm</td></tr>
+</table>
+
+<p><strong>Import APIs:</strong></p>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr>
+<tr><td>GET</td><td>/api/imports</td><td>Lấy danh sách phiếu nhập</td></tr>
+<tr><td>GET</td><td>/api/imports/:id</td><td>Lấy chi tiết phiếu nhập</td></tr>
+<tr><td>POST</td><td>/api/imports</td><td>Tạo phiếu nhập mới</td></tr>
+<tr><td>DELETE</td><td>/api/imports/:id</td><td>Xóa phiếu nhập</td></tr>
+</table>
+
+<p><strong>Export APIs:</strong></p>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr>
+<tr><td>GET</td><td>/api/exports</td><td>Lấy danh sách phiếu xuất</td></tr>
+<tr><td>GET</td><td>/api/exports/:id</td><td>Lấy chi tiết phiếu xuất</td></tr>
+<tr><td>POST</td><td>/api/exports</td><td>Tạo phiếu xuất mới</td></tr>
+<tr><td>DELETE</td><td>/api/exports/:id</td><td>Xóa phiếu xuất</td></tr>
+</table>
+
+<p><strong>Report APIs:</strong></p>
+<table>
+<tr><th>Method</th><th>Endpoint</th><th>Mô tả</th></tr>
+<tr><td>GET</td><td>/api/reports/inventory</td><td>Báo cáo tồn kho</td></tr>
+<tr><td>GET</td><td>/api/reports/import-export</td><td>Báo cáo nhập xuất</td></tr>
+<tr><td>GET</td><td>/api/reports/export-csv</td><td>Xuất báo cáo CSV</td></tr>
+</table>
+
+<h3>4.2.4 Thiết kế giao diện</h3>
+
+<h4>a) Trang đăng nhập</h4>
+<div class="figure">
+<svg width="600" height="350" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#764ba2"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="350" fill="url(#bgGrad)"/>
+
+  <!-- Login Card -->
+  <rect x="175" y="40" width="250" height="280" fill="#fff" rx="10" style="filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3))"/>
+
+  <!-- Logo/Title -->
+  <text x="300" y="80" text-anchor="middle" font-size="16" font-weight="bold" fill="#333">HỆ THỐNG QUẢN LÝ KHO</text>
+  <text x="300" y="100" text-anchor="middle" font-size="11" fill="#666">Đăng nhập để tiếp tục</text>
+
+  <!-- Username field -->
+  <text x="195" y="135" font-size="10" fill="#333">Tên đăng nhập</text>
+  <rect x="195" y="145" width="210" height="35" fill="#f5f5f5" stroke="#ddd" stroke-width="1" rx="5"/>
+  <text x="205" y="168" font-size="11" fill="#999">admin</text>
+
+  <!-- Password field -->
+  <text x="195" y="200" font-size="10" fill="#333">Mật khẩu</text>
+  <rect x="195" y="210" width="210" height="35" fill="#f5f5f5" stroke="#ddd" stroke-width="1" rx="5"/>
+  <text x="205" y="233" font-size="11" fill="#999">••••••••</text>
+
+  <!-- Login button -->
+  <rect x="195" y="265" width="210" height="40" fill="#667eea" rx="5"/>
+  <text x="300" y="291" text-anchor="middle" font-size="12" fill="#fff" font-weight="bold">ĐĂNG NHẬP</text>
+</svg>
+<p class="figure-caption">Hình 4.3: Giao diện trang đăng nhập</p>
+</div>
+<p>Trang đăng nhập có thiết kế đơn giản với form nhập tên đăng nhập và mật khẩu. Sử dụng gradient background và card form ở giữa màn hình.</p>
+
+<h4>b) Trang Dashboard</h4>
+<div class="figure">
+<svg width="750" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Browser frame -->
+  <rect x="0" y="0" width="750" height="400" fill="#f5f5f5" stroke="#ddd" stroke-width="2"/>
+
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="180" height="400" fill="#1a1a2e"/>
+  <text x="90" y="35" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">QUẢN LÝ KHO</text>
+  <rect x="10" y="60" width="160" height="35" fill="#4a69bd" rx="5"/>
+  <text x="90" y="83" text-anchor="middle" font-size="11" fill="#fff">Dashboard</text>
+  <text x="20" y="115" font-size="10" fill="#aaa">Sản phẩm</text>
+  <text x="20" y="140" font-size="10" fill="#aaa">Danh mục</text>
+  <text x="20" y="165" font-size="10" fill="#aaa">Nhập kho</text>
+  <text x="20" y="190" font-size="10" fill="#aaa">Xuất kho</text>
+  <text x="20" y="215" font-size="10" fill="#aaa">Tồn kho</text>
+  <text x="20" y="240" font-size="10" fill="#aaa">Nhà cung cấp</text>
+  <text x="20" y="265" font-size="10" fill="#aaa">Khách hàng</text>
+  <text x="20" y="290" font-size="10" fill="#aaa">Báo cáo</text>
+
+  <!-- Main content area -->
+  <rect x="180" y="0" width="570" height="50" fill="#fff" stroke="#eee"/>
+  <text x="200" y="32" font-size="14" font-weight="bold" fill="#333">Dashboard</text>
+
+  <!-- Stats cards -->
+  <rect x="200" y="70" width="120" height="80" fill="#4a69bd" rx="8"/>
+  <text x="260" y="100" text-anchor="middle" font-size="10" fill="#fff">Tổng sản phẩm</text>
+  <text x="260" y="130" text-anchor="middle" font-size="22" fill="#fff" font-weight="bold">156</text>
+
+  <rect x="340" y="70" width="120" height="80" fill="#38ada9" rx="8"/>
+  <text x="400" y="100" text-anchor="middle" font-size="10" fill="#fff">Tổng nhập</text>
+  <text x="400" y="130" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">52.5M</text>
+
+  <rect x="480" y="70" width="120" height="80" fill="#f6b93b" rx="8"/>
+  <text x="540" y="100" text-anchor="middle" font-size="10" fill="#fff">Tổng xuất</text>
+  <text x="540" y="130" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">78.2M</text>
+
+  <rect x="620" y="70" width="120" height="80" fill="#e55039" rx="8"/>
+  <text x="680" y="100" text-anchor="middle" font-size="10" fill="#fff">Giá trị tồn</text>
+  <text x="680" y="130" text-anchor="middle" font-size="18" fill="#fff" font-weight="bold">125M</text>
+
+  <!-- Low stock alerts -->
+  <rect x="200" y="170" width="265" height="210" fill="#fff" stroke="#eee" rx="5"/>
+  <text x="215" y="195" font-size="12" font-weight="bold" fill="#333">Cảnh báo sắp hết hàng</text>
+  <rect x="210" y="210" width="245" height="30" fill="#fff3cd" rx="3"/>
+  <text x="220" y="230" font-size="10" fill="#856404">SP001 - Laptop Dell (còn 3)</text>
+  <rect x="210" y="245" width="245" height="30" fill="#fff3cd" rx="3"/>
+  <text x="220" y="265" font-size="10" fill="#856404">SP015 - Bàn phím (còn 5)</text>
+  <rect x="210" y="280" width="245" height="30" fill="#f8d7da" rx="3"/>
+  <text x="220" y="300" font-size="10" fill="#721c24">SP023 - Chuột không dây (hết)</text>
+
+  <!-- Recent activities -->
+  <rect x="480" y="170" width="260" height="210" fill="#fff" stroke="#eee" rx="5"/>
+  <text x="495" y="195" font-size="12" font-weight="bold" fill="#333">Hoạt động gần đây</text>
+  <text x="495" y="220" font-size="9" fill="#666">10:30 - Admin nhập kho IMP-001</text>
+  <text x="495" y="240" font-size="9" fill="#666">09:15 - Staff xuất kho EXP-042</text>
+  <text x="495" y="260" font-size="9" fill="#666">08:45 - Admin thêm SP mới</text>
+  <text x="495" y="280" font-size="9" fill="#666">Yesterday - Cập nhật NCC</text>
+</svg>
+<p class="figure-caption">Hình 4.4: Giao diện Dashboard</p>
+</div>
+<p>Dashboard hiển thị các thông tin tổng quan:</p>
+<ul>
+<li>4 thẻ thống kê: Tổng sản phẩm, Tổng nhập, Tổng xuất, Giá trị tồn kho</li>
+<li>Danh sách cảnh báo hàng sắp hết</li>
+<li>Hoạt động gần đây</li>
+</ul>
+
+<h4>c) Trang quản lý sản phẩm</h4>
+<div class="figure">
+<svg width="750" height="380" xmlns="http://www.w3.org/2000/svg">
+  <!-- Browser frame -->
+  <rect x="0" y="0" width="750" height="380" fill="#f5f5f5" stroke="#ddd" stroke-width="2"/>
+
+  <!-- Sidebar (collapsed) -->
+  <rect x="0" y="0" width="50" height="380" fill="#1a1a2e"/>
+  <circle cx="25" cy="30" r="15" fill="#4a69bd"/>
+  <text x="25" y="35" text-anchor="middle" font-size="10" fill="#fff">K</text>
+
+  <!-- Header -->
+  <rect x="50" y="0" width="700" height="50" fill="#fff" stroke="#eee"/>
+  <text x="70" y="32" font-size="16" font-weight="bold" fill="#333">Quản lý sản phẩm</text>
+  <rect x="620" y="12" width="110" height="28" fill="#4a69bd" rx="5"/>
+  <text x="675" y="31" text-anchor="middle" font-size="11" fill="#fff">+ Thêm SP</text>
+
+  <!-- Search bar -->
+  <rect x="70" y="65" width="300" height="35" fill="#fff" stroke="#ddd" rx="5"/>
+  <text x="85" y="88" font-size="11" fill="#999">Tìm kiếm sản phẩm...</text>
+
+  <!-- Filter dropdown -->
+  <rect x="385" y="65" width="150" height="35" fill="#fff" stroke="#ddd" rx="5"/>
+  <text x="400" y="88" font-size="11" fill="#666">Tất cả danh mục</text>
+
+  <!-- Table -->
+  <rect x="70" y="115" width="660" height="250" fill="#fff" stroke="#ddd"/>
+
+  <!-- Table header -->
+  <rect x="70" y="115" width="660" height="35" fill="#f8f9fa"/>
+  <text x="85" y="138" font-size="10" fill="#666" font-weight="bold">Ảnh</text>
+  <text x="140" y="138" font-size="10" fill="#666" font-weight="bold">Mã SKU</text>
+  <text x="220" y="138" font-size="10" fill="#666" font-weight="bold">Tên sản phẩm</text>
+  <text x="400" y="138" font-size="10" fill="#666" font-weight="bold">Danh mục</text>
+  <text x="500" y="138" font-size="10" fill="#666" font-weight="bold">Giá bán</text>
+  <text x="600" y="138" font-size="10" fill="#666" font-weight="bold">Tồn kho</text>
+  <text x="670" y="138" font-size="10" fill="#666" font-weight="bold">Thao tác</text>
+
+  <!-- Table rows -->
+  <line x1="70" y1="150" x2="730" y2="150" stroke="#eee"/>
+  <rect x="85" y="160" width="40" height="40" fill="#eee" rx="3"/>
+  <text x="145" y="185" font-size="10" fill="#333">SP001</text>
+  <text x="225" y="185" font-size="10" fill="#333">Laptop Dell Inspiron 15</text>
+  <text x="405" y="185" font-size="10" fill="#666">Laptop</text>
+  <text x="505" y="185" font-size="10" fill="#4a69bd">15,500,000đ</text>
+  <text x="605" y="185" font-size="10" fill="#38ada9">45</text>
+  <rect x="665" y="170" width="20" height="20" fill="#4a69bd" rx="3"/>
+  <rect x="690" y="170" width="20" height="20" fill="#e55039" rx="3"/>
+
+  <line x1="70" y1="210" x2="730" y2="210" stroke="#eee"/>
+  <rect x="85" y="220" width="40" height="40" fill="#eee" rx="3"/>
+  <text x="145" y="245" font-size="10" fill="#333">SP002</text>
+  <text x="225" y="245" font-size="10" fill="#333">Bàn phím cơ Logitech G</text>
+  <text x="405" y="245" font-size="10" fill="#666">Phụ kiện</text>
+  <text x="505" y="245" font-size="10" fill="#4a69bd">2,200,000đ</text>
+  <text x="605" y="245" font-size="10" fill="#f6b93b">8</text>
+  <rect x="665" y="230" width="20" height="20" fill="#4a69bd" rx="3"/>
+  <rect x="690" y="230" width="20" height="20" fill="#e55039" rx="3"/>
+
+  <line x1="70" y1="270" x2="730" y2="270" stroke="#eee"/>
+  <rect x="85" y="280" width="40" height="40" fill="#eee" rx="3"/>
+  <text x="145" y="305" font-size="10" fill="#333">SP003</text>
+  <text x="225" y="305" font-size="10" fill="#333">Chuột không dây Apple</text>
+  <text x="405" y="305" font-size="10" fill="#666">Phụ kiện</text>
+  <text x="505" y="305" font-size="10" fill="#4a69bd">1,800,000đ</text>
+  <text x="605" y="305" font-size="10" fill="#e55039">0</text>
+  <rect x="665" y="290" width="20" height="20" fill="#4a69bd" rx="3"/>
+  <rect x="690" y="290" width="20" height="20" fill="#e55039" rx="3"/>
+
+  <!-- Pagination -->
+  <text x="70" y="355" font-size="10" fill="#666">Hiển thị 1-10 của 156 sản phẩm</text>
+  <rect x="620" y="340" width="25" height="25" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="632" y="358" text-anchor="middle" font-size="10" fill="#666">1</text>
+  <rect x="650" y="340" width="25" height="25" fill="#4a69bd" rx="3"/>
+  <text x="662" y="358" text-anchor="middle" font-size="10" fill="#fff">2</text>
+  <rect x="680" y="340" width="25" height="25" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="692" y="358" text-anchor="middle" font-size="10" fill="#666">3</text>
+</svg>
+<p class="figure-caption">Hình 4.5: Giao diện quản lý sản phẩm</p>
+</div>
+<p>Bao gồm:</p>
+<ul>
+<li>Thanh tìm kiếm và lọc theo danh mục</li>
+<li>Bảng danh sách sản phẩm với phân trang</li>
+<li>Modal thêm/sửa sản phẩm</li>
+<li>Hỗ trợ upload hình ảnh</li>
+</ul>
+
+<h4>d) Trang nhập kho</h4>
+<div class="figure">
+<svg width="650" height="420" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modal background -->
+  <rect x="0" y="0" width="650" height="420" fill="rgba(0,0,0,0.5)"/>
+
+  <!-- Modal -->
+  <rect x="50" y="20" width="550" height="380" fill="#fff" rx="10" style="filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3))"/>
+
+  <!-- Modal header -->
+  <rect x="50" y="20" width="550" height="50" fill="#38ada9" rx="10"/>
+  <rect x="50" y="50" width="550" height="20" fill="#38ada9"/>
+  <text x="325" y="52" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">Tạo phiếu nhập kho</text>
+  <text x="580" y="52" text-anchor="middle" font-size="16" fill="#fff">×</text>
+
+  <!-- Supplier section -->
+  <text x="70" y="95" font-size="11" fill="#333" font-weight="bold">Nhà cung cấp</text>
+  <rect x="70" y="105" width="250" height="32" fill="#f5f5f5" stroke="#ddd" rx="5"/>
+  <text x="85" y="126" font-size="10" fill="#666">NCC001 - Công ty ABC</text>
+
+  <text x="340" y="95" font-size="11" fill="#333" font-weight="bold">Ghi chú</text>
+  <rect x="340" y="105" width="240" height="32" fill="#f5f5f5" stroke="#ddd" rx="5"/>
+  <text x="355" y="126" font-size="10" fill="#999">Nhập ghi chú...</text>
+
+  <!-- Products section -->
+  <rect x="70" y="150" width="510" height="180" fill="#f8f9fa" stroke="#eee" rx="5"/>
+  <text x="85" y="175" font-size="11" fill="#333" font-weight="bold">Danh sách sản phẩm nhập</text>
+  <rect x="500" y="158" width="70" height="25" fill="#38ada9" rx="3"/>
+  <text x="535" y="175" text-anchor="middle" font-size="9" fill="#fff">+ Thêm</text>
+
+  <!-- Product row 1 -->
+  <rect x="85" y="190" width="200" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="100" y="210" font-size="10" fill="#666">SP001 - Laptop Dell</text>
+  <rect x="295" y="190" width="80" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="335" y="210" text-anchor="middle" font-size="10" fill="#333">10</text>
+  <rect x="385" y="190" width="100" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="435" y="210" text-anchor="middle" font-size="10" fill="#333">15,000,000</text>
+  <text x="500" y="210" font-size="10" fill="#38ada9" font-weight="bold">150,000,000đ</text>
+
+  <!-- Product row 2 -->
+  <rect x="85" y="230" width="200" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="100" y="250" font-size="10" fill="#666">SP002 - Bàn phím</text>
+  <rect x="295" y="230" width="80" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="335" y="250" text-anchor="middle" font-size="10" fill="#333">25</text>
+  <rect x="385" y="230" width="100" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="435" y="250" text-anchor="middle" font-size="10" fill="#333">2,000,000</text>
+  <text x="500" y="250" font-size="10" fill="#38ada9" font-weight="bold">50,000,000đ</text>
+
+  <!-- Column headers -->
+  <text x="180" y="185" text-anchor="middle" font-size="8" fill="#999">Sản phẩm</text>
+  <text x="335" y="185" text-anchor="middle" font-size="8" fill="#999">SL</text>
+  <text x="435" y="185" text-anchor="middle" font-size="8" fill="#999">Đơn giá</text>
+  <text x="530" y="185" text-anchor="middle" font-size="8" fill="#999">Thành tiền</text>
+
+  <!-- Total -->
+  <rect x="70" y="340" width="510" height="40" fill="#e8f5e9" stroke="#38ada9" rx="5"/>
+  <text x="400" y="365" font-size="12" fill="#333">Tổng cộng:</text>
+  <text x="530" y="365" font-size="14" fill="#38ada9" font-weight="bold">200,000,000đ</text>
+
+  <!-- Buttons -->
+  <rect x="380" y="390" width="80" height="32" fill="#fff" stroke="#ddd" rx="5"/>
+  <text x="420" y="411" text-anchor="middle" font-size="11" fill="#666">Hủy</text>
+  <rect x="470" y="390" width="110" height="32" fill="#38ada9" rx="5"/>
+  <text x="525" y="411" text-anchor="middle" font-size="11" fill="#fff">Tạo phiếu</text>
+</svg>
+<p class="figure-caption">Hình 4.6: Giao diện tạo phiếu nhập kho</p>
+</div>
+<p>Form tạo phiếu nhập với:</p>
+<ul>
+<li>Dropdown chọn nhà cung cấp hoặc nhập tay</li>
+<li>Danh sách sản phẩm động (thêm/xóa)</li>
+<li>Tự động tính tổng tiền</li>
+</ul>
+
+<h4>e) Trang xuất kho</h4>
+<div class="figure">
+<svg width="650" height="450" xmlns="http://www.w3.org/2000/svg">
+  <!-- Modal background -->
+  <rect x="0" y="0" width="650" height="450" fill="rgba(0,0,0,0.5)"/>
+
+  <!-- Modal -->
+  <rect x="50" y="20" width="550" height="410" fill="#fff" rx="10" style="filter: drop-shadow(0 4px 20px rgba(0,0,0,0.3))"/>
+
+  <!-- Modal header -->
+  <rect x="50" y="20" width="550" height="50" fill="#f6b93b" rx="10"/>
+  <rect x="50" y="50" width="550" height="20" fill="#f6b93b"/>
+  <text x="325" y="52" text-anchor="middle" font-size="14" fill="#fff" font-weight="bold">Tạo phiếu xuất kho</text>
+  <text x="580" y="52" text-anchor="middle" font-size="16" fill="#fff">×</text>
+
+  <!-- Customer section -->
+  <text x="70" y="95" font-size="11" fill="#333" font-weight="bold">Khách hàng</text>
+  <rect x="70" y="105" width="250" height="32" fill="#f5f5f5" stroke="#ddd" rx="5"/>
+  <text x="85" y="126" font-size="10" fill="#666">KH001 - Công ty XYZ</text>
+
+  <text x="340" y="95" font-size="11" fill="#333" font-weight="bold">Ghi chú</text>
+  <rect x="340" y="105" width="240" height="32" fill="#f5f5f5" stroke="#ddd" rx="5"/>
+  <text x="355" y="126" font-size="10" fill="#999">Nhập ghi chú...</text>
+
+  <!-- Products section -->
+  <rect x="70" y="150" width="510" height="200" fill="#f8f9fa" stroke="#eee" rx="5"/>
+  <text x="85" y="175" font-size="11" fill="#333" font-weight="bold">Danh sách sản phẩm xuất</text>
+  <rect x="500" y="158" width="70" height="25" fill="#f6b93b" rx="3"/>
+  <text x="535" y="175" text-anchor="middle" font-size="9" fill="#fff">+ Thêm</text>
+
+  <!-- Column headers -->
+  <text x="180" y="195" text-anchor="middle" font-size="8" fill="#999">Sản phẩm</text>
+  <text x="305" y="195" text-anchor="middle" font-size="8" fill="#999">Tồn</text>
+  <text x="355" y="195" text-anchor="middle" font-size="8" fill="#999">SL xuất</text>
+  <text x="435" y="195" text-anchor="middle" font-size="8" fill="#999">Đơn giá</text>
+  <text x="530" y="195" text-anchor="middle" font-size="8" fill="#999">Thành tiền</text>
+
+  <!-- Product row 1 - OK -->
+  <rect x="85" y="205" width="180" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="100" y="225" font-size="10" fill="#666">SP001 - Laptop Dell</text>
+  <text x="305" y="225" text-anchor="middle" font-size="10" fill="#38ada9">45</text>
+  <rect x="330" y="205" width="50" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="355" y="225" text-anchor="middle" font-size="10" fill="#333">5</text>
+  <rect x="390" y="205" width="80" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="430" y="225" text-anchor="middle" font-size="10" fill="#333">16,000,000</text>
+  <text x="510" y="225" font-size="10" fill="#f6b93b" font-weight="bold">80,000,000đ</text>
+
+  <!-- Product row 2 - Warning (exceeds stock) -->
+  <rect x="85" y="245" width="180" height="30" fill="#fff3cd" stroke="#f6b93b" rx="3"/>
+  <text x="100" y="265" font-size="10" fill="#856404">SP002 - Bàn phím</text>
+  <text x="305" y="265" text-anchor="middle" font-size="10" fill="#e55039">8</text>
+  <rect x="330" y="245" width="50" height="30" fill="#fff3cd" stroke="#e55039" rx="3"/>
+  <text x="355" y="265" text-anchor="middle" font-size="10" fill="#e55039">15</text>
+  <rect x="390" y="245" width="80" height="30" fill="#fff" stroke="#ddd" rx="3"/>
+  <text x="430" y="265" text-anchor="middle" font-size="10" fill="#333">2,500,000</text>
+  <text x="510" y="265" font-size="10" fill="#f6b93b" font-weight="bold">37,500,000đ</text>
+
+  <!-- Warning message -->
+  <rect x="85" y="285" width="485" height="25" fill="#f8d7da" stroke="#f5c6cb" rx="3"/>
+  <text x="100" y="302" font-size="10" fill="#721c24">⚠ Số lượng xuất vượt quá tồn kho. Vui lòng điều chỉnh.</text>
+
+  <!-- Total -->
+  <rect x="70" y="360" width="510" height="40" fill="#fff8e1" stroke="#f6b93b" rx="5"/>
+  <text x="400" y="385" font-size="12" fill="#333">Tổng cộng:</text>
+  <text x="530" y="385" font-size="14" fill="#f6b93b" font-weight="bold">117,500,000đ</text>
+
+  <!-- Buttons -->
+  <rect x="380" y="410" width="80" height="32" fill="#fff" stroke="#ddd" rx="5"/>
+  <text x="420" y="431" text-anchor="middle" font-size="11" fill="#666">Hủy</text>
+  <rect x="470" y="410" width="110" height="32" fill="#ccc" rx="5"/>
+  <text x="525" y="431" text-anchor="middle" font-size="11" fill="#666">Tạo phiếu</text>
+</svg>
+<p class="figure-caption">Hình 4.7: Giao diện tạo phiếu xuất kho (với cảnh báo vượt tồn kho)</p>
+</div>
+<p>Tương tự nhập kho nhưng có thêm:</p>
+<ul>
+<li>Hiển thị số lượng tồn kho hiện tại</li>
+<li>Cảnh báo khi số lượng xuất vượt quá tồn</li>
+</ul>
+
+<h2>4.3 Xây dựng ứng dụng</h2>
+
+<h3>4.3.1 Thư viện và công cụ sử dụng</h3>
+
+<p><strong>Backend:</strong></p>
+<table>
+<tr><th>Thư viện</th><th>Version</th><th>Mục đích</th></tr>
+<tr><td>express</td><td>4.18.x</td><td>Web framework</td></tr>
+<tr><td>mysql2</td><td>3.x</td><td>MySQL driver</td></tr>
+<tr><td>jsonwebtoken</td><td>9.x</td><td>JWT authentication</td></tr>
+<tr><td>bcryptjs</td><td>2.4.x</td><td>Hash password</td></tr>
+<tr><td>multer</td><td>1.4.x</td><td>File upload</td></tr>
+<tr><td>cors</td><td>2.8.x</td><td>CORS middleware</td></tr>
+<tr><td>helmet</td><td>7.x</td><td>Security headers</td></tr>
+<tr><td>dotenv</td><td>16.x</td><td>Environment variables</td></tr>
+</table>
+
+<p><strong>Frontend:</strong></p>
+<table>
+<tr><th>Thư viện</th><th>Version</th><th>Mục đích</th></tr>
+<tr><td>react</td><td>18.x</td><td>UI library</td></tr>
+<tr><td>react-router-dom</td><td>6.x</td><td>Routing</td></tr>
+<tr><td>axios</td><td>1.x</td><td>HTTP client</td></tr>
+<tr><td>react-toastify</td><td>9.x</td><td>Toast notifications</td></tr>
+<tr><td>lucide-react</td><td>0.x</td><td>Icons</td></tr>
+<tr><td>xlsx</td><td>0.18.x</td><td>Excel export</td></tr>
+</table>
+
+<h3>4.3.2 Kết quả đạt được</h3>
+<p>Hệ thống đã hoàn thành với đầy đủ các chức năng:</p>
+
+<table>
+<tr><th>Module</th><th>Chức năng</th><th>Trạng thái</th></tr>
+<tr><td>Authentication</td><td>Đăng nhập, đăng xuất, đổi mật khẩu</td><td>Hoàn thành</td></tr>
+<tr><td>Users</td><td>CRUD người dùng, phân quyền</td><td>Hoàn thành</td></tr>
+<tr><td>Categories</td><td>CRUD danh mục</td><td>Hoàn thành</td></tr>
+<tr><td>Products</td><td>CRUD sản phẩm, upload ảnh</td><td>Hoàn thành</td></tr>
+<tr><td>Suppliers</td><td>CRUD nhà cung cấp</td><td>Hoàn thành</td></tr>
+<tr><td>Customers</td><td>CRUD khách hàng</td><td>Hoàn thành</td></tr>
+<tr><td>Imports</td><td>Tạo phiếu nhập, in phiếu</td><td>Hoàn thành</td></tr>
+<tr><td>Exports</td><td>Tạo phiếu xuất, kiểm tra tồn, in phiếu</td><td>Hoàn thành</td></tr>
+<tr><td>Stocks</td><td>Xem tồn kho, cảnh báo hết hàng</td><td>Hoàn thành</td></tr>
+<tr><td>Reports</td><td>Báo cáo tồn kho, nhập xuất, xuất Excel</td><td>Hoàn thành</td></tr>
+<tr><td>Dashboard</td><td>Thống kê tổng quan</td><td>Hoàn thành</td></tr>
+<tr><td>Audit Logs</td><td>Lịch sử hoạt động</td><td>Hoàn thành</td></tr>
+<tr><td>Search</td><td>Tìm kiếm toàn cục</td><td>Hoàn thành</td></tr>
+</table>
+
+<h2>4.4 Kiểm thử</h2>
+
+<h3>4.4.1 Kiểm thử chức năng (Black-box Testing)</h3>
+
+<p><strong>Test Case 1: Đăng nhập hệ thống</strong></p>
+<table>
+<tr><th>Test ID</th><th>TC01</th></tr>
+<tr><td>Mô tả</td><td>Kiểm tra chức năng đăng nhập</td></tr>
+<tr><td>Input</td><td>Username: admin, Password: Admin@123</td></tr>
+<tr><td>Expected</td><td>Đăng nhập thành công, chuyển đến Dashboard</td></tr>
+<tr><td>Actual</td><td>Đăng nhập thành công</td></tr>
+<tr><td>Status</td><td>PASS</td></tr>
+</table>
+
+<p><strong>Test Case 2: Đăng nhập sai mật khẩu</strong></p>
+<table>
+<tr><th>Test ID</th><th>TC02</th></tr>
+<tr><td>Mô tả</td><td>Kiểm tra đăng nhập với mật khẩu sai</td></tr>
+<tr><td>Input</td><td>Username: admin, Password: wrongpass</td></tr>
+<tr><td>Expected</td><td>Hiển thị lỗi "Tên đăng nhập hoặc mật khẩu không đúng"</td></tr>
+<tr><td>Actual</td><td>Hiển thị lỗi đúng</td></tr>
+<tr><td>Status</td><td>PASS</td></tr>
+</table>
+
+<p><strong>Test Case 3: Tạo phiếu nhập kho</strong></p>
+<table>
+<tr><th>Test ID</th><th>TC03</th></tr>
+<tr><td>Mô tả</td><td>Tạo phiếu nhập với 2 sản phẩm</td></tr>
+<tr><td>Input</td><td>Supplier: NCC001, Products: SP001 x 10, SP002 x 5</td></tr>
+<tr><td>Expected</td><td>Phiếu được tạo, tồn kho tăng tương ứng</td></tr>
+<tr><td>Actual</td><td>Phiếu tạo thành công, tồn kho cập nhật đúng</td></tr>
+<tr><td>Status</td><td>PASS</td></tr>
+</table>
+
+<p><strong>Test Case 4: Xuất kho vượt quá tồn</strong></p>
+<table>
+<tr><th>Test ID</th><th>TC04</th></tr>
+<tr><td>Mô tả</td><td>Tạo phiếu xuất với số lượng vượt tồn kho</td></tr>
+<tr><td>Input</td><td>Product: SP001 (tồn: 10), Quantity: 15</td></tr>
+<tr><td>Expected</td><td>Hiển thị cảnh báo, không cho xuất</td></tr>
+<tr><td>Actual</td><td>Hiển thị cảnh báo đỏ, nút tạo bị disable</td></tr>
+<tr><td>Status</td><td>PASS</td></tr>
+</table>
+
+<p><strong>Test Case 5: Phân quyền Staff</strong></p>
+<table>
+<tr><th>Test ID</th><th>TC05</th></tr>
+<tr><td>Mô tả</td><td>Staff truy cập trang quản lý người dùng</td></tr>
+<tr><td>Input</td><td>Đăng nhập bằng tài khoản Staff, truy cập /users</td></tr>
+<tr><td>Expected</td><td>Bị chặn, hiển thị thông báo không có quyền</td></tr>
+<tr><td>Actual</td><td>Không thấy menu Users, API trả về 403</td></tr>
+<tr><td>Status</td><td>PASS</td></tr>
+</table>
+
+<h3>4.4.2 Kiểm thử tương thích</h3>
+<table>
+<tr><th>Trình duyệt</th><th>Version</th><th>Kết quả</th></tr>
+<tr><td>Google Chrome</td><td>120.x</td><td>Hoạt động tốt</td></tr>
+<tr><td>Mozilla Firefox</td><td>121.x</td><td>Hoạt động tốt</td></tr>
+<tr><td>Microsoft Edge</td><td>120.x</td><td>Hoạt động tốt</td></tr>
+<tr><td>Safari</td><td>17.x</td><td>Hoạt động tốt</td></tr>
+</table>
+
+<h2>4.5 Triển khai</h2>
+
+<h3>4.5.1 Yêu cầu hệ thống</h3>
+<p><strong>Server:</strong></p>
+<ul>
+<li>Node.js 18.x trở lên</li>
+<li>MySQL 8.x</li>
+<li>RAM tối thiểu 2GB</li>
+<li>Disk 10GB</li>
+</ul>
+
+<p><strong>Client:</strong></p>
+<ul>
+<li>Trình duyệt web hiện đại (Chrome, Firefox, Edge, Safari)</li>
+<li>Kết nối Internet</li>
+</ul>
+
+<h3>4.5.2 Hướng dẫn cài đặt</h3>
+
+<p><strong>Bước 1: Clone source code</strong></p>
+<pre><code>git clone [repository-url]
+cd QuanLyKho</code></pre>
+
+<p><strong>Bước 2: Cài đặt Backend</strong></p>
+<pre><code>cd backend
+npm install
+cp .env.example .env
+# Cấu hình database trong .env</code></pre>
+
+<p><strong>Bước 3: Khởi tạo Database</strong></p>
+<pre><code># Chạy các file SQL trong thư mục database/
+mysql -u root -p < database/01_schema.sql
+mysql -u root -p < database/02_seed.sql</code></pre>
+
+<p><strong>Bước 4: Cài đặt Frontend</strong></p>
+<pre><code>cd frontend
+npm install</code></pre>
+
+<p><strong>Bước 5: Chạy ứng dụng</strong></p>
+<pre><code># Terminal 1 - Backend
+cd backend
+npm run dev
+
+# Terminal 2 - Frontend
+cd frontend
+npm run dev</code></pre>
+
+<p><strong>Bước 6: Truy cập</strong></p>
+<ul>
+<li>Frontend: http://localhost:5173</li>
+<li>Backend API: http://localhost:5000/api</li>
+<li>Tài khoản mặc định: admin / Admin@123</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- CHƯƠNG 5 -->
+<h1>CHƯƠNG 5. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</h1>
+
+<h2>5.1 Kết luận</h2>
+
+<h3>5.1.1 Kết quả đạt được</h3>
+<p>Sau quá trình nghiên cứu và phát triển, đồ án đã hoàn thành xây dựng Hệ thống Quản lý Kho hàng với các kết quả sau:</p>
+
+<p><strong>Về mặt chức năng:</strong></p>
+<ul>
+<li>Hoàn thành 100% các chức năng theo yêu cầu đặt ra</li>
+<li>Hệ thống quản lý nhập xuất kho hoạt động ổn định</li>
+<li>Tồn kho được cập nhật tự động theo thời gian thực</li>
+<li>Hệ thống cảnh báo hàng sắp hết hoạt động hiệu quả</li>
+<li>Báo cáo thống kê đầy đủ, hỗ trợ xuất Excel</li>
+<li>Lịch sử hoạt động được ghi lại đầy đủ</li>
+</ul>
+
+<p><strong>Về mặt kỹ thuật:</strong></p>
+<ul>
+<li>Áp dụng thành công kiến trúc Client-Server với RESTful API</li>
+<li>Sử dụng hiệu quả các công nghệ hiện đại: Node.js, React.js, MySQL</li>
+<li>Bảo mật với JWT và bcrypt</li>
+<li>Code được tổ chức theo chuẩn MVC, dễ bảo trì</li>
+</ul>
+
+<p><strong>Về mặt trải nghiệm người dùng:</strong></p>
+<ul>
+<li>Giao diện trực quan, thân thiện</li>
+<li>Thao tác đơn giản, dễ sử dụng</li>
+<li>Có thông báo rõ ràng cho các thao tác</li>
+<li>Hỗ trợ in phiếu nhập xuất</li>
+</ul>
+
+<h3>5.1.2 Hạn chế</h3>
+<ul>
+<li>Chưa hỗ trợ quản lý nhiều kho hàng</li>
+<li>Chưa có tính năng quên mật khẩu</li>
+<li>Chưa tối ưu cho mobile</li>
+<li>Chưa có tính năng backup/restore tự động</li>
+<li>Chưa tích hợp barcode/QR code</li>
+</ul>
+
+<h2>5.2 Hướng phát triển</h2>
+<p>Trong tương lai, hệ thống có thể được mở rộng với các tính năng:</p>
+
+<p><strong>Ngắn hạn:</strong></p>
+<ul>
+<li>Thêm tính năng quên mật khẩu qua email</li>
+<li>Tối ưu giao diện responsive cho mobile</li>
+<li>Thêm báo cáo doanh thu theo thời gian</li>
+<li>Tích hợp quét barcode/QR code</li>
+</ul>
+
+<p><strong>Trung hạn:</strong></p>
+<ul>
+<li>Hỗ trợ quản lý nhiều kho hàng (multi-warehouse)</li>
+<li>Thêm module chuyển kho giữa các kho</li>
+<li>Tích hợp thông báo qua email/SMS</li>
+<li>Thêm tính năng dự báo tồn kho</li>
+</ul>
+
+<p><strong>Dài hạn:</strong></p>
+<ul>
+<li>Phát triển ứng dụng mobile (React Native)</li>
+<li>Tích hợp với các hệ thống ERP</li>
+<li>Thêm module kế toán cơ bản</li>
+<li>Áp dụng Machine Learning để dự báo nhu cầu</li>
+</ul>
+
+<div class="page-break"></div>
+
+<!-- TÀI LIỆU THAM KHẢO -->
+<h1>TÀI LIỆU THAM KHẢO</h1>
+
+<p>[1] Node.js Documentation, https://nodejs.org/docs</p>
+<p>[2] Express.js Guide, https://expressjs.com/en/guide</p>
+<p>[3] React Documentation, https://react.dev</p>
+<p>[4] MySQL 8.0 Reference Manual, https://dev.mysql.com/doc</p>
+<p>[5] JWT Introduction, https://jwt.io/introduction</p>
+<p>[6] Vite Documentation, https://vitejs.dev/guide</p>
+<p>[7] REST API Tutorial, https://restfulapi.net</p>
+<p>[8] OWASP Top 10, https://owasp.org/Top10</p>
+
+</body>
+</html>

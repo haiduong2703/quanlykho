@@ -1,0 +1,21 @@
+SKU,Product Name,Category,Unit,Quantity,Min Stock,Price
+ELEC-001,Laptop Dell Inspiron 156,Dien tu,Chiec,7,5,15000000.00
+ELEC-002,Chuot Logitech M171,Dien tu,Chiec,30,20,150000.00
+ELEC-003,Ban phim co Keychron K2,Dien tu,Chiec,15,10,2500000.00
+ELEC-004,Man hinh LG 24 inch,Dien tu,Chiec,12,8,3500000.00
+MED-001,Paracetamol 500mg,Duoc pham,Hop,150,100,25000.00
+MED-002,Khau trang y te,Duoc pham,Hop,250,200,50000.00
+MED-003,Con y te 90 do,Duoc pham,Chai,180,150,15000.00
+MED-004,Bang gac y te,Duoc pham,Cuon,120,100,8000.00
+CHEM-001,Nuoc tay Clorox,Hoa chat,Chai,60,40,30000.00
+CHEM-002,Nuoc lau san Vim,Hoa chat,Chai,80,50,35000.00
+CHEM-003,Xa phong rua tay Lifebuoy,Hoa chat,Chai,90,60,40000.00
+CHEM-004,Bot giat OMO,Hoa chat,Tui,30,20,180000.00
+FOOD-001,Gao ST25,Thuc pham,Kg,150,100,35000.00
+FOOD-002,Dau an Simply,Thuc pham,Chai,50,50,45000.00
+FOOD-003,Mi goi Hao Hao,Thuc pham,Thung,50,30,120000.00
+FOOD-004,Nuoc mam Nam Ngu,Thuc pham,Chai,60,40,35000.00
+OFF-001,Giay A4 Double A,Van phong pham,Ream,80,50,85000.00
+OFF-002,But bi Thien Long,Van phong pham,Cay,200,200,3000.00
+OFF-003,Kep tai lieu Plus,Van phong pham,Hop,50,30,25000.00
+OFF-004,Bia cong Plus A4,Van phong pham,Cai,80,50,15000.00
