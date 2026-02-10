@@ -5,7 +5,15 @@
       "Bash(node scripts/createAdmin.js:*)",
       "Bash(node -e:*)",
       "Bash(npm install:*)",
-      "Bash(tree:*)"
+      "Bash(tree:*)",
+      "Bash(node:*)",
+      "Bash(winget install:*)",
+      "Bash(\"C:\\\\Users\\\\Admin\\\\AppData\\\\Local\\\\Microsoft\\\\WinGet\\\\Links\\\\pandoc.exe\" \"d:\\\\QuanLyKho\\\\BaoCao_DoAn.md\" -o \"d:\\\\QuanLyKho\\\\BaoCao_DoAn.docx\" --reference-doc=\"\" -f markdown -t docx)",
+      "Bash(\"C:\\\\Program Files\\\\Pandoc\\\\pandoc.exe\" \"d:\\\\QuanLyKho\\\\BaoCao_DoAn.md\" -o \"d:\\\\QuanLyKho\\\\BaoCao_DoAn.docx\" -f markdown -t docx)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell:*)",
+      "Bash(\"C:/Users/Admin/AppData/Local/Pandoc/pandoc.exe\" \"d:/QuanLyKho/BaoCao_DoAn.md\" -o \"d:/QuanLyKho/BaoCao_DoAn.docx\" -f markdown -t docx)",
+      "Bash(git reset:*)"
     ]
   }
 }
