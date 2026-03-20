@@ -450,13 +450,13 @@ const ImportList = () => {
       >
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Chon nha cung cap</label>
+            <label className="form-label">Chọn nhà cung cấp</label>
             <select
               className="form-control"
               value={formData.supplier_id}
               onChange={(e) => handleSupplierChange(e.target.value)}
             >
-              <option value="">-- Chon NCC hoac nhap tay ben duoi --</option>
+              <option value="">-- Chọn NCC hoặc nhập tay bên dưới --</option>
               {suppliers.map(s => (
                 <option key={s.id} value={s.id}>{s.code} - {s.name}</option>
               ))}
@@ -465,23 +465,23 @@ const ImportList = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Ten nha cung cap</label>
+              <label className="form-label">Tên nhà cung cấp</label>
               <input
                 type="text"
                 className="form-control"
                 value={formData.supplier_name}
                 onChange={(e) => setFormData({ ...formData, supplier_name: e.target.value })}
-                placeholder="Nhap ten NCC..."
+                placeholder="Nhập tên NCC..."
               />
             </div>
             <div className="form-group">
-              <label className="form-label">So dien thoai</label>
+              <label className="form-label">Số điện thoại</label>
               <input
                 type="text"
                 className="form-control"
                 value={formData.supplier_phone}
                 onChange={(e) => setFormData({ ...formData, supplier_phone: e.target.value })}
-                placeholder="Nhap SDT..."
+                placeholder="Nhập SĐT..."
               />
             </div>
           </div>

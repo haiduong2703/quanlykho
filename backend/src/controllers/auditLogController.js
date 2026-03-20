@@ -1,5 +1,5 @@
 const AuditLog = require('../models/AuditLog');
-const { success, error } = require('../utils/responseHelper');
+const { successResponse, paginatedResponse } = require('../utils/responseHelper');
 
 const auditLogController = {
   // Get audit logs with filtering
@@ -24,7 +24,7 @@ const auditLogController = {
         details: log.details ? JSON.parse(log.details) : null
       }));
 
-      return success(res, parsedLogs, 'Audit logs retrieved successfully', {
+      return paginatedResponse(res, parsedLogs, {
         page: filters.page,
         limit: filters.limit,
         total
@@ -41,7 +41,7 @@ const auditLogController = {
         'CREATE', 'UPDATE', 'DELETE', 'LOGIN', 'LOGOUT',
         'IMPORT', 'EXPORT', 'TOGGLE_STATUS'
       ];
-      return success(res, actions, 'Action types retrieved');
+      return successResponse(res, actions, 'Action types retrieved');
     } catch (err) {
       next(err);
     }
@@ -54,7 +54,7 @@ const auditLogController = {
         'USER', 'PRODUCT', 'CATEGORY', 'SUPPLIER', 'CUSTOMER',
         'IMPORT_RECEIPT', 'EXPORT_RECEIPT', 'STOCK'
       ];
-      return success(res, entities, 'Entity types retrieved');
+      return successResponse(res, entities, 'Entity types retrieved');
     } catch (err) {
       next(err);
     }

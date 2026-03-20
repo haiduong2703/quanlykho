@@ -20,148 +20,95 @@ const CustomerList = () => {
   const [isEdit, setIsEdit] = useState(false);
 
   const [formData, setFormData] = useState({
-    code: '',
-    name: '',
-    contact_person: '',
-    phone: '',
-    email: '',
-    address: '',
-    tax_code: '',
-    note: ''
+    code: '', name: '', contact_person: '', phone: '', email: '', address: '', tax_code: '', note: ''
   });
 
-  useEffect(() => {
-    fetchCustomers();
-  }, [pagination.page]);
+  useEffect(() => { fetchCustomers(); }, [pagination.page]);
 
   const fetchCustomers = async () => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
-        page: pagination.page,
-        limit: pagination.limit,
-        ...(search && { search })
+        page: pagination.page, limit: pagination.limit, ...(search && { search })
       });
       const res = await api.get(`/customers?${params}`);
       setCustomers(res.data || []);
       setPagination(prev => ({ ...prev, total: res.pagination?.total || 0 }));
     } catch (error) {
-      toast.error('Khong the tai danh sach khach hang');
-    } finally {
-      setLoading(false);
-    }
+      toast.error('Không thể tải danh sách khách hàng');
+    } finally { setLoading(false); }
   };
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setPagination(prev => ({ ...prev, page: 1 }));
-    fetchCustomers();
-  };
+  const handleSearch = (e) => { e.preventDefault(); setPagination(prev => ({ ...prev, page: 1 })); fetchCustomers(); };
 
   const openAddModal = () => {
     setIsEdit(false);
-    setFormData({
-      code: '',
-      name: '',
-      contact_person: '',
-      phone: '',
-      email: '',
-      address: '',
-      tax_code: '',
-      note: ''
-    });
+    setFormData({ code: '', name: '', contact_person: '', phone: '', email: '', address: '', tax_code: '', note: '' });
     setShowModal(true);
   };
 
   const openEditModal = (customer) => {
-    setIsEdit(true);
-    setSelectedCustomer(customer);
+    setIsEdit(true); setSelectedCustomer(customer);
     setFormData({
-      code: customer.code,
-      name: customer.name,
-      contact_person: customer.contact_person || '',
-      phone: customer.phone || '',
-      email: customer.email || '',
-      address: customer.address || '',
-      tax_code: customer.tax_code || '',
-      note: customer.note || ''
+      code: customer.code, name: customer.name, contact_person: customer.contact_person || '',
+      phone: customer.phone || '', email: customer.email || '', address: customer.address || '',
+      tax_code: customer.tax_code || '', note: customer.note || ''
     });
     setShowModal(true);
   };
 
-  const openDeleteDialog = (customer) => {
-    setSelectedCustomer(customer);
-    setShowDeleteDialog(true);
-  };
+  const openDeleteDialog = (customer) => { setSelectedCustomer(customer); setShowDeleteDialog(true); };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setFormLoading(true);
-
+    e.preventDefault(); setFormLoading(true);
     try {
       if (isEdit) {
         await api.put(`/customers/${selectedCustomer.id}`, formData);
-        toast.success('Cap nhat khach hang thanh cong');
+        toast.success('Cập nhật khách hàng thành công');
       } else {
         await api.post('/customers', formData);
-        toast.success('Them khach hang thanh cong');
+        toast.success('Thêm khách hàng thành công');
       }
-      setShowModal(false);
-      fetchCustomers();
-    } catch (error) {
-      toast.error(error.message || 'Co loi xay ra');
-    } finally {
-      setFormLoading(false);
-    }
+      setShowModal(false); fetchCustomers();
+    } catch (error) { toast.error(error.message || 'Có lỗi xảy ra'); }
+    finally { setFormLoading(false); }
   };
 
   const handleDelete = async () => {
     setFormLoading(true);
     try {
       await api.delete(`/customers/${selectedCustomer.id}`);
-      toast.success('Xoa khach hang thanh cong');
-      setShowDeleteDialog(false);
-      fetchCustomers();
-    } catch (error) {
-      toast.error(error.message || 'Co loi xay ra');
-    } finally {
-      setFormLoading(false);
-    }
+      toast.success('Xóa khách hàng thành công');
+      setShowDeleteDialog(false); fetchCustomers();
+    } catch (error) { toast.error(error.message || 'Có lỗi xảy ra'); }
+    finally { setFormLoading(false); }
   };
 
   const handleToggleStatus = async (customer) => {
     try {
       await api.patch(`/customers/${customer.id}/toggle-status`);
-      toast.success(customer.is_active ? 'Da vo hieu hoa khach hang' : 'Da kich hoat khach hang');
+      toast.success(customer.is_active ? 'Đã vô hiệu hóa khách hàng' : 'Đã kích hoạt khách hàng');
       fetchCustomers();
-    } catch (error) {
-      toast.error('Co loi xay ra');
-    }
+    } catch (error) { toast.error('Có lỗi xảy ra'); }
   };
 
   return (
-    <Layout title="Quan ly khach hang">
+    <Layout title="Quản lý khách hàng">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Khach hang</h1>
-          <p className="page-subtitle">Quan ly danh sach khach hang mua hang</p>
+          <h1 className="page-title">Khách hàng</h1>
+          <p className="page-subtitle">Quản lý danh sách khách hàng mua hàng</p>
         </div>
         <button className="btn btn-primary" onClick={openAddModal}>
-          <Plus size={18} />
-          Them khach hang
+          <Plus size={18} /> Thêm khách hàng
         </button>
       </div>
 
       <div className="search-filters">
         <form onSubmit={handleSearch} className="search-box">
           <Search />
-          <input
-            type="text"
-            className="form-control"
-            placeholder="Tim kiem theo ma, ten, SDT, email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
+          <input type="text" className="form-control" placeholder="Tìm kiếm theo mã, tên, SĐT, email..."
+            value={search} onChange={(e) => setSearch(e.target.value)} />
         </form>
       </div>
 
@@ -170,31 +117,21 @@ const CustomerList = () => {
           <table className="table">
             <thead>
               <tr>
-                <th>Ma KH</th>
-                <th>Ten khach hang</th>
-                <th>Lien he</th>
-                <th>Dien thoai</th>
-                <th>Email</th>
-                <th>Trang thai</th>
-                <th style={{ width: '120px' }}>Thao tac</th>
+                <th>Mã KH</th><th>Tên khách hàng</th><th>Liên hệ</th>
+                <th>Điện thoại</th><th>Email</th><th>Trạng thái</th>
+                <th style={{ width: '120px' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="7" className="text-center">Dang tai...</td></tr>
+                <tr><td colSpan="7" className="text-center">Đang tải...</td></tr>
               ) : customers.length === 0 ? (
-                <tr><td colSpan="7" className="text-center">Khong co du lieu</td></tr>
+                <tr><td colSpan="7" className="text-center">Không có dữ liệu</td></tr>
               ) : (
                 customers.map(customer => (
                   <tr key={customer.id}>
                     <td>
-                      <code style={{
-                        background: 'var(--info-color)',
-                        color: 'white',
-                        padding: '4px 8px',
-                        borderRadius: '4px',
-                        fontWeight: 600
-                      }}>
+                      <code style={{ background: 'var(--info-color)', color: 'white', padding: '4px 8px', borderRadius: '4px', fontWeight: 600 }}>
                         {customer.code}
                       </code>
                     </td>
@@ -208,50 +145,20 @@ const CustomerList = () => {
                       )}
                     </td>
                     <td>{customer.contact_person || '-'}</td>
-                    <td>
-                      {customer.phone ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Phone size={14} />
-                          {customer.phone}
-                        </div>
-                      ) : '-'}
-                    </td>
-                    <td>
-                      {customer.email ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                          <Mail size={14} />
-                          {customer.email}
-                        </div>
-                      ) : '-'}
-                    </td>
+                    <td>{customer.phone ? (<div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Phone size={14} />{customer.phone}</div>) : '-'}</td>
+                    <td>{customer.email ? (<div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Mail size={14} />{customer.email}</div>) : '-'}</td>
                     <td>
                       <span className={`badge ${customer.is_active ? 'badge-success' : 'badge-danger'}`}>
-                        {customer.is_active ? 'Hoat dong' : 'Ngung'}
+                        {customer.is_active ? 'Hoạt động' : 'Ngừng'}
                       </span>
                     </td>
                     <td>
                       <div className="table-actions">
-                        <button
-                          className="btn btn-icon btn-secondary sm"
-                          onClick={() => handleToggleStatus(customer)}
-                          title={customer.is_active ? 'Vo hieu hoa' : 'Kich hoat'}
-                        >
+                        <button className="btn btn-icon btn-secondary sm" onClick={() => handleToggleStatus(customer)} title={customer.is_active ? 'Vô hiệu hóa' : 'Kích hoạt'}>
                           {customer.is_active ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
                         </button>
-                        <button
-                          className="btn btn-icon btn-primary sm"
-                          onClick={() => openEditModal(customer)}
-                          title="Sua"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          className="btn btn-icon btn-danger sm"
-                          onClick={() => openDeleteDialog(customer)}
-                          title="Xoa"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        <button className="btn btn-icon btn-primary sm" onClick={() => openEditModal(customer)} title="Sửa"><Edit size={16} /></button>
+                        <button className="btn btn-icon btn-danger sm" onClick={() => openDeleteDialog(customer)} title="Xóa"><Trash2 size={16} /></button>
                       </div>
                     </td>
                   </tr>
@@ -260,138 +167,75 @@ const CustomerList = () => {
             </tbody>
           </table>
         </div>
-
-        <Pagination
-          currentPage={pagination.page}
-          totalPages={Math.ceil(pagination.total / pagination.limit)}
-          totalItems={pagination.total}
-          itemsPerPage={pagination.limit}
-          onPageChange={(page) => setPagination(prev => ({ ...prev, page }))}
-        />
+        <Pagination currentPage={pagination.page} totalPages={Math.ceil(pagination.total / pagination.limit)}
+          totalItems={pagination.total} itemsPerPage={pagination.limit}
+          onPageChange={(page) => setPagination(prev => ({ ...prev, page }))} />
       </div>
 
-      {/* Add/Edit Modal */}
-      <Modal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title={isEdit ? 'Sua khach hang' : 'Them khach hang moi'}
-        size="lg"
-      >
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)} title={isEdit ? 'Sửa khách hàng' : 'Thêm khách hàng mới'} size="lg">
         <form onSubmit={handleSubmit}>
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Ma KH</label>
-              <input
-                type="text"
-                className="form-control"
-                value={formData.code}
+              <label className="form-label">Mã KH</label>
+              <input type="text" className="form-control" value={formData.code}
                 onChange={(e) => setFormData({ ...formData, code: e.target.value.toUpperCase() })}
-                placeholder="Tu dong neu de trong"
-                disabled={isEdit}
-              />
+                placeholder="Tự động nếu để trống" disabled={isEdit} />
             </div>
             <div className="form-group">
-              <label className="form-label">Ten khach hang *</label>
-              <input
-                type="text"
-                className="form-control"
-                value={formData.name}
+              <label className="form-label">Tên khách hàng *</label>
+              <input type="text" className="form-control" value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="Nhap ten khach hang"
-                required
-              />
+                placeholder="Nhập tên khách hàng" required />
             </div>
           </div>
-
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Nguoi lien he</label>
-              <input
-                type="text"
-                className="form-control"
-                value={formData.contact_person}
+              <label className="form-label">Người liên hệ</label>
+              <input type="text" className="form-control" value={formData.contact_person}
                 onChange={(e) => setFormData({ ...formData, contact_person: e.target.value })}
-                placeholder="Nhap ten nguoi lien he"
-              />
+                placeholder="Nhập tên người liên hệ" />
             </div>
             <div className="form-group">
-              <label className="form-label">So dien thoai</label>
-              <input
-                type="text"
-                className="form-control"
-                value={formData.phone}
+              <label className="form-label">Số điện thoại</label>
+              <input type="text" className="form-control" value={formData.phone}
                 onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="Nhap so dien thoai"
-              />
+                placeholder="Nhập số điện thoại" />
             </div>
           </div>
-
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">Email</label>
-              <input
-                type="email"
-                className="form-control"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="Nhap email"
-              />
+              <input type="email" className="form-control" value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })} placeholder="Nhập email" />
             </div>
             <div className="form-group">
-              <label className="form-label">Ma so thue</label>
-              <input
-                type="text"
-                className="form-control"
-                value={formData.tax_code}
-                onChange={(e) => setFormData({ ...formData, tax_code: e.target.value })}
-                placeholder="Nhap ma so thue"
-              />
+              <label className="form-label">Mã số thuế</label>
+              <input type="text" className="form-control" value={formData.tax_code}
+                onChange={(e) => setFormData({ ...formData, tax_code: e.target.value })} placeholder="Nhập mã số thuế" />
             </div>
           </div>
-
           <div className="form-group">
-            <label className="form-label">Dia chi</label>
-            <input
-              type="text"
-              className="form-control"
-              value={formData.address}
-              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-              placeholder="Nhap dia chi"
-            />
+            <label className="form-label">Địa chỉ</label>
+            <input type="text" className="form-control" value={formData.address}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })} placeholder="Nhập địa chỉ" />
           </div>
-
           <div className="form-group">
-            <label className="form-label">Ghi chu</label>
-            <textarea
-              className="form-control"
-              rows="2"
-              value={formData.note}
-              onChange={(e) => setFormData({ ...formData, note: e.target.value })}
-              placeholder="Nhap ghi chu"
-            />
+            <label className="form-label">Ghi chú</label>
+            <textarea className="form-control" rows="2" value={formData.note}
+              onChange={(e) => setFormData({ ...formData, note: e.target.value })} placeholder="Nhập ghi chú" />
           </div>
-
           <div className="form-actions">
-            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
-              Huy
-            </button>
+            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>Hủy</button>
             <button type="submit" className="btn btn-primary" disabled={formLoading}>
-              {formLoading ? 'Dang xu ly...' : (isEdit ? 'Cap nhat' : 'Them moi')}
+              {formLoading ? 'Đang xử lý...' : (isEdit ? 'Cập nhật' : 'Thêm mới')}
             </button>
           </div>
         </form>
       </Modal>
 
-      {/* Delete Confirmation */}
-      <ConfirmDialog
-        isOpen={showDeleteDialog}
-        onClose={() => setShowDeleteDialog(false)}
-        onConfirm={handleDelete}
-        title="Xoa khach hang"
-        message={`Ban co chac chan muon xoa khach hang "${selectedCustomer?.name}"?`}
-        type="danger"
-        loading={formLoading}
-      />
+      <ConfirmDialog isOpen={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} onConfirm={handleDelete}
+        title="Xóa khách hàng" message={`Bạn có chắc chắn muốn xóa khách hàng "${selectedCustomer?.name}"?`}
+        type="danger" loading={formLoading} />
     </Layout>
   );
 };

@@ -59,7 +59,7 @@ const ProductList = () => {
       setProducts(res.data || []);
       setPagination(prev => ({ ...prev, total: res.pagination?.total || 0 }));
     } catch (error) {
-      toast.error('Khong the tai danh sach san pham');
+      toast.error('Không thể tải danh sách sản phẩm');
     } finally {
       setLoading(false);
     }
@@ -104,11 +104,11 @@ const ProductList = () => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('Kich thuoc file khong duoc vuot qua 5MB');
+        toast.error('Kích thước file không được vượt quá 5MB');
         return;
       }
       if (!['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'].includes(file.type)) {
-        toast.error('Chi chap nhan file anh (jpg, png, gif, webp)');
+        toast.error('Chỉ chấp nhận file ảnh (jpg, png, gif, webp)');
         return;
       }
       setImageFile(file);
@@ -147,17 +147,17 @@ const ProductList = () => {
         await api.put(`/products/${selectedProduct.id}`, submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        toast.success('Cap nhat san pham thanh cong');
+        toast.success('Cập nhật sản phẩm thành công');
       } else {
         await api.post('/products', submitData, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
-        toast.success('Them san pham thanh cong');
+        toast.success('Thêm sản phẩm thành công');
       }
       setShowModal(false);
       fetchProducts();
     } catch (error) {
-      toast.error(error.message || 'Co loi xay ra');
+      toast.error(error.message || 'Có lỗi xảy ra');
     } finally {
       setFormLoading(false);
     }
@@ -167,11 +167,11 @@ const ProductList = () => {
     setFormLoading(true);
     try {
       await api.delete(`/products/${selectedProduct.id}`);
-      toast.success('Xoa san pham thanh cong');
+      toast.success('Xóa sản phẩm thành công');
       setShowDeleteDialog(false);
       fetchProducts();
     } catch (error) {
-      toast.error(error.message || 'Co loi xay ra');
+      toast.error(error.message || 'Có lỗi xảy ra');
     } finally {
       setFormLoading(false);
     }
@@ -189,15 +189,15 @@ const ProductList = () => {
   };
 
   return (
-    <Layout title="Quan ly san pham">
+    <Layout title="Quản lý sản phẩm">
       <div className="page-header">
         <div>
-          <h1 className="page-title">San pham</h1>
-          <p className="page-subtitle">Quan ly danh sach san pham trong kho</p>
+          <h1 className="page-title">Sản phẩm</h1>
+          <p className="page-subtitle">Quản lý danh sách sản phẩm trong kho</p>
         </div>
         <button className="btn btn-primary" onClick={openAddModal}>
           <Plus size={18} />
-          Them san pham
+          Thêm sản phẩm
         </button>
       </div>
 
@@ -208,7 +208,7 @@ const ProductList = () => {
           <input
             type="text"
             className="form-control"
-            placeholder="Tim kiem theo ten, SKU..."
+            placeholder="Tìm kiếm theo tên, SKU..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -218,7 +218,7 @@ const ProductList = () => {
           value={categoryFilter}
           onChange={(e) => { setCategoryFilter(e.target.value); setPagination(p => ({ ...p, page: 1 })); }}
         >
-          <option value="">Tat ca danh muc</option>
+          <option value="">Tất cả danh mục</option>
           {categories.map(cat => (
             <option key={cat.id} value={cat.id}>{cat.name}</option>
           ))}
@@ -231,22 +231,22 @@ const ProductList = () => {
           <table className="table">
             <thead>
               <tr>
-                <th style={{ width: '80px' }}>Hinh anh</th>
+                <th style={{ width: '80px' }}>Hình ảnh</th>
                 <th>SKU</th>
-                <th>Ten san pham</th>
-                <th>Danh muc</th>
-                <th>Don vi</th>
-                <th>Gia</th>
-                <th>Ton toi thieu</th>
-                <th>Trang thai</th>
-                <th style={{ width: '100px' }}>Thao tac</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Đơn vị</th>
+                <th>Giá</th>
+                <th>Tồn tối thiểu</th>
+                <th>Trạng thái</th>
+                <th style={{ width: '100px' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="9" className="text-center">Dang tai...</td></tr>
+                <tr><td colSpan="9" className="text-center">Đang tải...</td></tr>
               ) : products.length === 0 ? (
-                <tr><td colSpan="9" className="text-center">Khong co du lieu</td></tr>
+                <tr><td colSpan="9" className="text-center">Không có dữ liệu</td></tr>
               ) : (
                 products.map(product => (
                   <tr key={product.id}>
@@ -288,7 +288,7 @@ const ProductList = () => {
                     <td>{product.min_stock}</td>
                     <td>
                       <span className={`badge ${product.is_active ? 'badge-success' : 'badge-secondary'}`}>
-                        {product.is_active ? 'Hoat dong' : 'Ngung'}
+                        {product.is_active ? 'Hoạt động' : 'Ngừng'}
                       </span>
                     </td>
                     <td>
@@ -321,13 +321,13 @@ const ProductList = () => {
       <Modal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        title={selectedProduct ? 'Sua san pham' : 'Them san pham moi'}
+        title={selectedProduct ? 'Sửa sản phẩm' : 'Thêm sản phẩm mới'}
         size="lg"
       >
         <form onSubmit={handleSubmit}>
           {/* Image Upload */}
           <div className="form-group">
-            <label className="form-label">Hinh anh san pham</label>
+            <label className="form-label">Hình ảnh sản phẩm</label>
             <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
               <div style={{
                 width: '120px',
@@ -388,10 +388,10 @@ const ProductList = () => {
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload size={16} />
-                  Chon hinh anh
+                  Chọn hình ảnh
                 </button>
                 <p className="form-hint" style={{ marginTop: '8px' }}>
-                  Chap nhan: JPG, PNG, GIF, WebP. Toi da 5MB.
+                  Chấp nhận: JPG, PNG, GIF, WebP. Tối đa 5MB.
                 </p>
               </div>
             </div>
@@ -410,14 +410,14 @@ const ProductList = () => {
               />
             </div>
             <div className="form-group">
-              <label className="form-label required">Danh muc</label>
+              <label className="form-label required">Danh mục</label>
               <select
                 className="form-control"
                 value={formData.category_id}
                 onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
                 required
               >
-                <option value="">-- Chon danh muc --</option>
+                <option value="">-- Chọn danh mục --</option>
                 {categories.map(cat => (
                   <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
@@ -426,7 +426,7 @@ const ProductList = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label required">Ten san pham</label>
+            <label className="form-label required">Tên sản phẩm</label>
             <input
               type="text"
               className="form-control"
@@ -437,7 +437,7 @@ const ProductList = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label">Mo ta</label>
+            <label className="form-label">Mô tả</label>
             <textarea
               className="form-control"
               rows="3"
@@ -448,18 +448,18 @@ const ProductList = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label required">Don vi tinh</label>
+              <label className="form-label required">Đơn vị tính</label>
               <input
                 type="text"
                 className="form-control"
                 value={formData.unit}
                 onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                 required
-                placeholder="VD: Cai, Kg, Hop..."
+                placeholder="VD: Cái, Kg, Hộp..."
               />
             </div>
             <div className="form-group">
-              <label className="form-label required">Gia</label>
+              <label className="form-label required">Giá</label>
               <input
                 type="number"
                 className="form-control"
@@ -472,7 +472,7 @@ const ProductList = () => {
           </div>
 
           <div className="form-group">
-            <label className="form-label required">So luong ton toi thieu</label>
+            <label className="form-label required">Số lượng tồn tối thiểu</label>
             <input
               type="number"
               className="form-control"
@@ -481,15 +481,15 @@ const ProductList = () => {
               required
               min="0"
             />
-            <p className="form-hint">He thong se canh bao khi ton kho thap hon muc nay</p>
+            <p className="form-hint">Hệ thống sẽ cảnh báo khi tồn kho thấp hơn mức này</p>
           </div>
 
           <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
-              Huy
+              Hủy
             </button>
             <button type="submit" className="btn btn-primary" disabled={formLoading}>
-              {formLoading ? 'Dang xu ly...' : (selectedProduct ? 'Cap nhat' : 'Them moi')}
+              {formLoading ? 'Đang xử lý...' : (selectedProduct ? 'Cập nhật' : 'Thêm mới')}
             </button>
           </div>
         </form>
@@ -500,8 +500,8 @@ const ProductList = () => {
         isOpen={showDeleteDialog}
         onClose={() => setShowDeleteDialog(false)}
         onConfirm={handleDelete}
-        title="Xoa san pham"
-        message={`Ban co chac chan muon xoa san pham "${selectedProduct?.name}"?`}
+        title="Xóa sản phẩm"
+        message={`Bạn có chắc chắn muốn xóa sản phẩm "${selectedProduct?.name}"?`}
         type="danger"
         loading={formLoading}
       />

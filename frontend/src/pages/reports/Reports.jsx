@@ -16,7 +16,7 @@ import {
   FileSpreadsheet
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
-import * as XLSX from 'xlsx';
+import XLSX from 'xlsx-js-style';
 
 const Reports = () => {
   const [activeTab, setActiveTab] = useState('inventory');
@@ -68,6 +68,147 @@ const Reports = () => {
     fetchImportExportReport();
   };
 
+  // --- Style helpers for Excel ---
+  const borderAll = {
+    top: { style: 'thin', color: { rgb: 'CCCCCC' } },
+    bottom: { style: 'thin', color: { rgb: 'CCCCCC' } },
+    left: { style: 'thin', color: { rgb: 'CCCCCC' } },
+    right: { style: 'thin', color: { rgb: 'CCCCCC' } }
+  };
+
+  const styles = {
+    title: {
+      font: { bold: true, sz: 18, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: borderAll
+    },
+    subtitle: {
+      font: { sz: 12, italic: true, color: { rgb: '555555' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      fill: { fgColor: { rgb: 'E8F5E9' } },
+      border: borderAll
+    },
+    summaryValue: {
+      font: { bold: true, sz: 13, color: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      fill: { fgColor: { rgb: 'C8E6C9' } },
+      border: borderAll
+    },
+    header: {
+      font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '2E7D32' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: borderAll
+    },
+    headerWarning: {
+      font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: 'F57F17' } },
+      alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+      border: borderAll
+    },
+    cell: {
+      font: { sz: 11 },
+      alignment: { vertical: 'center' },
+      border: borderAll
+    },
+    cellCenter: {
+      font: { sz: 11 },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: borderAll
+    },
+    cellRight: {
+      font: { sz: 11 },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      border: borderAll,
+      numFmt: '#,##0'
+    },
+    cellCurrency: {
+      font: { sz: 11 },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      border: borderAll,
+      numFmt: '#,##0 "đ"'
+    },
+    totalLabel: {
+      font: { bold: true, sz: 12, color: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      fill: { fgColor: { rgb: 'E8F5E9' } },
+      border: { top: { style: 'double', color: { rgb: '2E7D32' } }, bottom: { style: 'double', color: { rgb: '2E7D32' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } }
+    },
+    totalValue: {
+      font: { bold: true, sz: 13, color: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      fill: { fgColor: { rgb: 'C8E6C9' } },
+      border: { top: { style: 'double', color: { rgb: '2E7D32' } }, bottom: { style: 'double', color: { rgb: '2E7D32' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } },
+      numFmt: '#,##0 "đ"'
+    },
+    totalValueNumber: {
+      font: { bold: true, sz: 13, color: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      fill: { fgColor: { rgb: 'C8E6C9' } },
+      border: { top: { style: 'double', color: { rgb: '2E7D32' } }, bottom: { style: 'double', color: { rgb: '2E7D32' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } },
+      numFmt: '#,##0'
+    },
+    totalEmpty: {
+      fill: { fgColor: { rgb: 'E8F5E9' } },
+      border: { top: { style: 'double', color: { rgb: '2E7D32' } }, bottom: { style: 'double', color: { rgb: '2E7D32' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } }
+    },
+    badgeSuccess: {
+      font: { bold: true, sz: 10, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: '2E7D32' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: borderAll
+    },
+    badgeWarning: {
+      font: { bold: true, sz: 10, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: 'F57F17' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: borderAll
+    },
+    badgeDanger: {
+      font: { bold: true, sz: 10, color: { rgb: 'FFFFFF' } },
+      fill: { fgColor: { rgb: 'C62828' } },
+      alignment: { horizontal: 'center', vertical: 'center' },
+      border: borderAll
+    },
+    rowEven: { fill: { fgColor: { rgb: 'F5F5F5' } } },
+    summaryLabel: {
+      font: { bold: true, sz: 12 },
+      alignment: { vertical: 'center' },
+      fill: { fgColor: { rgb: 'FAFAFA' } },
+      border: borderAll
+    },
+    summaryData: {
+      font: { bold: true, sz: 12, color: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      fill: { fgColor: { rgb: 'FAFAFA' } },
+      border: borderAll,
+      numFmt: '#,##0'
+    },
+    summaryDataCurrency: {
+      font: { bold: true, sz: 12, color: { rgb: '1B5E20' } },
+      alignment: { horizontal: 'right', vertical: 'center' },
+      fill: { fgColor: { rgb: 'FAFAFA' } },
+      border: borderAll,
+      numFmt: '#,##0 "đ"'
+    }
+  };
+
+  const applyRowBg = (ws, row, colCount, isEven) => {
+    if (!isEven) return;
+    for (let c = 0; c < colCount; c++) {
+      const addr = XLSX.utils.encode_cell({ r: row, c });
+      if (ws[addr]) {
+        ws[addr].s = { ...ws[addr].s, fill: { fgColor: { rgb: 'F5F5F5' } } };
+      }
+    }
+  };
+
+  const setRowHeight = (ws, row, height) => {
+    if (!ws['!rows']) ws['!rows'] = [];
+    ws['!rows'][row] = { hpt: height };
+  };
+
   const exportToExcel = (type) => {
     try {
       const wb = XLSX.utils.book_new();
@@ -75,12 +216,14 @@ const Reports = () => {
       const fileName = `bao-cao-${type === 'inventory' ? 'ton-kho' : 'nhap-xuat'}-${format(new Date(), 'yyyyMMdd')}.xlsx`;
 
       if (type === 'inventory') {
-        // Create inventory report data
+        const colCount = 10;
+
+        // Build data array
         const wsData = [
-          ['BÁO CÁO TỒN KHO'],
+          ['HỆ THỐNG QUẢN LÝ KHO - BÁO CÁO TỒN KHO'],
           [`Ngày xuất báo cáo: ${today}`],
           [`Tổng giá trị tồn kho: ${formatCurrency(totalInventoryValue)}`],
-          [],
+          [], // empty row spacer
           ['STT', 'Mã SKU', 'Tên sản phẩm', 'Danh mục', 'Đơn vị', 'Số lượng', 'Tồn tối thiểu', 'Đơn giá', 'Giá trị tồn', 'Trạng thái']
         ];
 
@@ -103,59 +246,166 @@ const Reports = () => {
           ]);
         });
 
-        // Add summary row
-        wsData.push([]);
-        wsData.push(['', '', '', '', 'TỔNG CỘNG:', inventoryData.reduce((sum, i) => sum + i.quantity, 0), '', '', totalInventoryValue, '']);
+        // Total row
+        const totalRowIdx = wsData.length;
+        wsData.push([
+          '', '', '', '', 'TỔNG CỘNG:',
+          inventoryData.reduce((sum, i) => sum + i.quantity, 0),
+          '', '',
+          totalInventoryValue,
+          ''
+        ]);
 
         const ws = XLSX.utils.aoa_to_sheet(wsData);
 
-        // Set column widths
-        ws['!cols'] = [
-          { wch: 5 },   // STT
-          { wch: 12 },  // SKU
-          { wch: 30 },  // Tên SP
-          { wch: 15 },  // Danh mục
-          { wch: 8 },   // Đơn vị
-          { wch: 10 },  // Số lượng
-          { wch: 12 },  // Tồn tối thiểu
-          { wch: 15 },  // Đơn giá
-          { wch: 18 },  // Giá trị tồn
-          { wch: 12 }   // Trạng thái
-        ];
-
-        // Merge cells for title
+        // Merge title rows
         ws['!merges'] = [
           { s: { r: 0, c: 0 }, e: { r: 0, c: 9 } },
           { s: { r: 1, c: 0 }, e: { r: 1, c: 9 } },
           { s: { r: 2, c: 0 }, e: { r: 2, c: 9 } }
         ];
 
+        // Column widths
+        ws['!cols'] = [
+          { wch: 6 }, { wch: 14 }, { wch: 32 }, { wch: 16 }, { wch: 10 },
+          { wch: 12 }, { wch: 14 }, { wch: 16 }, { wch: 20 }, { wch: 13 }
+        ];
+
+        // Row heights
+        setRowHeight(ws, 0, 36);
+        setRowHeight(ws, 1, 22);
+        setRowHeight(ws, 2, 22);
+        setRowHeight(ws, 4, 28);
+
+        // Style title rows
+        for (let c = 0; c < colCount; c++) {
+          const a0 = XLSX.utils.encode_cell({ r: 0, c });
+          const a1 = XLSX.utils.encode_cell({ r: 1, c });
+          const a2 = XLSX.utils.encode_cell({ r: 2, c });
+          if (ws[a0]) ws[a0].s = styles.title;
+          if (ws[a1]) ws[a1].s = styles.subtitle;
+          if (ws[a2]) ws[a2].s = styles.summaryValue;
+        }
+
+        // Style header row (row 4)
+        for (let c = 0; c < colCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: 4, c });
+          if (ws[addr]) ws[addr].s = styles.header;
+        }
+
+        // Style data rows
+        const dataStartRow = 5;
+        inventoryData.forEach((item, index) => {
+          const row = dataStartRow + index;
+          const isLowStock = item.quantity <= item.min_stock;
+          const isOutOfStock = item.quantity === 0;
+          const isEven = index % 2 === 0;
+
+          for (let c = 0; c < colCount; c++) {
+            const addr = XLSX.utils.encode_cell({ r: row, c });
+            if (!ws[addr]) continue;
+
+            // Base styles per column type
+            if (c === 0) ws[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 5 || c === 6) ws[addr].s = { ...styles.cellRight, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 7 || c === 8) ws[addr].s = { ...styles.cellCurrency, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 4) ws[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 9) {
+              // Status badge
+              ws[addr].s = isOutOfStock ? styles.badgeDanger : isLowStock ? styles.badgeWarning : styles.badgeSuccess;
+            }
+            else ws[addr].s = { ...styles.cell, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+          }
+
+          // Highlight low stock quantity in red/orange
+          const qtyAddr = XLSX.utils.encode_cell({ r: row, c: 5 });
+          if (ws[qtyAddr] && (isOutOfStock || isLowStock)) {
+            ws[qtyAddr].s = {
+              ...ws[qtyAddr].s,
+              font: { ...ws[qtyAddr].s.font, bold: true, color: { rgb: isOutOfStock ? 'C62828' : 'F57F17' } }
+            };
+          }
+        });
+
+        // Style total row
+        for (let c = 0; c < colCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: totalRowIdx, c });
+          if (!ws[addr]) {
+            ws[addr] = { v: '', t: 's' };
+          }
+          if (c === 4) ws[addr].s = styles.totalLabel;
+          else if (c === 5) ws[addr].s = styles.totalValueNumber;
+          else if (c === 8) ws[addr].s = styles.totalValue;
+          else ws[addr].s = styles.totalEmpty;
+        }
+        setRowHeight(ws, totalRowIdx, 30);
+
         XLSX.utils.book_append_sheet(wb, ws, 'Tồn kho');
 
       } else if (type === 'import-export') {
-        // Create import/export report
+        // ========== SUMMARY SHEET ==========
         const summaryData = [
-          ['BÁO CÁO NHẬP XUẤT KHO'],
+          ['HỆ THỐNG QUẢN LÝ KHO - BÁO CÁO NHẬP XUẤT'],
           [`Từ ngày: ${formatDate(dateRange.from)} - Đến ngày: ${formatDate(dateRange.to)}`],
           [`Ngày xuất báo cáo: ${today}`],
           [],
-          ['TỔNG HỢP'],
-          ['Số phiếu nhập:', importExportData?.summary?.import_count || 0],
-          ['Tổng tiền nhập:', importExportData?.summary?.import_total || 0],
-          ['Số phiếu xuất:', importExportData?.summary?.export_count || 0],
-          ['Tổng tiền xuất:', importExportData?.summary?.export_total || 0],
+          ['CHỈ TIÊU', 'GIÁ TRỊ'],
+          ['Số phiếu nhập', importExportData?.summary?.import_count || 0],
+          ['Tổng tiền nhập', importExportData?.summary?.import_total || 0],
+          ['Số phiếu xuất', importExportData?.summary?.export_count || 0],
+          ['Tổng tiền xuất', importExportData?.summary?.export_total || 0],
+          [],
+          ['Chênh lệch (Nhập - Xuất)', (importExportData?.summary?.import_total || 0) - (importExportData?.summary?.export_total || 0)]
         ];
 
         const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
-        summaryWs['!cols'] = [{ wch: 20 }, { wch: 20 }];
+        summaryWs['!cols'] = [{ wch: 28 }, { wch: 25 }];
         summaryWs['!merges'] = [
           { s: { r: 0, c: 0 }, e: { r: 0, c: 1 } },
           { s: { r: 1, c: 0 }, e: { r: 1, c: 1 } },
           { s: { r: 2, c: 0 }, e: { r: 2, c: 1 } }
         ];
+
+        // Style summary sheet
+        setRowHeight(summaryWs, 0, 36);
+        setRowHeight(summaryWs, 1, 22);
+        setRowHeight(summaryWs, 2, 22);
+        setRowHeight(summaryWs, 4, 28);
+
+        for (let c = 0; c < 2; c++) {
+          const a0 = XLSX.utils.encode_cell({ r: 0, c });
+          const a1 = XLSX.utils.encode_cell({ r: 1, c });
+          const a2 = XLSX.utils.encode_cell({ r: 2, c });
+          if (summaryWs[a0]) summaryWs[a0].s = styles.title;
+          if (summaryWs[a1]) summaryWs[a1].s = styles.subtitle;
+          if (summaryWs[a2]) summaryWs[a2].s = styles.subtitle;
+        }
+
+        // Header row 4
+        for (let c = 0; c < 2; c++) {
+          const addr = XLSX.utils.encode_cell({ r: 4, c });
+          if (summaryWs[addr]) summaryWs[addr].s = styles.header;
+        }
+
+        // Data rows 5-8
+        [5, 6, 7, 8].forEach(r => {
+          const a0 = XLSX.utils.encode_cell({ r, c: 0 });
+          const a1 = XLSX.utils.encode_cell({ r, c: 1 });
+          if (summaryWs[a0]) summaryWs[a0].s = styles.summaryLabel;
+          if (summaryWs[a1]) summaryWs[a1].s = (r === 6 || r === 8) ? styles.summaryDataCurrency : styles.summaryData;
+        });
+
+        // Difference row (10)
+        const diffA0 = XLSX.utils.encode_cell({ r: 10, c: 0 });
+        const diffA1 = XLSX.utils.encode_cell({ r: 10, c: 1 });
+        if (summaryWs[diffA0]) summaryWs[diffA0].s = styles.totalLabel;
+        if (summaryWs[diffA1]) summaryWs[diffA1].s = styles.totalValue;
+        setRowHeight(summaryWs, 10, 30);
+
         XLSX.utils.book_append_sheet(wb, summaryWs, 'Tổng hợp');
 
-        // Import sheet
+        // ========== IMPORT SHEET ==========
+        const importColCount = 6;
         const importData = [
           ['DANH SÁCH PHIẾU NHẬP KHO'],
           [`Từ ngày: ${formatDate(dateRange.from)} - Đến ngày: ${formatDate(dateRange.to)}`],
@@ -174,25 +424,64 @@ const Reports = () => {
           ]);
         });
 
-        importData.push([]);
+        const importTotalRow = importData.length;
         importData.push(['', '', '', 'TỔNG CỘNG:', importExportData?.summary?.import_total || 0, '']);
 
         const importWs = XLSX.utils.aoa_to_sheet(importData);
         importWs['!cols'] = [
-          { wch: 5 },
-          { wch: 15 },
-          { wch: 25 },
-          { wch: 12 },
-          { wch: 18 },
-          { wch: 25 }
+          { wch: 6 }, { wch: 16 }, { wch: 28 }, { wch: 14 }, { wch: 20 }, { wch: 28 }
         ];
         importWs['!merges'] = [
           { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
           { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }
         ];
+
+        setRowHeight(importWs, 0, 36);
+        setRowHeight(importWs, 1, 22);
+        setRowHeight(importWs, 3, 28);
+
+        // Style title
+        for (let c = 0; c < importColCount; c++) {
+          const a0 = XLSX.utils.encode_cell({ r: 0, c });
+          const a1 = XLSX.utils.encode_cell({ r: 1, c });
+          if (importWs[a0]) importWs[a0].s = styles.title;
+          if (importWs[a1]) importWs[a1].s = styles.subtitle;
+        }
+
+        // Style header
+        for (let c = 0; c < importColCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: 3, c });
+          if (importWs[addr]) importWs[addr].s = styles.header;
+        }
+
+        // Style data rows
+        (importExportData?.imports || []).forEach((_, index) => {
+          const row = 4 + index;
+          const isEven = index % 2 === 0;
+          for (let c = 0; c < importColCount; c++) {
+            const addr = XLSX.utils.encode_cell({ r: row, c });
+            if (!importWs[addr]) continue;
+            if (c === 0) importWs[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 4) importWs[addr].s = { ...styles.cellCurrency, ...(isEven ? { fill: styles.rowEven.fill } : {}), font: { ...styles.cellCurrency.font, bold: true, color: { rgb: '2E7D32' } } };
+            else if (c === 3) importWs[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else importWs[addr].s = { ...styles.cell, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+          }
+        });
+
+        // Style total row
+        for (let c = 0; c < importColCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: importTotalRow, c });
+          if (!importWs[addr]) importWs[addr] = { v: '', t: 's' };
+          if (c === 3) importWs[addr].s = styles.totalLabel;
+          else if (c === 4) importWs[addr].s = styles.totalValue;
+          else importWs[addr].s = styles.totalEmpty;
+        }
+        setRowHeight(importWs, importTotalRow, 30);
+
         XLSX.utils.book_append_sheet(wb, importWs, 'Phiếu nhập');
 
-        // Export sheet
+        // ========== EXPORT SHEET ==========
+        const exportColCount = 6;
         const exportData = [
           ['DANH SÁCH PHIẾU XUẤT KHO'],
           [`Từ ngày: ${formatDate(dateRange.from)} - Đến ngày: ${formatDate(dateRange.to)}`],
@@ -211,26 +500,80 @@ const Reports = () => {
           ]);
         });
 
-        exportData.push([]);
+        const exportTotalRow = exportData.length;
         exportData.push(['', '', '', 'TỔNG CỘNG:', importExportData?.summary?.export_total || 0, '']);
 
         const exportWs = XLSX.utils.aoa_to_sheet(exportData);
         exportWs['!cols'] = [
-          { wch: 5 },
-          { wch: 15 },
-          { wch: 25 },
-          { wch: 12 },
-          { wch: 18 },
-          { wch: 25 }
+          { wch: 6 }, { wch: 16 }, { wch: 28 }, { wch: 14 }, { wch: 20 }, { wch: 28 }
         ];
         exportWs['!merges'] = [
           { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } },
           { s: { r: 1, c: 0 }, e: { r: 1, c: 5 } }
         ];
+
+        setRowHeight(exportWs, 0, 36);
+        setRowHeight(exportWs, 1, 22);
+        setRowHeight(exportWs, 3, 28);
+
+        // Style title - use warning (orange) theme for exports
+        const exportTitle = {
+          font: { bold: true, sz: 18, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: 'E65100' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderAll
+        };
+        const exportSubtitle = {
+          font: { sz: 12, italic: true, color: { rgb: '555555' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          fill: { fgColor: { rgb: 'FFF3E0' } },
+          border: borderAll
+        };
+
+        for (let c = 0; c < exportColCount; c++) {
+          const a0 = XLSX.utils.encode_cell({ r: 0, c });
+          const a1 = XLSX.utils.encode_cell({ r: 1, c });
+          if (exportWs[a0]) exportWs[a0].s = exportTitle;
+          if (exportWs[a1]) exportWs[a1].s = exportSubtitle;
+        }
+
+        // Header with warning color
+        for (let c = 0; c < exportColCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: 3, c });
+          if (exportWs[addr]) exportWs[addr].s = styles.headerWarning;
+        }
+
+        // Style data rows
+        (importExportData?.exports || []).forEach((_, index) => {
+          const row = 4 + index;
+          const isEven = index % 2 === 0;
+          for (let c = 0; c < exportColCount; c++) {
+            const addr = XLSX.utils.encode_cell({ r: row, c });
+            if (!exportWs[addr]) continue;
+            if (c === 0) exportWs[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 4) exportWs[addr].s = { ...styles.cellCurrency, ...(isEven ? { fill: styles.rowEven.fill } : {}), font: { ...styles.cellCurrency.font, bold: true, color: { rgb: 'E65100' } } };
+            else if (c === 3) exportWs[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else exportWs[addr].s = { ...styles.cell, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+          }
+        });
+
+        // Style total row (orange theme)
+        const exportTotalLabel = { ...styles.totalLabel, font: { ...styles.totalLabel.font, color: { rgb: 'E65100' } }, fill: { fgColor: { rgb: 'FFF3E0' } }, border: { top: { style: 'double', color: { rgb: 'E65100' } }, bottom: { style: 'double', color: { rgb: 'E65100' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+        const exportTotalValue = { ...styles.totalValue, font: { ...styles.totalValue.font, color: { rgb: 'E65100' } }, fill: { fgColor: { rgb: 'FFE0B2' } }, border: { top: { style: 'double', color: { rgb: 'E65100' } }, bottom: { style: 'double', color: { rgb: 'E65100' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+        const exportTotalEmpty = { fill: { fgColor: { rgb: 'FFF3E0' } }, border: { top: { style: 'double', color: { rgb: 'E65100' } }, bottom: { style: 'double', color: { rgb: 'E65100' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+
+        for (let c = 0; c < exportColCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: exportTotalRow, c });
+          if (!exportWs[addr]) exportWs[addr] = { v: '', t: 's' };
+          if (c === 3) exportWs[addr].s = exportTotalLabel;
+          else if (c === 4) exportWs[addr].s = exportTotalValue;
+          else exportWs[addr].s = exportTotalEmpty;
+        }
+        setRowHeight(exportWs, exportTotalRow, 30);
+
         XLSX.utils.book_append_sheet(wb, exportWs, 'Phiếu xuất');
       }
 
-      // Save file
       XLSX.writeFile(wb, fileName);
       toast.success('Xuất báo cáo Excel thành công!');
     } catch (error) {

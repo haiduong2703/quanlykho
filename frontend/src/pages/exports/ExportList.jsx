@@ -490,13 +490,13 @@ const ExportList = () => {
       >
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label className="form-label">Chon khach hang</label>
+            <label className="form-label">Chọn khách hàng</label>
             <select
               className="form-control"
               value={formData.customer_id}
               onChange={(e) => handleCustomerChange(e.target.value)}
             >
-              <option value="">-- Chon khach hang hoac nhap tay ben duoi --</option>
+              <option value="">-- Chọn khách hàng hoặc nhập tay bên dưới --</option>
               {customers.map(c => (
                 <option key={c.id} value={c.id}>{c.code} - {c.name}</option>
               ))}
@@ -505,23 +505,23 @@ const ExportList = () => {
 
           <div className="form-row">
             <div className="form-group">
-              <label className="form-label">Ten khach hang</label>
+              <label className="form-label">Tên khách hàng</label>
               <input
                 type="text"
                 className="form-control"
                 value={formData.customer_name}
                 onChange={(e) => setFormData({ ...formData, customer_name: e.target.value })}
-                placeholder="Nhap ten khach hang..."
+                placeholder="Nhập tên khách hàng..."
               />
             </div>
             <div className="form-group">
-              <label className="form-label">So dien thoai</label>
+              <label className="form-label">Số điện thoại</label>
               <input
                 type="text"
                 className="form-control"
                 value={formData.customer_phone}
                 onChange={(e) => setFormData({ ...formData, customer_phone: e.target.value })}
-                placeholder="Nhap SDT..."
+                placeholder="Nhập SĐT..."
               />
             </div>
           </div>

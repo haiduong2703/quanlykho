@@ -95,7 +95,6 @@ class DashboardService {
       FROM categories c
       LEFT JOIN products p ON c.id = p.category_id AND p.is_active = 1
       LEFT JOIN stocks s ON p.id = s.product_id
-      WHERE c.is_active = 1
       GROUP BY c.id, c.name
       ORDER BY total_value DESC
       LIMIT 10
@@ -113,7 +112,7 @@ class DashboardService {
         p.name,
         SUM(ed.quantity) as total_exported,
         SUM(ed.subtotal) as total_revenue
-      FROM export_receipt_details ed
+      FROM export_receipt_items ed
       JOIN products p ON ed.product_id = p.id
       JOIN export_receipts er ON ed.export_receipt_id = er.id
       WHERE er.export_date >= DATE_SUB(CURDATE(), INTERVAL 30 DAY)

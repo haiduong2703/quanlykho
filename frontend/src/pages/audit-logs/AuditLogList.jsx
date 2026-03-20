@@ -37,7 +37,7 @@ const AuditLogList = () => {
       setLogs(res.data || []);
       setPagination(prev => ({ ...prev, total: res.pagination?.total || 0 }));
     } catch (error) {
-      toast.error('Khong the tai lich su hoat dong');
+      toast.error('Không thể tải lịch sử hoạt động');
     } finally {
       setLoading(false);
     }
@@ -74,38 +74,38 @@ const AuditLogList = () => {
 
   const getActionLabel = (action) => {
     const labels = {
-      CREATE: 'Tao moi',
-      UPDATE: 'Cap nhat',
-      DELETE: 'Xoa',
-      LOGIN: 'Dang nhap',
-      LOGOUT: 'Dang xuat',
-      IMPORT: 'Nhap kho',
-      EXPORT: 'Xuat kho',
-      TOGGLE_STATUS: 'Doi trang thai'
+      CREATE: 'Tạo mới',
+      UPDATE: 'Cập nhật',
+      DELETE: 'Xóa',
+      LOGIN: 'Đăng nhập',
+      LOGOUT: 'Đăng xuất',
+      IMPORT: 'Nhập kho',
+      EXPORT: 'Xuất kho',
+      TOGGLE_STATUS: 'Đổi trạng thái'
     };
     return labels[action] || action;
   };
 
   const getEntityLabel = (entity) => {
     const labels = {
-      USER: 'Nguoi dung',
-      PRODUCT: 'San pham',
-      CATEGORY: 'Danh muc',
-      SUPPLIER: 'Nha cung cap',
-      CUSTOMER: 'Khach hang',
-      IMPORT_RECEIPT: 'Phieu nhap',
-      EXPORT_RECEIPT: 'Phieu xuat',
-      STOCK: 'Ton kho'
+      USER: 'Người dùng',
+      PRODUCT: 'Sản phẩm',
+      CATEGORY: 'Danh mục',
+      SUPPLIER: 'Nhà cung cấp',
+      CUSTOMER: 'Khách hàng',
+      IMPORT_RECEIPT: 'Phiếu nhập',
+      EXPORT_RECEIPT: 'Phiếu xuất',
+      STOCK: 'Tồn kho'
     };
     return labels[entity] || entity;
   };
 
   return (
-    <Layout title="Lich su hoat dong">
+    <Layout title="Lịch sử hoạt động">
       <div className="page-header">
         <div>
-          <h1 className="page-title">Lich su hoat dong</h1>
-          <p className="page-subtitle">Theo doi tat ca cac thao tac trong he thong</p>
+          <h1 className="page-title">Lịch sử hoạt động</h1>
+          <p className="page-subtitle">Theo dõi tất cả các thao tác trong hệ thống</p>
         </div>
       </div>
 
@@ -115,7 +115,7 @@ const AuditLogList = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Filter size={18} style={{ color: 'var(--text-secondary)' }} />
-              <span style={{ fontWeight: 500 }}>Bo loc:</span>
+              <span style={{ fontWeight: 500 }}>Bộ lọc:</span>
             </div>
 
             <select
@@ -124,13 +124,13 @@ const AuditLogList = () => {
               onChange={(e) => setFilters({ ...filters, action: e.target.value })}
               style={{ width: '150px' }}
             >
-              <option value="">Tat ca hanh dong</option>
-              <option value="CREATE">Tao moi</option>
-              <option value="UPDATE">Cap nhat</option>
-              <option value="DELETE">Xoa</option>
-              <option value="LOGIN">Dang nhap</option>
-              <option value="IMPORT">Nhap kho</option>
-              <option value="EXPORT">Xuat kho</option>
+              <option value="">Tất cả hành động</option>
+              <option value="CREATE">Tạo mới</option>
+              <option value="UPDATE">Cập nhật</option>
+              <option value="DELETE">Xóa</option>
+              <option value="LOGIN">Đăng nhập</option>
+              <option value="IMPORT">Nhập kho</option>
+              <option value="EXPORT">Xuất kho</option>
             </select>
 
             <select
@@ -139,14 +139,14 @@ const AuditLogList = () => {
               onChange={(e) => setFilters({ ...filters, entity_type: e.target.value })}
               style={{ width: '150px' }}
             >
-              <option value="">Tat ca doi tuong</option>
-              <option value="USER">Nguoi dung</option>
-              <option value="PRODUCT">San pham</option>
-              <option value="CATEGORY">Danh muc</option>
+              <option value="">Tất cả đối tượng</option>
+              <option value="USER">Người dùng</option>
+              <option value="PRODUCT">Sản phẩm</option>
+              <option value="CATEGORY">Danh mục</option>
               <option value="SUPPLIER">NCC</option>
-              <option value="CUSTOMER">Khach hang</option>
-              <option value="IMPORT_RECEIPT">Phieu nhap</option>
-              <option value="EXPORT_RECEIPT">Phieu xuat</option>
+              <option value="CUSTOMER">Khách hàng</option>
+              <option value="IMPORT_RECEIPT">Phiếu nhập</option>
+              <option value="EXPORT_RECEIPT">Phiếu xuất</option>
             </select>
 
             <input
@@ -167,10 +167,10 @@ const AuditLogList = () => {
 
             <button className="btn btn-primary btn-sm" onClick={handleFilter}>
               <Filter size={16} />
-              Loc
+              Lọc
             </button>
             <button className="btn btn-secondary btn-sm" onClick={resetFilters}>
-              Dat lai
+              Đặt lại
             </button>
           </div>
         </div>
@@ -181,19 +181,19 @@ const AuditLogList = () => {
           <table className="table">
             <thead>
               <tr>
-                <th style={{ width: '160px' }}>Thoi gian</th>
-                <th style={{ width: '150px' }}>Nguoi thuc hien</th>
-                <th style={{ width: '120px' }}>Hanh dong</th>
-                <th style={{ width: '120px' }}>Doi tuong</th>
-                <th>Mo ta</th>
+                <th style={{ width: '160px' }}>Thời gian</th>
+                <th style={{ width: '150px' }}>Người thực hiện</th>
+                <th style={{ width: '120px' }}>Hành động</th>
+                <th style={{ width: '120px' }}>Đối tượng</th>
+                <th>Mô tả</th>
                 <th style={{ width: '120px' }}>IP</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="6" className="text-center">Dang tai...</td></tr>
+                <tr><td colSpan="6" className="text-center">Đang tải...</td></tr>
               ) : logs.length === 0 ? (
-                <tr><td colSpan="6" className="text-center">Khong co du lieu</td></tr>
+                <tr><td colSpan="6" className="text-center">Không có dữ liệu</td></tr>
               ) : (
                 logs.map(log => (
                   <tr key={log.id}>
