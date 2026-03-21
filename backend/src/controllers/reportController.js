@@ -20,6 +20,24 @@ class ReportController {
     }
   }
 
+  async getSupplierStats(req, res) {
+    try {
+      const stats = await reportService.getSupplierStats(req.query);
+      return successResponse(res, stats);
+    } catch (error) {
+      return errorResponse(res, error.message, 500);
+    }
+  }
+
+  async getCustomerStats(req, res) {
+    try {
+      const stats = await reportService.getCustomerStats(req.query);
+      return successResponse(res, stats);
+    } catch (error) {
+      return errorResponse(res, error.message, 500);
+    }
+  }
+
   async exportInventoryCSV(req, res) {
     try {
       const { filepath, filename } = await reportService.exportInventoryToCSV();

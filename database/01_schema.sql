@@ -4,6 +4,7 @@ CREATE DATABASE IF NOT EXISTS warehouse_db CHARACTER SET utf8mb4 COLLATE utf8mb4
 USE warehouse_db;
 
 -- Drop tables if exists (for clean reinstall)
+DROP TABLE IF EXISTS stock_movements;
 DROP TABLE IF EXISTS audit_logs;
 DROP TABLE IF EXISTS export_receipt_items;
 DROP TABLE IF EXISTS export_receipts;
@@ -125,13 +126,19 @@ CREATE TABLE import_receipts (
   supplier_phone VARCHAR(20),
   total_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
   note TEXT,
+  status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+  approved_by INT NULL,
+  approved_at TIMESTAMP NULL,
+  rejected_reason TEXT NULL,
   import_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
   FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL,
+  FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL,
   INDEX idx_receipt_code (receipt_code),
   INDEX idx_user (user_id),
   INDEX idx_supplier (supplier_id),
+  INDEX idx_status (status),
   INDEX idx_import_date (import_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -161,13 +168,19 @@ CREATE TABLE export_receipts (
   customer_phone VARCHAR(20),
   total_amount DECIMAL(15,2) NOT NULL DEFAULT 0,
   note TEXT,
+  status ENUM('PENDING', 'APPROVED', 'REJECTED') DEFAULT 'PENDING',
+  approved_by INT NULL,
+  approved_at TIMESTAMP NULL,
+  rejected_reason TEXT NULL,
   export_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE RESTRICT,
   FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
+  FOREIGN KEY (approved_by) REFERENCES users(id) ON DELETE SET NULL,
   INDEX idx_receipt_code (receipt_code),
   INDEX idx_user (user_id),
   INDEX idx_customer (customer_id),
+  INDEX idx_status (status),
   INDEX idx_export_date (export_date)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -185,6 +198,28 @@ CREATE TABLE export_receipt_items (
   FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT,
   INDEX idx_export_receipt (export_receipt_id),
   INDEX idx_product (product_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Table: stock_movements (Lịch sử biến động tồn kho)
+CREATE TABLE stock_movements (
+  id INT PRIMARY KEY AUTO_INCREMENT,
+  product_id INT NOT NULL,
+  type ENUM('IMPORT', 'EXPORT', 'ADJUST', 'INVENTORY_CHECK') NOT NULL,
+  quantity INT NOT NULL,
+  before_quantity INT NOT NULL DEFAULT 0,
+  after_quantity INT NOT NULL DEFAULT 0,
+  reference_type VARCHAR(50) NULL,
+  reference_id INT NULL,
+  reference_code VARCHAR(50) NULL,
+  note TEXT,
+  created_by INT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE,
+  FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_product (product_id),
+  INDEX idx_type (type),
+  INDEX idx_reference (reference_type, reference_id),
+  INDEX idx_created (created_at)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Table: audit_logs

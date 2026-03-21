@@ -82,6 +82,12 @@ mysql -u root -p < database/01_schema.sql
 
 # Import dữ liệu mẫu
 mysql -u root -p < database/02_seed.sql
+
+# Tạo bảng kiểm kê kho
+mysql -u root -p < database/03_inventory_check.sql
+
+# Chạy migration (thêm bảng stock_movements, workflow approval...)
+mysql -u root -p < database/04_migrations.sql
 ```
 
 **Lưu ý**: Nếu gặp lỗi password hash trong seed file, cần cập nhật password hash mới:
@@ -181,17 +187,34 @@ Sau khi import seed data, bạn có thể đăng nhập với:
 - `GET /api/stocks/alerts` - Cảnh báo tồn kho thấp
 - `GET /api/stocks/product/:id` - Tồn kho theo sản phẩm
 
+### Products (advanced)
+- `POST /api/products/import-excel` - Bulk import sản phẩm từ Excel
+- `GET /api/products/sample-excel` - Tải file Excel mẫu
+- `PATCH /api/products/:id/toggle-status` - Bật/tắt sản phẩm
+
+### Stocks
+- `GET /api/stocks` - Danh sách tồn kho
+- `GET /api/stocks/alerts` - Cảnh báo tồn kho thấp
+- `GET /api/stocks/product/:id` - Tồn kho theo sản phẩm
+- `GET /api/stocks/product/:id/history` - Lịch sử biến động tồn kho
+
 ### Import Receipts
-- `GET /api/imports` - Danh sách phiếu nhập
+- `GET /api/imports` - Danh sách phiếu nhập (filter: status, search, from_date, to_date)
 - `GET /api/imports/:id` - Chi tiết phiếu nhập
-- `POST /api/imports` - Tạo phiếu nhập (transaction)
-- `DELETE /api/imports/:id` - Xóa phiếu nhập (transaction)
+- `POST /api/imports` - Tạo phiếu nhập (status: PENDING)
+- `PUT /api/imports/:id` - Sửa phiếu nhập (chỉ PENDING)
+- `PATCH /api/imports/:id/approve` - Duyệt phiếu nhập (ADMIN only, cập nhật tồn kho)
+- `PATCH /api/imports/:id/reject` - Từ chối phiếu nhập (ADMIN only)
+- `DELETE /api/imports/:id` - Xóa phiếu nhập
 
 ### Export Receipts
-- `GET /api/exports` - Danh sách phiếu xuất
+- `GET /api/exports` - Danh sách phiếu xuất (filter: status, search, from_date, to_date)
 - `GET /api/exports/:id` - Chi tiết phiếu xuất
-- `POST /api/exports` - Tạo phiếu xuất (transaction + validation)
-- `DELETE /api/exports/:id` - Xóa phiếu xuất (transaction)
+- `POST /api/exports` - Tạo phiếu xuất (status: PENDING)
+- `PUT /api/exports/:id` - Sửa phiếu xuất (chỉ PENDING)
+- `PATCH /api/exports/:id/approve` - Duyệt phiếu xuất (ADMIN only, cập nhật tồn kho)
+- `PATCH /api/exports/:id/reject` - Từ chối phiếu xuất (ADMIN only)
+- `DELETE /api/exports/:id` - Xóa phiếu xuất
 
 ### Dashboard
 - `GET /api/dashboard/stats` - Thống kê tổng quan
@@ -201,6 +224,8 @@ Sau khi import seed data, bạn có thể đăng nhập với:
 ### Reports
 - `GET /api/reports/inventory` - Báo cáo tồn kho
 - `GET /api/reports/import-export?from=&to=` - Báo cáo nhập/xuất
+- `GET /api/reports/supplier-stats?from_date=&to_date=` - Thống kê theo nhà cung cấp
+- `GET /api/reports/customer-stats?from_date=&to_date=` - Thống kê theo khách hàng
 - `GET /api/reports/export-csv` - Export CSV
 
 ## CHỨC NĂNG CHÍNH
@@ -228,21 +253,31 @@ Sau khi import seed data, bạn có thể đăng nhập với:
 
 ### 5. Nhập kho
 - Tạo phiếu nhập với nhiều sản phẩm
+- **Sửa phiếu nhập** (chỉ khi trạng thái PENDING)
+- **Workflow duyệt**: PENDING → APPROVED/REJECTED
+- Chỉ ADMIN mới được duyệt/từ chối phiếu
+- Tồn kho chỉ cập nhật khi phiếu được duyệt (APPROVED)
 - **Transaction safety**: Rollback nếu có lỗi
-- Tự động cộng tồn kho
 - Generate receipt code tự động (IMP20260114001)
 
 ### 6. Xuất kho
 - Tạo phiếu xuất với nhiều sản phẩm
-- **Validation tồn kho**: Không cho xuất vượt tồn
+- **Sửa phiếu xuất** (chỉ khi trạng thái PENDING)
+- **Workflow duyệt**: PENDING → APPROVED/REJECTED
+- **Validation tồn kho**: Kiểm tra lại khi duyệt
 - **Transaction safety**: Rollback nếu có lỗi
-- Tự động trừ tồn kho
 - Generate receipt code tự động (EXP20260114001)
 
 ### 7. Tồn kho
 - Xem tồn kho realtime
 - Cảnh báo sản phẩm sắp hết (quantity <= min_stock)
 - Tính giá trị tồn kho
+- **Lịch sử biến động tồn kho** theo sản phẩm (nhập, xuất, điều chỉnh)
+
+### 7.1. Import sản phẩm hàng loạt
+- Upload file Excel (.xlsx) để import nhiều sản phẩm
+- Tải file Excel mẫu từ hệ thống
+- Hiển thị kết quả: thành công, bỏ qua, lỗi chi tiết
 
 ### 8. Dashboard
 - Tổng số sản phẩm
@@ -254,34 +289,33 @@ Sau khi import seed data, bạn có thể đăng nhập với:
 ### 9. Báo cáo
 - Báo cáo tồn kho
 - Báo cáo nhập/xuất theo khoảng thời gian
-- Export CSV
+- **Thống kê theo nhà cung cấp** (số phiếu, tổng tiền, lần nhập gần nhất)
+- **Thống kê theo khách hàng** (số phiếu, tổng tiền, lần xuất gần nhất)
+- Export Excel / CSV
 
 ## TRANSACTION LOGIC
 
-### Flow Nhập Kho
-1. BEGIN TRANSACTION
-2. Validate items (product exists, quantity > 0)
-3. Generate receipt_code
-4. Calculate total_amount
-5. INSERT import_receipt
-6. FOR EACH item:
-   - INSERT import_receipt_item
-   - UPDATE stocks: quantity += item.quantity
-7. COMMIT TRANSACTION
-8. ROLLBACK nếu có lỗi
+### Flow Nhập Kho (với Approval)
+1. **Tạo phiếu** (status = PENDING):
+   - Validate items → Generate receipt_code → INSERT receipt + items
+   - Tồn kho CHƯA thay đổi
+2. **Duyệt phiếu** (ADMIN, status → APPROVED):
+   - BEGIN TRANSACTION
+   - FOR EACH item: Stock.increment + ghi StockMovement
+   - COMMIT
+3. **Từ chối** (status → REJECTED): Không ảnh hưởng tồn kho
+4. **Sửa phiếu**: Chỉ khi PENDING - cập nhật items + thông tin
 
-### Flow Xuất Kho
-1. BEGIN TRANSACTION
-2. Validate items
-3. **Check stock availability** (CRITICAL)
-4. Generate receipt_code
-5. Calculate total_amount
-6. INSERT export_receipt
-7. FOR EACH item:
-   - INSERT export_receipt_item
-   - UPDATE stocks: quantity -= item.quantity
-8. COMMIT TRANSACTION
-9. ROLLBACK nếu có lỗi
+### Flow Xuất Kho (với Approval)
+1. **Tạo phiếu** (status = PENDING):
+   - Validate items + **check stock** → INSERT receipt + items
+   - Tồn kho CHƯA thay đổi
+2. **Duyệt phiếu** (ADMIN, status → APPROVED):
+   - BEGIN TRANSACTION
+   - **Re-validate stock availability** (CRITICAL)
+   - FOR EACH item: Stock.decrement + ghi StockMovement
+   - COMMIT
+3. **Từ chối** (status → REJECTED): Không ảnh hưởng tồn kho
 
 ## SECURITY
 
@@ -296,15 +330,18 @@ Sau khi import seed data, bạn có thể đăng nhập với:
 
 ## DATABASE SCHEMA
 
-8 bảng chính:
+11 bảng chính:
 - `users` - Người dùng và phân quyền
 - `categories` - Danh mục sản phẩm
 - `products` - Sản phẩm
 - `stocks` - Tồn kho
-- `import_receipts` - Phiếu nhập kho
+- `stock_movements` - Lịch sử biến động tồn kho
+- `import_receipts` - Phiếu nhập kho (có status: PENDING/APPROVED/REJECTED)
 - `import_receipt_items` - Chi tiết phiếu nhập
-- `export_receipts` - Phiếu xuất kho
+- `export_receipts` - Phiếu xuất kho (có status: PENDING/APPROVED/REJECTED)
 - `export_receipt_items` - Chi tiết phiếu xuất
+- `suppliers` - Nhà cung cấp
+- `customers` - Khách hàng
 
 ## TROUBLESHOOTING
 

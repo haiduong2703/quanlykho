@@ -8,5 +8,6 @@ router.use(auth);
 router.get('/', stockController.getStocks);
 router.get('/alerts', stockController.getLowStockAlerts);
 router.get('/product/:id', stockController.getStockByProductId);
+router.get('/product/:id/history', stockController.getStockHistory);
 
 module.exports = router;

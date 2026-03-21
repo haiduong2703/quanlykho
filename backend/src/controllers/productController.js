@@ -108,6 +108,31 @@ class ProductController {
       return errorResponse(res, error.message, 400);
     }
   }
+
+  async bulkImport(req, res) {
+    try {
+      if (!req.file) {
+        return errorResponse(res, 'Please upload an Excel file', 400);
+      }
+
+      const results = await productService.bulkImportFromExcel(req.file.path);
+      return successResponse(res, results, `Import completed: ${results.success} products added`);
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async downloadSampleExcel(req, res) {
+    try {
+      const filePath = productService.generateSampleExcel();
+      res.download(filePath, 'mau_import_san_pham.xlsx', (err) => {
+        // Clean up temp file after download
+        try { require('fs').unlinkSync(filePath); } catch (e) { /* ignore */ }
+      });
+    } catch (error) {
+      return errorResponse(res, error.message, 500);
+    }
+  }
 }
 
 module.exports = new ProductController();

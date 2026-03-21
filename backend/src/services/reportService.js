@@ -32,6 +32,66 @@ class ReportService {
     };
   }
 
+  async getSupplierStats(filters = {}) {
+    const { from_date, to_date } = filters;
+    const params = [];
+    const joinConditions = ['(s.id = ir.supplier_id OR (ir.supplier_id IS NULL AND ir.supplier_name = s.name))'];
+
+    if (from_date) {
+      joinConditions.push('ir.import_date >= ?');
+      params.push(from_date);
+    }
+    if (to_date) {
+      joinConditions.push('ir.import_date <= ?');
+      params.push(to_date + ' 23:59:59');
+    }
+
+    const query = `
+      SELECT
+        s.id, s.code, s.name, s.phone, s.email,
+        COUNT(DISTINCT ir.id) as total_receipts,
+        COALESCE(SUM(ir.total_amount), 0) as total_amount,
+        MAX(ir.import_date) as last_import_date
+      FROM suppliers s
+      LEFT JOIN import_receipts ir ON ${joinConditions.join(' AND ')}
+      GROUP BY s.id, s.code, s.name, s.phone, s.email
+      ORDER BY total_amount DESC
+    `;
+
+    const [rows] = await pool.query(query, params);
+    return rows;
+  }
+
+  async getCustomerStats(filters = {}) {
+    const { from_date, to_date } = filters;
+    const params = [];
+    const joinConditions = ['(c.id = er.customer_id OR (er.customer_id IS NULL AND er.customer_name = c.name))'];
+
+    if (from_date) {
+      joinConditions.push('er.export_date >= ?');
+      params.push(from_date);
+    }
+    if (to_date) {
+      joinConditions.push('er.export_date <= ?');
+      params.push(to_date + ' 23:59:59');
+    }
+
+    const query = `
+      SELECT
+        c.id, c.code, c.name, c.phone, c.email,
+        COUNT(DISTINCT er.id) as total_receipts,
+        COALESCE(SUM(er.total_amount), 0) as total_amount,
+        MAX(er.export_date) as last_export_date
+      FROM customers c
+      LEFT JOIN export_receipts er ON ${joinConditions.join(' AND ')}
+      GROUP BY c.id, c.code, c.name, c.phone, c.email
+      ORDER BY total_amount DESC
+    `;
+
+    const [rows] = await pool.query(query, params);
+    return rows;
+  }
+
   async exportInventoryToCSV() {
     const stocks = await Stock.findAll({ limit: 10000 });
 

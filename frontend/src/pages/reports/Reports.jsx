@@ -13,7 +13,10 @@ import {
   TrendingUp,
   TrendingDown,
   Filter,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Users,
+  Truck,
+  RotateCcw
 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
 import XLSX from 'xlsx-js-style';
@@ -23,16 +26,31 @@ const Reports = () => {
   const [loading, setLoading] = useState(false);
   const [inventoryData, setInventoryData] = useState([]);
   const [importExportData, setImportExportData] = useState(null);
+  const [supplierStatsData, setSupplierStatsData] = useState([]);
+  const [customerStatsData, setCustomerStatsData] = useState([]);
   const [dateRange, setDateRange] = useState({
     from: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
     to: format(endOfMonth(new Date()), 'yyyy-MM-dd')
   });
+  const [supplierDateRange, setSupplierDateRange] = useState({
+    from: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+    to: format(endOfMonth(new Date()), 'yyyy-MM-dd')
+  });
+  const [customerDateRange, setCustomerDateRange] = useState({
+    from: format(startOfMonth(new Date()), 'yyyy-MM-dd'),
+    to: format(endOfMonth(new Date()), 'yyyy-MM-dd')
+  });
+  const [activeQuickFilter, setActiveQuickFilter] = useState({ importExport: null, supplier: null, customer: null });
 
   useEffect(() => {
     if (activeTab === 'inventory') {
       fetchInventoryReport();
-    } else {
+    } else if (activeTab === 'import-export') {
       fetchImportExportReport();
+    } else if (activeTab === 'supplier-stats') {
+      fetchSupplierStats();
+    } else if (activeTab === 'customer-stats') {
+      fetchCustomerStats();
     }
   }, [activeTab]);
 
@@ -48,13 +66,11 @@ const Reports = () => {
     }
   };
 
-  const fetchImportExportReport = async () => {
+  const fetchImportExportReport = async (range) => {
     try {
       setLoading(true);
-      const params = new URLSearchParams({
-        from: dateRange.from,
-        to: dateRange.to
-      });
+      const r = range || dateRange;
+      const params = new URLSearchParams({ from: r.from, to: r.to });
       const res = await api.get(`/reports/import-export?${params}`);
       setImportExportData(res.data);
     } catch (error) {
@@ -64,8 +80,47 @@ const Reports = () => {
     }
   };
 
+  const fetchSupplierStats = async (range) => {
+    try {
+      setLoading(true);
+      const r = range || supplierDateRange;
+      const params = new URLSearchParams({ from_date: r.from, to_date: r.to });
+      const res = await api.get(`/reports/supplier-stats?${params}`);
+      setSupplierStatsData(res.data || []);
+    } catch (error) {
+      toast.error('Không thể tải thống kê nhà cung cấp');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchCustomerStats = async (range) => {
+    try {
+      setLoading(true);
+      const r = range || customerDateRange;
+      const params = new URLSearchParams({ from_date: r.from, to_date: r.to });
+      const res = await api.get(`/reports/customer-stats?${params}`);
+      setCustomerStatsData(res.data || []);
+    } catch (error) {
+      toast.error('Không thể tải thống kê khách hàng');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleDateFilter = () => {
+    setActiveQuickFilter(prev => ({ ...prev, importExport: null }));
     fetchImportExportReport();
+  };
+
+  const handleSupplierDateFilter = () => {
+    setActiveQuickFilter(prev => ({ ...prev, supplier: null }));
+    fetchSupplierStats();
+  };
+
+  const handleCustomerDateFilter = () => {
+    setActiveQuickFilter(prev => ({ ...prev, customer: null }));
+    fetchCustomerStats();
   };
 
   // --- Style helpers for Excel ---
@@ -213,7 +268,17 @@ const Reports = () => {
     try {
       const wb = XLSX.utils.book_new();
       const today = format(new Date(), 'dd/MM/yyyy');
-      const fileName = `bao-cao-${type === 'inventory' ? 'ton-kho' : 'nhap-xuat'}-${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      let fileName;
+
+      if (type === 'inventory') {
+        fileName = `bao-cao-ton-kho-${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      } else if (type === 'import-export') {
+        fileName = `bao-cao-nhap-xuat-${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      } else if (type === 'supplier-stats') {
+        fileName = `thong-ke-nha-cung-cap-${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      } else if (type === 'customer-stats') {
+        fileName = `thong-ke-khach-hang-${format(new Date(), 'yyyyMMdd')}.xlsx`;
+      }
 
       if (type === 'inventory') {
         const colCount = 10;
@@ -350,12 +415,12 @@ const Reports = () => {
           [`Ngày xuất báo cáo: ${today}`],
           [],
           ['CHỈ TIÊU', 'GIÁ TRỊ'],
-          ['Số phiếu nhập', importExportData?.summary?.import_count || 0],
-          ['Tổng tiền nhập', importExportData?.summary?.import_total || 0],
-          ['Số phiếu xuất', importExportData?.summary?.export_count || 0],
-          ['Tổng tiền xuất', importExportData?.summary?.export_total || 0],
+          ['Số phiếu nhập', importExportData?.summary?.total_imports || 0],
+          ['Tổng tiền nhập', importExportData?.summary?.total_import_amount || 0],
+          ['Số phiếu xuất', importExportData?.summary?.total_exports || 0],
+          ['Tổng tiền xuất', importExportData?.summary?.total_export_amount || 0],
           [],
-          ['Chênh lệch (Nhập - Xuất)', (importExportData?.summary?.import_total || 0) - (importExportData?.summary?.export_total || 0)]
+          ['Chênh lệch (Nhập - Xuất)', (importExportData?.summary?.total_import_amount || 0) - (importExportData?.summary?.total_export_amount || 0)]
         ];
 
         const summaryWs = XLSX.utils.aoa_to_sheet(summaryData);
@@ -425,7 +490,7 @@ const Reports = () => {
         });
 
         const importTotalRow = importData.length;
-        importData.push(['', '', '', 'TỔNG CỘNG:', importExportData?.summary?.import_total || 0, '']);
+        importData.push(['', '', '', 'TỔNG CỘNG:', importExportData?.summary?.total_import_amount || 0, '']);
 
         const importWs = XLSX.utils.aoa_to_sheet(importData);
         importWs['!cols'] = [
@@ -501,7 +566,7 @@ const Reports = () => {
         });
 
         const exportTotalRow = exportData.length;
-        exportData.push(['', '', '', 'TỔNG CỘNG:', importExportData?.summary?.export_total || 0, '']);
+        exportData.push(['', '', '', 'TỔNG CỘNG:', importExportData?.summary?.total_export_amount || 0, '']);
 
         const exportWs = XLSX.utils.aoa_to_sheet(exportData);
         exportWs['!cols'] = [
@@ -572,6 +637,201 @@ const Reports = () => {
         setRowHeight(exportWs, exportTotalRow, 30);
 
         XLSX.utils.book_append_sheet(wb, exportWs, 'Phiếu xuất');
+
+      } else if (type === 'supplier-stats') {
+        const colCount = 7;
+        const wsData = [
+          ['THỐNG KÊ NHÀ CUNG CẤP'],
+          [`Từ ngày: ${formatDate(supplierDateRange.from)} - Đến ngày: ${formatDate(supplierDateRange.to)}`],
+          [`Ngày xuất báo cáo: ${today}`],
+          [],
+          ['Mã NCC', 'Tên NCC', 'SĐT', 'Email', 'Số phiếu nhập', 'Tổng tiền nhập', 'Lần nhập gần nhất']
+        ];
+
+        supplierStatsData.forEach((item) => {
+          wsData.push([
+            item.code,
+            item.name,
+            item.phone || '',
+            item.email || '',
+            item.total_receipts,
+            item.total_amount,
+            item.last_import_date ? formatDate(item.last_import_date) : ''
+          ]);
+        });
+
+        const totalRowIdx = wsData.length;
+        wsData.push([
+          '', 'TỔNG CỘNG:', '', '',
+          supplierStatsData.reduce((sum, i) => sum + (i.total_receipts || 0), 0),
+          supplierStatsData.reduce((sum, i) => sum + (i.total_amount || 0), 0),
+          ''
+        ]);
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!merges'] = [
+          { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
+          { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
+          { s: { r: 2, c: 0 }, e: { r: 2, c: 6 } }
+        ];
+        ws['!cols'] = [
+          { wch: 12 }, { wch: 28 }, { wch: 14 }, { wch: 24 }, { wch: 14 }, { wch: 20 }, { wch: 18 }
+        ];
+
+        setRowHeight(ws, 0, 36);
+        setRowHeight(ws, 1, 22);
+        setRowHeight(ws, 2, 22);
+        setRowHeight(ws, 4, 28);
+
+        for (let c = 0; c < colCount; c++) {
+          const a0 = XLSX.utils.encode_cell({ r: 0, c });
+          const a1 = XLSX.utils.encode_cell({ r: 1, c });
+          const a2 = XLSX.utils.encode_cell({ r: 2, c });
+          if (ws[a0]) ws[a0].s = styles.title;
+          if (ws[a1]) ws[a1].s = styles.subtitle;
+          if (ws[a2]) ws[a2].s = styles.subtitle;
+        }
+
+        for (let c = 0; c < colCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: 4, c });
+          if (ws[addr]) ws[addr].s = styles.header;
+        }
+
+        const dataStartRow = 5;
+        supplierStatsData.forEach((_, index) => {
+          const row = dataStartRow + index;
+          const isEven = index % 2 === 0;
+          for (let c = 0; c < colCount; c++) {
+            const addr = XLSX.utils.encode_cell({ r: row, c });
+            if (!ws[addr]) continue;
+            if (c === 4) ws[addr].s = { ...styles.cellRight, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 5) ws[addr].s = { ...styles.cellCurrency, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 6) ws[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else ws[addr].s = { ...styles.cell, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+          }
+        });
+
+        for (let c = 0; c < colCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: totalRowIdx, c });
+          if (!ws[addr]) ws[addr] = { v: '', t: 's' };
+          if (c === 1) ws[addr].s = styles.totalLabel;
+          else if (c === 4) ws[addr].s = styles.totalValueNumber;
+          else if (c === 5) ws[addr].s = styles.totalValue;
+          else ws[addr].s = styles.totalEmpty;
+        }
+        setRowHeight(ws, totalRowIdx, 30);
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Thống kê NCC');
+
+      } else if (type === 'customer-stats') {
+        const colCount = 7;
+        const wsData = [
+          ['THỐNG KÊ KHÁCH HÀNG'],
+          [`Từ ngày: ${formatDate(customerDateRange.from)} - Đến ngày: ${formatDate(customerDateRange.to)}`],
+          [`Ngày xuất báo cáo: ${today}`],
+          [],
+          ['Mã KH', 'Tên KH', 'SĐT', 'Email', 'Số phiếu xuất', 'Tổng tiền xuất', 'Lần xuất gần nhất']
+        ];
+
+        customerStatsData.forEach((item) => {
+          wsData.push([
+            item.code,
+            item.name,
+            item.phone || '',
+            item.email || '',
+            item.total_receipts,
+            item.total_amount,
+            item.last_export_date ? formatDate(item.last_export_date) : ''
+          ]);
+        });
+
+        const totalRowIdx = wsData.length;
+        wsData.push([
+          '', 'TỔNG CỘNG:', '', '',
+          customerStatsData.reduce((sum, i) => sum + (i.total_receipts || 0), 0),
+          customerStatsData.reduce((sum, i) => sum + (i.total_amount || 0), 0),
+          ''
+        ]);
+
+        const ws = XLSX.utils.aoa_to_sheet(wsData);
+        ws['!merges'] = [
+          { s: { r: 0, c: 0 }, e: { r: 0, c: 6 } },
+          { s: { r: 1, c: 0 }, e: { r: 1, c: 6 } },
+          { s: { r: 2, c: 0 }, e: { r: 2, c: 6 } }
+        ];
+        ws['!cols'] = [
+          { wch: 12 }, { wch: 28 }, { wch: 14 }, { wch: 24 }, { wch: 14 }, { wch: 20 }, { wch: 18 }
+        ];
+
+        setRowHeight(ws, 0, 36);
+        setRowHeight(ws, 1, 22);
+        setRowHeight(ws, 2, 22);
+        setRowHeight(ws, 4, 28);
+
+        // Use orange theme for customer stats
+        const customerTitle = {
+          font: { bold: true, sz: 18, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: '1565C0' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          border: borderAll
+        };
+        const customerSubtitle = {
+          font: { sz: 12, italic: true, color: { rgb: '555555' } },
+          alignment: { horizontal: 'center', vertical: 'center' },
+          fill: { fgColor: { rgb: 'E3F2FD' } },
+          border: borderAll
+        };
+        const customerHeader = {
+          font: { bold: true, sz: 11, color: { rgb: 'FFFFFF' } },
+          fill: { fgColor: { rgb: '1976D2' } },
+          alignment: { horizontal: 'center', vertical: 'center', wrapText: true },
+          border: borderAll
+        };
+
+        for (let c = 0; c < colCount; c++) {
+          const a0 = XLSX.utils.encode_cell({ r: 0, c });
+          const a1 = XLSX.utils.encode_cell({ r: 1, c });
+          const a2 = XLSX.utils.encode_cell({ r: 2, c });
+          if (ws[a0]) ws[a0].s = customerTitle;
+          if (ws[a1]) ws[a1].s = customerSubtitle;
+          if (ws[a2]) ws[a2].s = customerSubtitle;
+        }
+
+        for (let c = 0; c < colCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: 4, c });
+          if (ws[addr]) ws[addr].s = customerHeader;
+        }
+
+        const dataStartRow = 5;
+        customerStatsData.forEach((_, index) => {
+          const row = dataStartRow + index;
+          const isEven = index % 2 === 0;
+          for (let c = 0; c < colCount; c++) {
+            const addr = XLSX.utils.encode_cell({ r: row, c });
+            if (!ws[addr]) continue;
+            if (c === 4) ws[addr].s = { ...styles.cellRight, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 5) ws[addr].s = { ...styles.cellCurrency, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else if (c === 6) ws[addr].s = { ...styles.cellCenter, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+            else ws[addr].s = { ...styles.cell, ...(isEven ? { fill: styles.rowEven.fill } : {}) };
+          }
+        });
+
+        const customerTotalLabel = { ...styles.totalLabel, font: { ...styles.totalLabel.font, color: { rgb: '1565C0' } }, fill: { fgColor: { rgb: 'E3F2FD' } }, border: { top: { style: 'double', color: { rgb: '1565C0' } }, bottom: { style: 'double', color: { rgb: '1565C0' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+        const customerTotalValue = { ...styles.totalValue, font: { ...styles.totalValue.font, color: { rgb: '1565C0' } }, fill: { fgColor: { rgb: 'BBDEFB' } }, border: { top: { style: 'double', color: { rgb: '1565C0' } }, bottom: { style: 'double', color: { rgb: '1565C0' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+        const customerTotalValueNumber = { ...styles.totalValueNumber, font: { ...styles.totalValueNumber.font, color: { rgb: '1565C0' } }, fill: { fgColor: { rgb: 'BBDEFB' } }, border: { top: { style: 'double', color: { rgb: '1565C0' } }, bottom: { style: 'double', color: { rgb: '1565C0' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+        const customerTotalEmpty = { fill: { fgColor: { rgb: 'E3F2FD' } }, border: { top: { style: 'double', color: { rgb: '1565C0' } }, bottom: { style: 'double', color: { rgb: '1565C0' } }, left: { style: 'thin', color: { rgb: 'CCCCCC' } }, right: { style: 'thin', color: { rgb: 'CCCCCC' } } } };
+
+        for (let c = 0; c < colCount; c++) {
+          const addr = XLSX.utils.encode_cell({ r: totalRowIdx, c });
+          if (!ws[addr]) ws[addr] = { v: '', t: 's' };
+          if (c === 1) ws[addr].s = customerTotalLabel;
+          else if (c === 4) ws[addr].s = customerTotalValueNumber;
+          else if (c === 5) ws[addr].s = customerTotalValue;
+          else ws[addr].s = customerTotalEmpty;
+        }
+        setRowHeight(ws, totalRowIdx, 30);
+
+        XLSX.utils.book_append_sheet(wb, ws, 'Thống kê KH');
       }
 
       XLSX.writeFile(wb, fileName);
@@ -593,15 +853,67 @@ const Reports = () => {
   const setQuickDateRange = (days) => {
     const to = new Date();
     const from = subDays(to, days);
-    setDateRange({
-      from: format(from, 'yyyy-MM-dd'),
-      to: format(to, 'yyyy-MM-dd')
-    });
+    const newRange = { from: format(from, 'yyyy-MM-dd'), to: format(to, 'yyyy-MM-dd') };
+    setDateRange(newRange);
+    setActiveQuickFilter(prev => ({ ...prev, importExport: days }));
+    // Auto-fetch with new range
+    setTimeout(() => fetchImportExportReport(newRange), 0);
+  };
+
+  const clearDateRange = () => {
+    const newRange = { from: format(startOfMonth(new Date()), 'yyyy-MM-dd'), to: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
+    setDateRange(newRange);
+    setActiveQuickFilter(prev => ({ ...prev, importExport: null }));
+    setTimeout(() => fetchImportExportReport(newRange), 0);
+  };
+
+  const setQuickSupplierDateRange = (days) => {
+    const to = new Date();
+    const from = subDays(to, days);
+    const newRange = { from: format(from, 'yyyy-MM-dd'), to: format(to, 'yyyy-MM-dd') };
+    setSupplierDateRange(newRange);
+    setActiveQuickFilter(prev => ({ ...prev, supplier: days }));
+    setTimeout(() => fetchSupplierStats(newRange), 0);
+  };
+
+  const clearSupplierDateRange = () => {
+    const newRange = { from: format(startOfMonth(new Date()), 'yyyy-MM-dd'), to: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
+    setSupplierDateRange(newRange);
+    setActiveQuickFilter(prev => ({ ...prev, supplier: null }));
+    setTimeout(() => fetchSupplierStats(newRange), 0);
+  };
+
+  const setQuickCustomerDateRange = (days) => {
+    const to = new Date();
+    const from = subDays(to, days);
+    const newRange = { from: format(from, 'yyyy-MM-dd'), to: format(to, 'yyyy-MM-dd') };
+    setCustomerDateRange(newRange);
+    setActiveQuickFilter(prev => ({ ...prev, customer: days }));
+    setTimeout(() => fetchCustomerStats(newRange), 0);
+  };
+
+  const clearCustomerDateRange = () => {
+    const newRange = { from: format(startOfMonth(new Date()), 'yyyy-MM-dd'), to: format(endOfMonth(new Date()), 'yyyy-MM-dd') };
+    setCustomerDateRange(newRange);
+    setActiveQuickFilter(prev => ({ ...prev, customer: null }));
+    setTimeout(() => fetchCustomerStats(newRange), 0);
   };
 
   const totalInventoryValue = inventoryData.reduce((sum, item) =>
     sum + (item.quantity * item.price), 0
   );
+
+  const supplierSummary = {
+    totalSuppliers: supplierStatsData.length,
+    totalReceipts: supplierStatsData.reduce((sum, i) => sum + (i.total_receipts || 0), 0),
+    totalAmount: supplierStatsData.reduce((sum, i) => sum + (i.total_amount || 0), 0)
+  };
+
+  const customerSummary = {
+    totalCustomers: customerStatsData.length,
+    totalReceipts: customerStatsData.reduce((sum, i) => sum + (i.total_receipts || 0), 0),
+    totalAmount: customerStatsData.reduce((sum, i) => sum + (i.total_amount || 0), 0)
+  };
 
   return (
     <Layout title="Báo cáo">
@@ -618,7 +930,8 @@ const Reports = () => {
         gap: '8px',
         marginBottom: '24px',
         borderBottom: '2px solid var(--border-color)',
-        paddingBottom: '8px'
+        paddingBottom: '8px',
+        flexWrap: 'wrap'
       }}>
         <button
           className={`btn ${activeTab === 'inventory' ? 'btn-primary' : 'btn-secondary'}`}
@@ -633,6 +946,20 @@ const Reports = () => {
         >
           <FileText size={18} />
           Báo cáo nhập xuất
+        </button>
+        <button
+          className={`btn ${activeTab === 'supplier-stats' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('supplier-stats')}
+        >
+          <Truck size={18} />
+          Thống kê NCC
+        </button>
+        <button
+          className={`btn ${activeTab === 'customer-stats' ? 'btn-primary' : 'btn-secondary'}`}
+          onClick={() => setActiveTab('customer-stats')}
+        >
+          <Users size={18} />
+          Thống kê khách hàng
         </button>
       </div>
 
@@ -792,28 +1119,21 @@ const Reports = () => {
                   <Filter size={16} />
                   Lọc
                 </button>
-                <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '16px' }}>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => setQuickDateRange(7)}
-                    style={{ marginRight: '8px' }}
-                  >
-                    7 ngày
-                  </button>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => setQuickDateRange(30)}
-                    style={{ marginRight: '8px' }}
-                  >
-                    30 ngày
-                  </button>
-                  <button
-                    className="btn btn-secondary btn-sm"
-                    onClick={() => setQuickDateRange(90)}
-                  >
-                    90 ngày
-                  </button>
+                <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '16px', display: 'flex', gap: '8px' }}>
+                  {[7, 30, 90].map(days => (
+                    <button
+                      key={days}
+                      className={`btn btn-sm ${activeQuickFilter.importExport === days ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setQuickDateRange(days)}
+                    >
+                      {days} ngày
+                    </button>
+                  ))}
                 </div>
+                <button className="btn btn-secondary btn-sm" onClick={clearDateRange} title="Xóa bộ lọc">
+                  <RotateCcw size={14} />
+                  Xóa lọc
+                </button>
               </div>
             </div>
           </div>
@@ -826,7 +1146,7 @@ const Reports = () => {
                   <ArrowDownToLine size={24} />
                 </div>
                 <div className="stat-content">
-                  <div className="stat-value">{importExportData.summary?.import_count || 0}</div>
+                  <div className="stat-value">{importExportData.summary?.total_imports || 0}</div>
                   <div className="stat-label">Phiếu nhập</div>
                 </div>
               </div>
@@ -836,7 +1156,7 @@ const Reports = () => {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value" style={{ fontSize: '18px' }}>
-                    {formatCurrency(importExportData.summary?.import_total || 0)}
+                    {formatCurrency(importExportData.summary?.total_import_amount || 0)}
                   </div>
                   <div className="stat-label">Tổng nhập</div>
                 </div>
@@ -846,7 +1166,7 @@ const Reports = () => {
                   <ArrowUpFromLine size={24} />
                 </div>
                 <div className="stat-content">
-                  <div className="stat-value">{importExportData.summary?.export_count || 0}</div>
+                  <div className="stat-value">{importExportData.summary?.total_exports || 0}</div>
                   <div className="stat-label">Phiếu xuất</div>
                 </div>
               </div>
@@ -856,7 +1176,7 @@ const Reports = () => {
                 </div>
                 <div className="stat-content">
                   <div className="stat-value" style={{ fontSize: '18px' }}>
-                    {formatCurrency(importExportData.summary?.export_total || 0)}
+                    {formatCurrency(importExportData.summary?.total_export_amount || 0)}
                   </div>
                   <div className="stat-label">Tổng xuất</div>
                 </div>
@@ -971,6 +1291,290 @@ const Reports = () => {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Supplier Stats */}
+      {activeTab === 'supplier-stats' && (
+        <>
+          {/* Date Filter */}
+          <div className="card" style={{ marginBottom: '24px' }}>
+            <div className="card-body">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Calendar size={18} style={{ color: 'var(--text-secondary)' }} />
+                  <span style={{ fontWeight: 500 }}>Khoảng thời gian:</span>
+                </div>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={supplierDateRange.from}
+                  onChange={(e) => setSupplierDateRange({ ...supplierDateRange, from: e.target.value })}
+                  style={{ width: 'auto' }}
+                />
+                <span>đến</span>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={supplierDateRange.to}
+                  onChange={(e) => setSupplierDateRange({ ...supplierDateRange, to: e.target.value })}
+                  style={{ width: 'auto' }}
+                />
+                <button className="btn btn-primary" onClick={handleSupplierDateFilter}>
+                  <Filter size={16} />
+                  Lọc
+                </button>
+                <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '16px', display: 'flex', gap: '8px' }}>
+                  {[7, 30, 90].map(days => (
+                    <button
+                      key={days}
+                      className={`btn btn-sm ${activeQuickFilter.supplier === days ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setQuickSupplierDateRange(days)}
+                    >
+                      {days} ngày
+                    </button>
+                  ))}
+                </div>
+                <button className="btn btn-secondary btn-sm" onClick={clearSupplierDateRange} title="Xóa bộ lọc">
+                  <RotateCcw size={14} />
+                  Xóa lọc
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary Cards */}
+          <div className="stats-grid" style={{ marginBottom: '24px' }}>
+            <div className="stat-card">
+              <div className="stat-icon primary">
+                <Truck size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">{supplierSummary.totalSuppliers}</div>
+                <div className="stat-label">Tổng nhà cung cấp</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon success">
+                <FileText size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">{supplierSummary.totalReceipts}</div>
+                <div className="stat-label">Tổng phiếu nhập</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon warning">
+                <DollarSign size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value" style={{ fontSize: '18px' }}>
+                  {formatCurrency(supplierSummary.totalAmount)}
+                </div>
+                <div className="stat-label">Tổng tiền nhập</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Supplier Stats Table */}
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Truck size={18} style={{ color: 'var(--primary-color)' }} />
+                Thống kê nhà cung cấp
+              </h3>
+              <button
+                className="btn btn-success btn-sm"
+                onClick={() => exportToExcel('supplier-stats')}
+              >
+                <FileSpreadsheet size={16} />
+                Xuất Excel
+              </button>
+            </div>
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Mã NCC</th>
+                    <th>Tên NCC</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Số phiếu nhập</th>
+                    <th>Tổng tiền nhập</th>
+                    <th>Lần nhập gần nhất</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan="7" className="text-center">Đang tải...</td></tr>
+                  ) : supplierStatsData.length === 0 ? (
+                    <tr><td colSpan="7" className="text-center">Không có dữ liệu</td></tr>
+                  ) : (
+                    supplierStatsData.map((item, index) => (
+                      <tr key={item.id || index}>
+                        <td><code>{item.code}</code></td>
+                        <td style={{ fontWeight: 500 }}>{item.name}</td>
+                        <td>{item.phone || '-'}</td>
+                        <td>{item.email || '-'}</td>
+                        <td style={{ fontWeight: 600, textAlign: 'center' }}>{item.total_receipts}</td>
+                        <td style={{ fontWeight: 600, color: 'var(--success-color)' }}>
+                          {formatCurrency(item.total_amount)}
+                        </td>
+                        <td>{item.last_import_date ? formatDate(item.last_import_date) : '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Customer Stats */}
+      {activeTab === 'customer-stats' && (
+        <>
+          {/* Date Filter */}
+          <div className="card" style={{ marginBottom: '24px' }}>
+            <div className="card-body">
+              <div style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '16px',
+                flexWrap: 'wrap'
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <Calendar size={18} style={{ color: 'var(--text-secondary)' }} />
+                  <span style={{ fontWeight: 500 }}>Khoảng thời gian:</span>
+                </div>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={customerDateRange.from}
+                  onChange={(e) => setCustomerDateRange({ ...customerDateRange, from: e.target.value })}
+                  style={{ width: 'auto' }}
+                />
+                <span>đến</span>
+                <input
+                  type="date"
+                  className="form-control"
+                  value={customerDateRange.to}
+                  onChange={(e) => setCustomerDateRange({ ...customerDateRange, to: e.target.value })}
+                  style={{ width: 'auto' }}
+                />
+                <button className="btn btn-primary" onClick={handleCustomerDateFilter}>
+                  <Filter size={16} />
+                  Lọc
+                </button>
+                <div style={{ borderLeft: '1px solid var(--border-color)', paddingLeft: '16px', display: 'flex', gap: '8px' }}>
+                  {[7, 30, 90].map(days => (
+                    <button
+                      key={days}
+                      className={`btn btn-sm ${activeQuickFilter.customer === days ? 'btn-primary' : 'btn-secondary'}`}
+                      onClick={() => setQuickCustomerDateRange(days)}
+                    >
+                      {days} ngày
+                    </button>
+                  ))}
+                </div>
+                <button className="btn btn-secondary btn-sm" onClick={clearCustomerDateRange} title="Xóa bộ lọc">
+                  <RotateCcw size={14} />
+                  Xóa lọc
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary Cards */}
+          <div className="stats-grid" style={{ marginBottom: '24px' }}>
+            <div className="stat-card">
+              <div className="stat-icon primary">
+                <Users size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">{customerSummary.totalCustomers}</div>
+                <div className="stat-label">Tổng khách hàng</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon success">
+                <FileText size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value">{customerSummary.totalReceipts}</div>
+                <div className="stat-label">Tổng phiếu xuất</div>
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon warning">
+                <DollarSign size={24} />
+              </div>
+              <div className="stat-content">
+                <div className="stat-value" style={{ fontSize: '18px' }}>
+                  {formatCurrency(customerSummary.totalAmount)}
+                </div>
+                <div className="stat-label">Tổng tiền xuất</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Customer Stats Table */}
+          <div className="card">
+            <div className="card-header">
+              <h3 className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Users size={18} style={{ color: 'var(--primary-color)' }} />
+                Thống kê khách hàng
+              </h3>
+              <button
+                className="btn btn-success btn-sm"
+                onClick={() => exportToExcel('customer-stats')}
+              >
+                <FileSpreadsheet size={16} />
+                Xuất Excel
+              </button>
+            </div>
+            <div className="table-container">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>Mã KH</th>
+                    <th>Tên KH</th>
+                    <th>SĐT</th>
+                    <th>Email</th>
+                    <th>Số phiếu xuất</th>
+                    <th>Tổng tiền xuất</th>
+                    <th>Lần xuất gần nhất</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading ? (
+                    <tr><td colSpan="7" className="text-center">Đang tải...</td></tr>
+                  ) : customerStatsData.length === 0 ? (
+                    <tr><td colSpan="7" className="text-center">Không có dữ liệu</td></tr>
+                  ) : (
+                    customerStatsData.map((item, index) => (
+                      <tr key={item.id || index}>
+                        <td><code>{item.code}</code></td>
+                        <td style={{ fontWeight: 500 }}>{item.name}</td>
+                        <td>{item.phone || '-'}</td>
+                        <td>{item.email || '-'}</td>
+                        <td style={{ fontWeight: 600, textAlign: 'center' }}>{item.total_receipts}</td>
+                        <td style={{ fontWeight: 600, color: 'var(--warning-color)' }}>
+                          {formatCurrency(item.total_amount)}
+                        </td>
+                        <td>{item.last_export_date ? formatDate(item.last_export_date) : '-'}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </>

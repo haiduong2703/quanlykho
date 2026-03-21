@@ -7,6 +7,8 @@ router.use(auth);
 
 router.get('/inventory', reportController.getInventoryReport);
 router.get('/import-export', reportController.getImportExportReport);
+router.get('/supplier-stats', reportController.getSupplierStats);
+router.get('/customer-stats', reportController.getCustomerStats);
 router.get('/export-csv', reportController.exportInventoryCSV);
 
 module.exports = router;

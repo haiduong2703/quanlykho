@@ -38,6 +38,49 @@ class ExportController {
     }
   }
 
+  async updateExportReceipt(req, res) {
+    try {
+      const receipt = await exportService.updateExportReceipt(req.params.id, req.user.id, req.body);
+
+      await AuditLog.log(req, 'UPDATE', 'EXPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        customer: req.body.customer_name,
+        total: receipt.total_amount
+      });
+
+      return successResponse(res, receipt, 'Export receipt updated successfully');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async approveExportReceipt(req, res) {
+    try {
+      const receipt = await exportService.approveExportReceipt(req.params.id, req.user.id);
+
+      await AuditLog.log(req, 'APPROVE', 'EXPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        approved_by: req.user.full_name
+      });
+
+      return successResponse(res, receipt, 'Export receipt approved successfully');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async rejectExportReceipt(req, res) {
+    try {
+      const receipt = await exportService.rejectExportReceipt(req.params.id, req.user.id, req.body.reason);
+
+      await AuditLog.log(req, 'REJECT', 'EXPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        reason: req.body.reason
+      });
+
+      return successResponse(res, receipt, 'Export receipt rejected');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
   async deleteExportReceipt(req, res) {
     try {
       const receipt = await exportService.getExportReceiptById(req.params.id);

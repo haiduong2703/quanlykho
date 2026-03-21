@@ -38,6 +38,49 @@ class ImportController {
     }
   }
 
+  async updateImportReceipt(req, res) {
+    try {
+      const receipt = await importService.updateImportReceipt(req.params.id, req.user.id, req.body);
+
+      await AuditLog.log(req, 'UPDATE', 'IMPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        supplier: req.body.supplier_name,
+        total: receipt.total_amount
+      });
+
+      return successResponse(res, receipt, 'Import receipt updated successfully');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async approveImportReceipt(req, res) {
+    try {
+      const receipt = await importService.approveImportReceipt(req.params.id, req.user.id);
+
+      await AuditLog.log(req, 'APPROVE', 'IMPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        approved_by: req.user.full_name
+      });
+
+      return successResponse(res, receipt, 'Import receipt approved successfully');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async rejectImportReceipt(req, res) {
+    try {
+      const receipt = await importService.rejectImportReceipt(req.params.id, req.user.id, req.body.reason);
+
+      await AuditLog.log(req, 'REJECT', 'IMPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        reason: req.body.reason
+      });
+
+      return successResponse(res, receipt, 'Import receipt rejected');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
   async deleteImportReceipt(req, res) {
     try {
       const receipt = await importService.getImportReceiptById(req.params.id);

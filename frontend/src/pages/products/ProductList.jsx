@@ -5,7 +5,7 @@ import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Pagination from '../../components/common/Pagination';
 import api from '../../config/api';
 import { toast } from 'react-toastify';
-import { Plus, Search, Edit, Trash2, Package, Upload, X, Image } from 'lucide-react';
+import { Plus, Search, Edit, Trash2, Package, Upload, X, Image, ToggleLeft, ToggleRight, FileSpreadsheet, Download, AlertCircle, CheckCircle2 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const UPLOADS_URL = `${API_URL}/uploads/products`;
@@ -20,6 +20,8 @@ const ProductList = () => {
 
   const [showModal, setShowModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showToggleDialog, setShowToggleDialog] = useState(false);
+  const [showImportModal, setShowImportModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
     sku: '', name: '', description: '', category_id: '', unit: '', price: '', min_stock: ''
@@ -28,6 +30,12 @@ const ProductList = () => {
   const [imagePreview, setImagePreview] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
   const fileInputRef = useRef(null);
+
+  // Import Excel state
+  const [importFile, setImportFile] = useState(null);
+  const [importLoading, setImportLoading] = useState(false);
+  const [importResult, setImportResult] = useState(null);
+  const importFileInputRef = useRef(null);
 
   useEffect(() => {
     fetchCategories();
@@ -98,6 +106,11 @@ const ProductList = () => {
   const openDeleteDialog = (product) => {
     setSelectedProduct(product);
     setShowDeleteDialog(true);
+  };
+
+  const openToggleDialog = (product) => {
+    setSelectedProduct(product);
+    setShowToggleDialog(true);
   };
 
   const handleImageChange = (e) => {
@@ -177,6 +190,97 @@ const ProductList = () => {
     }
   };
 
+  const handleToggleStatus = async () => {
+    setFormLoading(true);
+    try {
+      await api.patch(`/products/${selectedProduct.id}/toggle-status`);
+      toast.success(
+        selectedProduct.is_active
+          ? 'Đã ngừng hoạt động sản phẩm'
+          : 'Đã kích hoạt sản phẩm'
+      );
+      setShowToggleDialog(false);
+      fetchProducts();
+    } catch (error) {
+      toast.error(error.message || 'Có lỗi xảy ra');
+    } finally {
+      setFormLoading(false);
+    }
+  };
+
+  // Import Excel handlers
+  const openImportModal = () => {
+    setImportFile(null);
+    setImportResult(null);
+    setShowImportModal(true);
+  };
+
+  const handleImportFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const validTypes = [
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'application/vnd.ms-excel'
+      ];
+      if (!validTypes.includes(file.type) && !file.name.match(/\.(xlsx|xls)$/i)) {
+        toast.error('Chỉ chấp nhận file Excel (.xlsx, .xls)');
+        return;
+      }
+      setImportFile(file);
+      setImportResult(null);
+    }
+  };
+
+  const handleDownloadSample = async () => {
+    try {
+      const response = await api.get('/products/sample-excel', {
+        responseType: 'blob'
+      });
+      // api interceptor returns response.data, so response here is already the data
+      const blob = response instanceof Blob ? response : new Blob([response]);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'mau-import-san-pham.xlsx';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error(error.message || 'Không thể tải file mẫu');
+    }
+  };
+
+  const handleImportSubmit = async () => {
+    if (!importFile) {
+      toast.error('Vui lòng chọn file Excel');
+      return;
+    }
+
+    setImportLoading(true);
+    setImportResult(null);
+
+    try {
+      const submitData = new FormData();
+      submitData.append('file', importFile);
+
+      const res = await api.post('/products/import-excel', submitData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+
+      setImportResult(res.data);
+
+      if (res.data?.success > 0) {
+        toast.success(`Import thành công ${res.data.success} sản phẩm`);
+        fetchProducts();
+      }
+    } catch (error) {
+      toast.error(error.message || 'Có lỗi xảy ra khi import');
+    } finally {
+      setImportLoading(false);
+    }
+  };
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
   };
@@ -195,10 +299,16 @@ const ProductList = () => {
           <h1 className="page-title">Sản phẩm</h1>
           <p className="page-subtitle">Quản lý danh sách sản phẩm trong kho</p>
         </div>
-        <button className="btn btn-primary" onClick={openAddModal}>
-          <Plus size={18} />
-          Thêm sản phẩm
-        </button>
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button className="btn btn-secondary" onClick={openImportModal}>
+            <FileSpreadsheet size={18} />
+            Import Excel
+          </button>
+          <button className="btn btn-primary" onClick={openAddModal}>
+            <Plus size={18} />
+            Thêm sản phẩm
+          </button>
+        </div>
       </div>
 
       {/* Search & Filters */}
@@ -239,7 +349,7 @@ const ProductList = () => {
                 <th>Giá</th>
                 <th>Tồn tối thiểu</th>
                 <th>Trạng thái</th>
-                <th style={{ width: '100px' }}>Thao tác</th>
+                <th style={{ width: '140px' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -293,10 +403,18 @@ const ProductList = () => {
                     </td>
                     <td>
                       <div className="table-actions">
-                        <button className="btn btn-icon btn-secondary sm" onClick={() => openEditModal(product)}>
+                        <button className="btn btn-icon btn-secondary sm" onClick={() => openEditModal(product)} title="Sửa">
                           <Edit size={16} />
                         </button>
-                        <button className="btn btn-icon btn-danger sm" onClick={() => openDeleteDialog(product)}>
+                        <button
+                          className={`btn btn-icon sm ${product.is_active ? 'btn-warning' : 'btn-success'}`}
+                          onClick={() => openToggleDialog(product)}
+                          title={product.is_active ? 'Ngừng hoạt động' : 'Kích hoạt'}
+                          style={{ minWidth: '32px' }}
+                        >
+                          {product.is_active ? <ToggleRight size={16} /> : <ToggleLeft size={16} />}
+                        </button>
+                        <button className="btn btn-icon btn-danger sm" onClick={() => openDeleteDialog(product)} title="Xóa">
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -495,6 +613,148 @@ const ProductList = () => {
         </form>
       </Modal>
 
+      {/* Import Excel Modal */}
+      <Modal
+        isOpen={showImportModal}
+        onClose={() => setShowImportModal(false)}
+        title="Import sản phẩm từ Excel"
+        size="md"
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          {/* Download sample */}
+          <div style={{
+            padding: '16px',
+            background: 'var(--bg-secondary)',
+            borderRadius: '8px',
+            border: '1px solid var(--border-color)'
+          }}>
+            <p style={{ marginBottom: '12px', fontWeight: 500 }}>
+              Bước 1: Tải file mẫu
+            </p>
+            <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
+              Tải file Excel mẫu để biết định dạng dữ liệu cần import.
+            </p>
+            <button className="btn btn-secondary" onClick={handleDownloadSample}>
+              <Download size={16} />
+              Tải file mẫu Excel
+            </button>
+          </div>
+
+          {/* File upload */}
+          <div style={{
+            padding: '16px',
+            background: 'var(--bg-secondary)',
+            borderRadius: '8px',
+            border: '1px solid var(--border-color)'
+          }}>
+            <p style={{ marginBottom: '12px', fontWeight: 500 }}>
+              Bước 2: Chọn file Excel để import
+            </p>
+            <input
+              type="file"
+              ref={importFileInputRef}
+              onChange={handleImportFileChange}
+              accept=".xlsx,.xls"
+              style={{ display: 'none' }}
+            />
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <button
+                className="btn btn-secondary"
+                onClick={() => importFileInputRef.current?.click()}
+                disabled={importLoading}
+              >
+                <Upload size={16} />
+                Chọn file
+              </button>
+              {importFile && (
+                <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  <FileSpreadsheet size={14} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+                  {importFile.name}
+                </span>
+              )}
+            </div>
+            <p className="form-hint" style={{ marginTop: '8px' }}>
+              Chấp nhận: .xlsx, .xls
+            </p>
+          </div>
+
+          {/* Import results */}
+          {importResult && (
+            <div style={{
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid var(--border-color)',
+              background: importResult.errors?.length > 0 ? '#fff8f0' : '#f0fff4'
+            }}>
+              <p style={{ fontWeight: 500, marginBottom: '12px' }}>Kết quả import</p>
+              <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', marginBottom: importResult.errors?.length > 0 ? '12px' : '0' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <span style={{ fontWeight: 500 }}>Tổng:</span>
+                  <span>{importResult.total || 0}</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--success-color)' }}>
+                  <CheckCircle2 size={16} />
+                  <span style={{ fontWeight: 500 }}>Thành công:</span>
+                  <span>{importResult.success || 0}</span>
+                </div>
+                {importResult.skipped > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)' }}>
+                    <span style={{ fontWeight: 500 }}>Bỏ qua:</span>
+                    <span>{importResult.skipped}</span>
+                  </div>
+                )}
+                {importResult.errors?.length > 0 && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--danger-color, #e74c3c)' }}>
+                    <AlertCircle size={16} />
+                    <span style={{ fontWeight: 500 }}>Lỗi:</span>
+                    <span>{importResult.errors.length}</span>
+                  </div>
+                )}
+              </div>
+              {importResult.errors?.length > 0 && (
+                <div style={{
+                  maxHeight: '150px',
+                  overflowY: 'auto',
+                  background: 'var(--bg-primary, #fff)',
+                  borderRadius: '6px',
+                  padding: '10px',
+                  border: '1px solid var(--border-color)'
+                }}>
+                  {importResult.errors.map((err, index) => (
+                    <div key={index} style={{
+                      fontSize: '13px',
+                      color: 'var(--danger-color, #e74c3c)',
+                      padding: '4px 0',
+                      borderBottom: index < importResult.errors.length - 1 ? '1px solid var(--border-color)' : 'none'
+                    }}>
+                      {err}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setShowImportModal(false)}
+            >
+              Đóng
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={handleImportSubmit}
+              disabled={!importFile || importLoading}
+            >
+              {importLoading ? 'Đang import...' : 'Import'}
+            </button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={showDeleteDialog}
@@ -503,6 +763,21 @@ const ProductList = () => {
         title="Xóa sản phẩm"
         message={`Bạn có chắc chắn muốn xóa sản phẩm "${selectedProduct?.name}"?`}
         type="danger"
+        loading={formLoading}
+      />
+
+      {/* Toggle Status Confirmation */}
+      <ConfirmDialog
+        isOpen={showToggleDialog}
+        onClose={() => setShowToggleDialog(false)}
+        onConfirm={handleToggleStatus}
+        title={selectedProduct?.is_active ? 'Ngừng hoạt động sản phẩm' : 'Kích hoạt sản phẩm'}
+        message={
+          selectedProduct?.is_active
+            ? `Bạn có chắc chắn muốn ngừng hoạt động sản phẩm "${selectedProduct?.name}"?`
+            : `Bạn có chắc chắn muốn kích hoạt lại sản phẩm "${selectedProduct?.name}"?`
+        }
+        type="warning"
         loading={formLoading}
       />
     </Layout>

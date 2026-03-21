@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Layout from '../../components/layout/Layout';
 import Pagination from '../../components/common/Pagination';
+import Modal from '../../components/common/Modal';
 import api from '../../config/api';
 import { toast } from 'react-toastify';
-import { Search, AlertTriangle, Package, Warehouse } from 'lucide-react';
+import { Search, AlertTriangle, Package, History } from 'lucide-react';
 
 const StockList = () => {
   const [stocks, setStocks] = useState([]);
@@ -13,6 +14,14 @@ const StockList = () => {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
   const [lowStockOnly, setLowStockOnly] = useState(false);
+
+  // History modal state
+  const [historyModalOpen, setHistoryModalOpen] = useState(false);
+  const [historyProduct, setHistoryProduct] = useState(null);
+  const [historyData, setHistoryData] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [historyPagination, setHistoryPagination] = useState({ page: 1, limit: 20, total: 0 });
+  const [historyTypeFilter, setHistoryTypeFilter] = useState('');
 
   useEffect(() => {
     fetchCategories();
@@ -51,6 +60,55 @@ const StockList = () => {
     }
   };
 
+  const fetchHistory = useCallback(async (productId, page = 1, type = '') => {
+    try {
+      setHistoryLoading(true);
+      const params = new URLSearchParams({
+        page,
+        limit: 20,
+        ...(type && { type })
+      });
+      const res = await api.get(`/stocks/product/${productId}/history?${params}`);
+      setHistoryData(res.data || []);
+      setHistoryPagination(prev => ({
+        ...prev,
+        page,
+        total: res.pagination?.total || 0
+      }));
+    } catch (error) {
+      toast.error('Không thể tải lịch sử biến động kho');
+    } finally {
+      setHistoryLoading(false);
+    }
+  }, []);
+
+  const openHistoryModal = (stock) => {
+    setHistoryProduct(stock);
+    setHistoryData([]);
+    setHistoryTypeFilter('');
+    setHistoryPagination({ page: 1, limit: 20, total: 0 });
+    setHistoryModalOpen(true);
+    fetchHistory(stock.product_id || stock.id, 1, '');
+  };
+
+  const closeHistoryModal = () => {
+    setHistoryModalOpen(false);
+    setHistoryProduct(null);
+    setHistoryData([]);
+    setHistoryTypeFilter('');
+  };
+
+  const handleHistoryPageChange = (page) => {
+    setHistoryPagination(prev => ({ ...prev, page }));
+    fetchHistory(historyProduct.product_id || historyProduct.id, page, historyTypeFilter);
+  };
+
+  const handleHistoryTypeFilterChange = (type) => {
+    setHistoryTypeFilter(type);
+    setHistoryPagination(prev => ({ ...prev, page: 1 }));
+    fetchHistory(historyProduct.product_id || historyProduct.id, 1, type);
+  };
+
   const handleSearch = (e) => {
     e.preventDefault();
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -61,10 +119,31 @@ const StockList = () => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleDateString('vi-VN', {
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit'
+    });
+  };
+
   const getStockStatus = (quantity, minStock) => {
     if (quantity <= 0) return { text: 'Hết hàng', class: 'badge-danger' };
     if (quantity <= minStock) return { text: 'Sắp hết', class: 'badge-warning' };
     return { text: 'Đủ hàng', class: 'badge-success' };
+  };
+
+  const getTypeBadge = (type) => {
+    switch (type) {
+      case 'IMPORT':
+        return { text: 'Nhập kho', class: 'badge-success' };
+      case 'EXPORT':
+        return { text: 'Xuất kho', class: 'badge-warning' };
+      case 'ADJUST':
+        return { text: 'Điều chỉnh', class: 'badge-primary' };
+      default:
+        return { text: type, class: 'badge-secondary' };
+    }
   };
 
   return (
@@ -120,13 +199,14 @@ const StockList = () => {
                 <th>Tồn tối thiểu</th>
                 <th>Giá trị tồn</th>
                 <th>Trạng thái</th>
+                <th>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="8" className="text-center">Đang tải...</td></tr>
+                <tr><td colSpan="9" className="text-center">Đang tải...</td></tr>
               ) : stocks.length === 0 ? (
-                <tr><td colSpan="8" className="text-center">Không có dữ liệu</td></tr>
+                <tr><td colSpan="9" className="text-center">Không có dữ liệu</td></tr>
               ) : (
                 stocks.map(stock => {
                   const status = getStockStatus(stock.quantity, stock.min_stock);
@@ -157,6 +237,16 @@ const StockList = () => {
                           {status.text}
                         </span>
                       </td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-outline"
+                          title="Lịch sử biến động"
+                          onClick={() => openHistoryModal(stock)}
+                          style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <History size={15} />
+                        </button>
+                      </td>
                     </tr>
                   );
                 })
@@ -173,6 +263,84 @@ const StockList = () => {
           onPageChange={(page) => setPagination(prev => ({ ...prev, page }))}
         />
       </div>
+
+      {/* History Modal */}
+      <Modal
+        isOpen={historyModalOpen}
+        onClose={closeHistoryModal}
+        title={`Lịch sử biến động - ${historyProduct?.name || ''}`}
+        size="lg"
+      >
+        <div style={{ marginBottom: '16px' }}>
+          <select
+            className="form-control"
+            value={historyTypeFilter}
+            onChange={(e) => handleHistoryTypeFilterChange(e.target.value)}
+            style={{ maxWidth: '200px' }}
+          >
+            <option value="">Tất cả loại</option>
+            <option value="IMPORT">Nhập kho</option>
+            <option value="EXPORT">Xuất kho</option>
+            <option value="ADJUST">Điều chỉnh</option>
+          </select>
+        </div>
+
+        <div className="table-container">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Ngày</th>
+                <th>Loại</th>
+                <th>Số lượng</th>
+                <th>Trước</th>
+                <th>Sau</th>
+                <th>Chứng từ</th>
+                <th>Người thực hiện</th>
+              </tr>
+            </thead>
+            <tbody>
+              {historyLoading ? (
+                <tr><td colSpan="7" className="text-center">Đang tải...</td></tr>
+              ) : historyData.length === 0 ? (
+                <tr><td colSpan="7" className="text-center">Không có dữ liệu</td></tr>
+              ) : (
+                historyData.map(item => {
+                  const typeBadge = getTypeBadge(item.type);
+                  return (
+                    <tr key={item.id}>
+                      <td>{formatDate(item.created_at)}</td>
+                      <td>
+                        <span className={`badge ${typeBadge.class}`}>
+                          {typeBadge.text}
+                        </span>
+                      </td>
+                      <td style={{ fontWeight: 600 }}>{item.quantity}</td>
+                      <td>{item.before_quantity}</td>
+                      <td>{item.after_quantity}</td>
+                      <td>
+                        {item.reference_code ? (
+                          <code>{item.reference_code}</code>
+                        ) : (
+                          <span style={{ color: 'var(--text-secondary)' }}>-</span>
+                        )}
+                      </td>
+                      <td>{item.created_by_name || '-'}</td>
+                    </tr>
+                  );
+                })
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <Pagination
+          currentPage={historyPagination.page}
+          totalPages={Math.ceil(historyPagination.total / historyPagination.limit)}
+          totalItems={historyPagination.total}
+          itemsPerPage={historyPagination.limit}
+          onPageChange={handleHistoryPageChange}
+        />
+      </Modal>
     </Layout>
   );
 };

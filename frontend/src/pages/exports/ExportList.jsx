@@ -1,13 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import Layout from '../../components/layout/Layout';
 import Modal from '../../components/common/Modal';
 import ConfirmDialog from '../../components/common/ConfirmDialog';
 import Pagination from '../../components/common/Pagination';
+import { AuthContext } from '../../contexts/AuthContext';
 import api from '../../config/api';
 import { toast } from 'react-toastify';
-import { Plus, Search, Eye, Trash2, ArrowUpFromLine, X, Package, AlertTriangle, Printer } from 'lucide-react';
+import { Plus, Search, Eye, Trash2, Edit, ArrowUpFromLine, X, Package, AlertTriangle, Printer, Check, XCircle } from 'lucide-react';
+
+const STATUS_CONFIG = {
+  PENDING: { label: 'Chờ duyệt', color: '#3b82f6', bg: '#eff6ff' },
+  APPROVED: { label: 'Đã duyệt', color: '#22c55e', bg: '#f0fdf4' },
+  REJECTED: { label: 'Từ chối', color: '#ef4444', bg: '#fef2f2' }
+};
+
+const StatusBadge = ({ status }) => {
+  const config = STATUS_CONFIG[status] || STATUS_CONFIG.PENDING;
+  return (
+    <span style={{
+      display: 'inline-block',
+      padding: '4px 10px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: 600,
+      color: config.color,
+      background: config.bg,
+      border: `1px solid ${config.color}`,
+      whiteSpace: 'nowrap'
+    }}>
+      {config.label}
+    </span>
+  );
+};
 
 const ExportList = () => {
+  const { isAdmin } = useContext(AuthContext);
   const [exports, setExports] = useState([]);
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -15,12 +42,19 @@ const ExportList = () => {
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
 
   const [showModal, setShowModal] = useState(false);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [selectedExport, setSelectedExport] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+
+  // Approval workflow state
+  const [showRejectInput, setShowRejectInput] = useState(false);
+  const [rejectReason, setRejectReason] = useState('');
+  const [approvalLoading, setApprovalLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     customer_id: '',
@@ -47,7 +81,7 @@ const ExportList = () => {
 
   useEffect(() => {
     fetchExports();
-  }, [pagination.page]);
+  }, [pagination.page, statusFilter]);
 
   const fetchProducts = async () => {
     try {
@@ -77,7 +111,8 @@ const ExportList = () => {
       const params = new URLSearchParams({
         page: pagination.page,
         limit: pagination.limit,
-        ...(search && { search })
+        ...(search && { search }),
+        ...(statusFilter && { status: statusFilter })
       });
       const res = await api.get(`/exports?${params}`);
       setExports(res.data || []);
@@ -95,8 +130,14 @@ const ExportList = () => {
     fetchExports();
   };
 
+  const handleStatusFilterChange = (value) => {
+    setStatusFilter(value);
+    setPagination(prev => ({ ...prev, page: 1 }));
+  };
+
   const openAddModal = () => {
     fetchStocks(); // Refresh stock data
+    setEditingId(null);
     setFormData({
       customer_id: '',
       customer_name: '',
@@ -105,6 +146,32 @@ const ExportList = () => {
       items: [{ product_id: '', quantity: '', unit_price: '', note: '' }]
     });
     setShowModal(true);
+  };
+
+  const openEditModal = async (exportReceipt) => {
+    try {
+      fetchStocks(); // Refresh stock data
+      const res = await api.get(`/exports/${exportReceipt.id}`);
+      const data = res.data;
+      setEditingId(data.id);
+      setFormData({
+        customer_id: data.customer_id || '',
+        customer_name: data.customer_name || '',
+        customer_phone: data.customer_phone || '',
+        note: data.note || '',
+        items: data.items && data.items.length > 0
+          ? data.items.map(item => ({
+              product_id: item.product_id?.toString() || '',
+              quantity: item.quantity?.toString() || '',
+              unit_price: item.unit_price?.toString() || '',
+              note: item.note || ''
+            }))
+          : [{ product_id: '', quantity: '', unit_price: '', note: '' }]
+      });
+      setShowModal(true);
+    } catch (error) {
+      toast.error('Không thể tải dữ liệu phiếu xuất');
+    }
   };
 
   const handleCustomerChange = (customerId) => {
@@ -128,6 +195,8 @@ const ExportList = () => {
       const res = await api.get(`/exports/${exportReceipt.id}`);
       setSelectedExport(res.data);
       setShowDetailModal(true);
+      setShowRejectInput(false);
+      setRejectReason('');
     } catch (error) {
       toast.error('Không thể tải chi tiết phiếu xuất');
     }
@@ -210,7 +279,7 @@ const ExportList = () => {
 
     setFormLoading(true);
     try {
-      await api.post('/exports', {
+      const payload = {
         ...formData,
         items: validItems.map(item => ({
           product_id: parseInt(item.product_id),
@@ -218,9 +287,17 @@ const ExportList = () => {
           unit_price: parseFloat(item.unit_price),
           note: item.note
         }))
-      });
-      toast.success('Tạo phiếu xuất kho thành công');
+      };
+
+      if (editingId) {
+        await api.put(`/exports/${editingId}`, payload);
+        toast.success('Cập nhật phiếu xuất kho thành công');
+      } else {
+        await api.post('/exports', payload);
+        toast.success('Tạo phiếu xuất kho thành công');
+      }
       setShowModal(false);
+      setEditingId(null);
       fetchExports();
       fetchStocks(); // Refresh stock after export
     } catch (error) {
@@ -245,11 +322,54 @@ const ExportList = () => {
     }
   };
 
+  const handleApprove = async () => {
+    if (!selectedExport) return;
+    setApprovalLoading(true);
+    try {
+      await api.patch(`/exports/${selectedExport.id}/approve`);
+      toast.success('Duyệt phiếu xuất thành công');
+      // Refresh detail modal data
+      const res = await api.get(`/exports/${selectedExport.id}`);
+      setSelectedExport(res.data);
+      fetchExports();
+      fetchStocks();
+    } catch (error) {
+      toast.error(error.message || 'Có lỗi xảy ra khi duyệt');
+    } finally {
+      setApprovalLoading(false);
+    }
+  };
+
+  const handleReject = async () => {
+    if (!selectedExport) return;
+    if (!rejectReason.trim()) {
+      toast.error('Vui lòng nhập lý do từ chối');
+      return;
+    }
+    setApprovalLoading(true);
+    try {
+      await api.patch(`/exports/${selectedExport.id}/reject`, { reason: rejectReason.trim() });
+      toast.success('Đã từ chối phiếu xuất');
+      // Refresh detail modal data
+      const res = await api.get(`/exports/${selectedExport.id}`);
+      setSelectedExport(res.data);
+      setShowRejectInput(false);
+      setRejectReason('');
+      fetchExports();
+      fetchStocks();
+    } catch (error) {
+      toast.error(error.message || 'Có lỗi xảy ra khi từ chối');
+    } finally {
+      setApprovalLoading(false);
+    }
+  };
+
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
   };
 
   const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('vi-VN', {
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit'
@@ -400,6 +520,17 @@ const ExportList = () => {
             onChange={(e) => setSearch(e.target.value)}
           />
         </form>
+        <select
+          className="form-control"
+          value={statusFilter}
+          onChange={(e) => handleStatusFilterChange(e.target.value)}
+          style={{ width: '180px', marginLeft: '12px' }}
+        >
+          <option value="">Tất cả trạng thái</option>
+          <option value="PENDING">Chờ duyệt</option>
+          <option value="APPROVED">Đã duyệt</option>
+          <option value="REJECTED">Từ chối</option>
+        </select>
       </div>
 
       <div className="card">
@@ -411,15 +542,16 @@ const ExportList = () => {
                 <th>Khách hàng</th>
                 <th>Ngày xuất</th>
                 <th>Tổng tiền</th>
+                <th>Trạng thái</th>
                 <th>Người tạo</th>
-                <th style={{ width: '100px' }}>Thao tác</th>
+                <th style={{ width: '140px' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan="6" className="text-center">Đang tải...</td></tr>
+                <tr><td colSpan="7" className="text-center">Đang tải...</td></tr>
               ) : exports.length === 0 ? (
-                <tr><td colSpan="6" className="text-center">Không có dữ liệu</td></tr>
+                <tr><td colSpan="7" className="text-center">Không có dữ liệu</td></tr>
               ) : (
                 exports.map(item => (
                   <tr key={item.id}>
@@ -446,6 +578,9 @@ const ExportList = () => {
                     <td style={{ fontWeight: 600, color: 'var(--warning-color)' }}>
                       {formatCurrency(item.total_amount)}
                     </td>
+                    <td>
+                      <StatusBadge status={item.status} />
+                    </td>
                     <td>{item.created_by_name || 'N/A'}</td>
                     <td>
                       <div className="table-actions">
@@ -456,13 +591,24 @@ const ExportList = () => {
                         >
                           <Eye size={16} />
                         </button>
-                        <button
-                          className="btn btn-icon btn-danger sm"
-                          onClick={() => openDeleteDialog(item)}
-                          title="Xóa"
-                        >
-                          <Trash2 size={16} />
-                        </button>
+                        {item.status === 'PENDING' && (
+                          <button
+                            className="btn btn-icon btn-primary sm"
+                            onClick={() => openEditModal(item)}
+                            title="Sửa"
+                          >
+                            <Edit size={16} />
+                          </button>
+                        )}
+                        {(item.status === 'PENDING' || item.status === 'REJECTED') && (
+                          <button
+                            className="btn btn-icon btn-danger sm"
+                            onClick={() => openDeleteDialog(item)}
+                            title="Xóa"
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -481,11 +627,11 @@ const ExportList = () => {
         />
       </div>
 
-      {/* Create Export Modal */}
+      {/* Create/Edit Export Modal */}
       <Modal
         isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        title="Tạo phiếu xuất kho"
+        onClose={() => { setShowModal(false); setEditingId(null); }}
+        title={editingId ? 'Sửa phiếu xuất kho' : 'Tạo phiếu xuất kho'}
         size="lg"
       >
         <form onSubmit={handleSubmit}>
@@ -670,7 +816,7 @@ const ExportList = () => {
           </div>
 
           <div className="form-actions" style={{ marginTop: '24px' }}>
-            <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>
+            <button type="button" className="btn btn-secondary" onClick={() => { setShowModal(false); setEditingId(null); }}>
               Hủy
             </button>
             <button
@@ -678,7 +824,7 @@ const ExportList = () => {
               className="btn btn-warning"
               disabled={formLoading || hasStockError()}
             >
-              {formLoading ? 'Đang xử lý...' : 'Tạo phiếu xuất'}
+              {formLoading ? 'Đang xử lý...' : (editingId ? 'Cập nhật phiếu xuất' : 'Tạo phiếu xuất')}
             </button>
           </div>
         </form>
@@ -687,7 +833,7 @@ const ExportList = () => {
       {/* Detail Modal */}
       <Modal
         isOpen={showDetailModal}
-        onClose={() => setShowDetailModal(false)}
+        onClose={() => { setShowDetailModal(false); setShowRejectInput(false); setRejectReason(''); }}
         title={`Chi tiết phiếu xuất - ${selectedExport?.receipt_code || ''}`}
         size="lg"
       >
@@ -715,6 +861,55 @@ const ExportList = () => {
                 <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Số điện thoại</label>
                 <div style={{ fontWeight: 500 }}>{selectedExport.customer_phone || 'N/A'}</div>
               </div>
+              <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Trạng thái</label>
+                <div style={{ marginTop: '4px' }}>
+                  <StatusBadge status={selectedExport.status} />
+                </div>
+              </div>
+              <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Người tạo</label>
+                <div style={{ fontWeight: 500 }}>{selectedExport.created_by_name || 'N/A'}</div>
+              </div>
+              {selectedExport.status === 'APPROVED' && (
+                <>
+                  <div>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Người duyệt</label>
+                    <div style={{ fontWeight: 500, color: '#22c55e' }}>{selectedExport.approved_by_name || 'N/A'}</div>
+                  </div>
+                  <div>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Ngày duyệt</label>
+                    <div style={{ fontWeight: 500 }}>{formatDate(selectedExport.approved_at)}</div>
+                  </div>
+                </>
+              )}
+              {selectedExport.status === 'REJECTED' && (
+                <>
+                  <div>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Người từ chối</label>
+                    <div style={{ fontWeight: 500, color: '#ef4444' }}>{selectedExport.approved_by_name || 'N/A'}</div>
+                  </div>
+                  <div>
+                    <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Ngày từ chối</label>
+                    <div style={{ fontWeight: 500 }}>{formatDate(selectedExport.approved_at)}</div>
+                  </div>
+                  {selectedExport.rejected_reason && (
+                    <div style={{ gridColumn: '1 / -1' }}>
+                      <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Lý do từ chối</label>
+                      <div style={{
+                        fontWeight: 500,
+                        color: '#ef4444',
+                        background: '#fef2f2',
+                        padding: '8px 12px',
+                        borderRadius: '6px',
+                        marginTop: '4px'
+                      }}>
+                        {selectedExport.rejected_reason}
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
               <div style={{ gridColumn: '1 / -1' }}>
                 <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Ghi chú</label>
                 <div style={{ fontWeight: 500 }}>{selectedExport.note || 'Không có ghi chú'}</div>
@@ -753,14 +948,75 @@ const ExportList = () => {
               </tfoot>
             </table>
 
+            {/* Reject reason input */}
+            {showRejectInput && selectedExport.status === 'PENDING' && (
+              <div style={{
+                background: '#fef2f2',
+                border: '1px solid #ef4444',
+                borderRadius: '8px',
+                padding: '16px',
+                marginTop: '16px'
+              }}>
+                <label style={{ fontWeight: 600, color: '#ef4444', display: 'block', marginBottom: '8px' }}>
+                  Lý do từ chối
+                </label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  value={rejectReason}
+                  onChange={(e) => setRejectReason(e.target.value)}
+                  placeholder="Nhập lý do từ chối phiếu xuất..."
+                  style={{ marginBottom: '12px' }}
+                />
+                <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                  <button
+                    className="btn btn-secondary"
+                    onClick={() => { setShowRejectInput(false); setRejectReason(''); }}
+                    disabled={approvalLoading}
+                  >
+                    Hủy
+                  </button>
+                  <button
+                    className="btn btn-danger"
+                    onClick={handleReject}
+                    disabled={approvalLoading || !rejectReason.trim()}
+                  >
+                    {approvalLoading ? 'Đang xử lý...' : 'Xác nhận từ chối'}
+                  </button>
+                </div>
+              </div>
+            )}
+
             <div className="form-actions" style={{ marginTop: '24px' }}>
-              <button className="btn btn-secondary" onClick={() => setShowDetailModal(false)}>
+              <button className="btn btn-secondary" onClick={() => { setShowDetailModal(false); setShowRejectInput(false); setRejectReason(''); }}>
                 Đóng
               </button>
-              <button className="btn btn-primary" onClick={handlePrint}>
-                <Printer size={16} />
-                In phiếu
-              </button>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                {isAdmin() && selectedExport.status === 'PENDING' && !showRejectInput && (
+                  <>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => setShowRejectInput(true)}
+                      disabled={approvalLoading}
+                    >
+                      <XCircle size={16} />
+                      Từ chối
+                    </button>
+                    <button
+                      className="btn btn-success"
+                      onClick={handleApprove}
+                      disabled={approvalLoading}
+                    >
+                      <Check size={16} />
+                      {approvalLoading ? 'Đang xử lý...' : 'Duyệt'}
+                    </button>
+                  </>
+                )}
+                <button className="btn btn-primary" onClick={handlePrint}>
+                  <Printer size={16} />
+                  In phiếu
+                </button>
+              </div>
             </div>
           </div>
         )}

@@ -3,13 +3,15 @@ const moment = require('moment');
 
 class ImportReceipt {
   static async findAll(filters = {}) {
-    const { page = 1, limit = 10, search, from_date, to_date } = filters;
+    const { page = 1, limit = 10, search, from_date, to_date, status } = filters;
     const offset = (page - 1) * limit;
 
     let query = `
-      SELECT ir.*, u.username, u.full_name as user_full_name
+      SELECT ir.*, u.username, u.full_name as user_full_name,
+             ua.full_name as approved_by_name
       FROM import_receipts ir
       LEFT JOIN users u ON ir.user_id = u.id
+      LEFT JOIN users ua ON ir.approved_by = ua.id
       WHERE 1=1
     `;
     const params = [];
@@ -19,6 +21,11 @@ class ImportReceipt {
       params.push(`%${search}%`, `%${search}%`);
     }
 
+    if (status) {
+      query += ' AND ir.status = ?';
+      params.push(status);
+    }
+
     if (from_date) {
       query += ' AND ir.import_date >= ?';
       params.push(from_date);
@@ -26,7 +33,7 @@ class ImportReceipt {
 
     if (to_date) {
       query += ' AND ir.import_date <= ?';
-      params.push(to_date);
+      params.push(to_date + ' 23:59:59');
     }
 
     query += ' ORDER BY ir.import_date DESC, ir.created_at DESC LIMIT ? OFFSET ?';
@@ -72,16 +79,18 @@ class ImportReceipt {
   static async create(receiptData, connection = null) {
     const conn = connection || pool;
     const query = `
-      INSERT INTO import_receipts (receipt_code, user_id, supplier_name, supplier_phone, total_amount, note, import_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO import_receipts (receipt_code, user_id, supplier_id, supplier_name, supplier_phone, total_amount, note, status, import_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await conn.query(query, [
       receiptData.receipt_code,
       receiptData.user_id,
+      receiptData.supplier_id || null,
       receiptData.supplier_name,
       receiptData.supplier_phone,
       receiptData.total_amount,
       receiptData.note,
+      receiptData.status || 'PENDING',
       receiptData.import_date || new Date()
     ]);
     return { id: result.insertId, ...receiptData };
@@ -92,6 +101,10 @@ class ImportReceipt {
     const fields = [];
     const params = [];
 
+    if (receiptData.supplier_id !== undefined) {
+      fields.push('supplier_id = ?');
+      params.push(receiptData.supplier_id || null);
+    }
     if (receiptData.supplier_name !== undefined) {
       fields.push('supplier_name = ?');
       params.push(receiptData.supplier_name);
@@ -103,6 +116,10 @@ class ImportReceipt {
     if (receiptData.note !== undefined) {
       fields.push('note = ?');
       params.push(receiptData.note);
+    }
+    if (receiptData.total_amount !== undefined) {
+      fields.push('total_amount = ?');
+      params.push(receiptData.total_amount);
     }
 
     if (fields.length === 0) return true;
@@ -121,13 +138,18 @@ class ImportReceipt {
   }
 
   static async count(filters = {}) {
-    const { search, from_date, to_date } = filters;
+    const { search, from_date, to_date, status } = filters;
     let query = 'SELECT COUNT(*) as total FROM import_receipts WHERE 1=1';
     const params = [];
 
     if (search) {
       query += ' AND (receipt_code LIKE ? OR supplier_name LIKE ?)';
       params.push(`%${search}%`, `%${search}%`);
+    }
+
+    if (status) {
+      query += ' AND status = ?';
+      params.push(status);
     }
 
     if (from_date) {
@@ -156,7 +178,7 @@ class ImportReceipt {
 
     if (to_date) {
       query += ' AND import_date <= ?';
-      params.push(to_date);
+      params.push(to_date + ' 23:59:59');
     }
 
     const [rows] = await pool.query(query, params);

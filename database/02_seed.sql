@@ -13,6 +13,8 @@ TRUNCATE TABLE import_receipts;
 TRUNCATE TABLE stocks;
 TRUNCATE TABLE products;
 TRUNCATE TABLE categories;
+TRUNCATE TABLE suppliers;
+TRUNCATE TABLE customers;
 TRUNCATE TABLE users;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -22,6 +24,17 @@ INSERT INTO users (username, email, password, full_name, role, is_active) VALUES
 ('admin', 'admin@example.com', '$2a$10$5jK9ei21h07Aj7W5NpmXZuQOaLA/b12ft2RZaE7cQc70r8hc/33Dy', 'Quản trị viên', 'ADMIN', TRUE),
 ('staff', 'staff@example.com', '$2a$10$jMc4m4/kE.h6yng2Ai7H0OGutvmWbkNe8WDfoDR9GktYUKtnDvAte', 'Nhân viên kho', 'STAFF', TRUE),
 ('john_doe', 'john@example.com', '$2a$10$7KnGuEmE0QSobtbGdXVOu.VvukeeaKHUY8qlARZ.TsqHzpa05aboa', 'Nguyễn Văn An', 'STAFF', TRUE);
+
+-- Seed suppliers
+INSERT INTO suppliers (code, name, contact_person, phone, email, address, tax_code, is_active) VALUES
+('SUP-001', 'Công ty TNHH Điện tử ABC', 'Nguyễn Văn Hùng', '0901234567', 'abc@electronics.vn', '123 Nguyễn Trãi, Q.1, TP.HCM', '0312345678', TRUE),
+('SUP-002', 'Công ty TNHH Thực phẩm XYZ', 'Trần Thị Mai', '0912345678', 'xyz@food.vn', '456 Lê Lợi, Q.3, TP.HCM', '0312345679', TRUE),
+('SUP-003', 'Công ty CP Văn phòng phẩm 123', 'Lê Văn Bình', '0923456789', 'vpp123@office.vn', '789 Hai Bà Trưng, Q.1, TP.HCM', '0312345680', TRUE);
+
+-- Seed customers
+INSERT INTO customers (code, name, contact_person, phone, email, address, tax_code, is_active) VALUES
+('CUS-001', 'Công ty TNHH Phân phối DEF', 'Phạm Văn Tùng', '0934567890', 'def@distribution.vn', '321 Võ Văn Tần, Q.3, TP.HCM', '0312345681', TRUE),
+('CUS-002', 'Siêu thị CoopMart', 'Nguyễn Thị Lan', '0945678901', 'coopmart@retail.vn', '654 Cách Mạng Tháng 8, Q.10, TP.HCM', '0312345682', TRUE);
 
 -- Seed categories
 INSERT INTO categories (name, description) VALUES
@@ -87,10 +100,10 @@ INSERT INTO stocks (product_id, quantity, last_import_date) VALUES
 (20, 30, NOW());
 
 -- Seed import receipts
-INSERT INTO import_receipts (receipt_code, user_id, supplier_name, supplier_phone, total_amount, note, import_date) VALUES
-('IMP20260114001', 1, 'Công ty TNHH Điện tử ABC', '0901234567', 35000000, 'Nhập hàng tháng 1/2026', '2026-01-10 09:00:00'),
-('IMP20260114002', 2, 'Công ty TNHH Thực phẩm XYZ', '0912345678', 12500000, 'Nhập hàng thực phẩm định kỳ', '2026-01-12 14:30:00'),
-('IMP20260114003', 1, 'Công ty CP Văn phòng phẩm 123', '0923456789', 5500000, 'Nhập văn phòng phẩm Q1/2026', '2026-01-13 10:15:00');
+INSERT INTO import_receipts (receipt_code, user_id, supplier_id, supplier_name, supplier_phone, total_amount, note, status, approved_by, approved_at, import_date) VALUES
+('IMP20260114001', 1, 1, 'Công ty TNHH Điện tử ABC', '0901234567', 35000000, 'Nhập hàng tháng 1/2026', 'APPROVED', 1, '2026-01-10 09:30:00', '2026-01-10 09:00:00'),
+('IMP20260114002', 2, 2, 'Công ty TNHH Thực phẩm XYZ', '0912345678', 12500000, 'Nhập hàng thực phẩm định kỳ', 'APPROVED', 1, '2026-01-12 15:00:00', '2026-01-12 14:30:00'),
+('IMP20260114003', 1, 3, 'Công ty CP Văn phòng phẩm 123', '0923456789', 5500000, 'Nhập văn phòng phẩm Q1/2026', 'APPROVED', 1, '2026-01-13 10:30:00', '2026-01-13 10:15:00');
 
 -- Seed import receipt items
 INSERT INTO import_receipt_items (import_receipt_id, product_id, quantity, unit_price, subtotal) VALUES
@@ -107,9 +120,9 @@ INSERT INTO import_receipt_items (import_receipt_id, product_id, quantity, unit_
 (3, 12, 50, 14000, 700000);
 
 -- Seed export receipts
-INSERT INTO export_receipts (receipt_code, user_id, customer_name, customer_phone, total_amount, note, export_date) VALUES
-('EXP20260114001', 2, 'Công ty TNHH Phân phối DEF', '0934567890', 18000000, 'Xuất hàng theo đơn đặt hàng #DH001', '2026-01-11 11:20:00'),
-('EXP20260114002', 3, 'Siêu thị CoopMart', '0945678901', 8500000, 'Xuất hàng định kỳ tuần', '2026-01-13 15:45:00');
+INSERT INTO export_receipts (receipt_code, user_id, customer_id, customer_name, customer_phone, total_amount, note, status, approved_by, approved_at, export_date) VALUES
+('EXP20260114001', 2, 1, 'Công ty TNHH Phân phối DEF', '0934567890', 18000000, 'Xuất hàng theo đơn đặt hàng #DH001', 'APPROVED', 1, '2026-01-11 11:30:00', '2026-01-11 11:20:00'),
+('EXP20260114002', 3, 2, 'Siêu thị CoopMart', '0945678901', 8500000, 'Xuất hàng định kỳ tuần', 'APPROVED', 1, '2026-01-13 16:00:00', '2026-01-13 15:45:00');
 
 -- Seed export receipt items
 INSERT INTO export_receipt_items (export_receipt_id, product_id, quantity, unit_price, subtotal) VALUES

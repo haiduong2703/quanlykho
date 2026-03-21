@@ -28,6 +28,15 @@ class StockController {
       return errorResponse(res, error.message, 500);
     }
   }
+
+  async getStockHistory(req, res) {
+    try {
+      const { movements, total } = await stockService.getStockHistory(req.params.id, req.query);
+      return paginatedResponse(res, movements, { ...req.query, total });
+    } catch (error) {
+      return errorResponse(res, error.message, 500);
+    }
+  }
 }
 
 module.exports = new StockController();

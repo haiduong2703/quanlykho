@@ -1,4 +1,5 @@
 const Stock = require('../models/Stock');
+const StockMovement = require('../models/StockMovement');
 
 class StockService {
   async getStocks(filters) {
@@ -19,6 +20,12 @@ class StockService {
 
   async getTotalStockValue() {
     return await Stock.getTotalStockValue();
+  }
+
+  async getStockHistory(productId, filters) {
+    const movements = await StockMovement.findByProductId(productId, filters);
+    const total = await StockMovement.countByProductId(productId, filters);
+    return { movements, total };
   }
 }
 
