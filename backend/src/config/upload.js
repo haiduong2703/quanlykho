@@ -43,9 +43,10 @@ const upload = multer({
   }
 });
 
-// Helper to delete old image
+// Helper to delete old image (skip external URLs)
 const deleteImage = (imagePath) => {
   if (!imagePath) return;
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) return;
 
   const fullPath = path.join(__dirname, '../../uploads/products', imagePath);
   if (fs.existsSync(fullPath)) {

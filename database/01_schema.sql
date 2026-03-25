@@ -4,8 +4,11 @@ CREATE DATABASE IF NOT EXISTS warehouse_db CHARACTER SET utf8mb4 COLLATE utf8mb4
 USE warehouse_db;
 
 -- Drop tables if exists (for clean reinstall)
+SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS stock_movements;
 DROP TABLE IF EXISTS audit_logs;
+DROP TABLE IF EXISTS inventory_check_details;
+DROP TABLE IF EXISTS inventory_checks;
 DROP TABLE IF EXISTS export_receipt_items;
 DROP TABLE IF EXISTS export_receipts;
 DROP TABLE IF EXISTS import_receipt_items;
@@ -16,6 +19,7 @@ DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS customers;
 DROP TABLE IF EXISTS suppliers;
 DROP TABLE IF EXISTS users;
+SET FOREIGN_KEY_CHECKS = 1;
 
 -- Table: users
 CREATE TABLE users (

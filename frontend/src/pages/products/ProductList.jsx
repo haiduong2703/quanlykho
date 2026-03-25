@@ -99,7 +99,7 @@ const ProductList = () => {
       min_stock: product.min_stock
     });
     setImageFile(null);
-    setImagePreview(product.image_url || (product.image ? `${UPLOADS_URL}/${product.image}` : null));
+    setImagePreview(product.image_url || getImageUrl(product));
     setShowModal(true);
   };
 
@@ -286,10 +286,12 @@ const ProductList = () => {
   };
 
   const getImageUrl = (product) => {
-    // Prefer image_url from API, fallback to manual construction
     if (product.image_url) return product.image_url;
-    if (product.image) return `${UPLOADS_URL}/${product.image}`;
-    return null;
+    if (!product.image) return null;
+    // External URL (e.g. crawled from svietdecor.com) — use directly
+    if (product.image.startsWith('http://') || product.image.startsWith('https://')) return product.image;
+    // Local upload — construct path
+    return `${UPLOADS_URL}/${product.image}`;
   };
 
   return (

@@ -11,7 +11,12 @@ const APP_URL = process.env.APP_URL || 'http://localhost:5000';
 const formatProductImage = (product) => {
   if (!product) return product;
   if (product.image) {
-    product.image_url = `${APP_URL}/uploads/products/${product.image}`;
+    // External URL (crawled) — use directly; local filename — construct path
+    if (product.image.startsWith('http://') || product.image.startsWith('https://')) {
+      product.image_url = product.image;
+    } else {
+      product.image_url = `${APP_URL}/uploads/products/${product.image}`;
+    }
   } else {
     product.image_url = null;
   }
