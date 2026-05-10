@@ -67,6 +67,19 @@ class ImportController {
     }
   }
 
+  async setQCStatus(req, res) {
+    try {
+      const { qc_status, qc_note } = req.body;
+      const receipt = await importService.setQCStatus(req.params.id, qc_status, qc_note, req.user.id);
+      await AuditLog.log(req, 'QC_UPDATE', 'IMPORT_RECEIPT', receipt.id, receipt.receipt_code, {
+        qc_status, qc_note
+      });
+      return successResponse(res, receipt, 'QC status updated');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
   async rejectImportReceipt(req, res) {
     try {
       const receipt = await importService.rejectImportReceipt(req.params.id, req.user.id, req.body.reason);

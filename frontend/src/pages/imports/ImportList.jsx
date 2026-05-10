@@ -38,6 +38,7 @@ const ImportList = () => {
   const [imports, setImports] = useState([]);
   const [products, setProducts] = useState([]);
   const [suppliers, setSuppliers] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
   const [search, setSearch] = useState('');
@@ -56,17 +57,28 @@ const ImportList = () => {
   const [rejectReason, setRejectReason] = useState('');
 
   const [formData, setFormData] = useState({
+    receipt_type: 'PURCHASE',
+    warehouse_id: '',
+    qc_required: false,
     supplier_id: '',
     supplier_name: '',
     supplier_phone: '',
     note: '',
-    items: [{ product_id: '', quantity: '', unit_price: '', note: '' }]
+    items: [{ product_id: '', quantity: '', unit_price: '', note: '', batch_code: '', manufacture_date: '', expiry_date: '' }]
   });
 
   useEffect(() => {
     fetchProducts();
     fetchSuppliers();
+    fetchWarehouses();
   }, []);
+
+  const fetchWarehouses = async () => {
+    try {
+      const res = await api.get('/warehouses/active');
+      setWarehouses(res.data || []);
+    } catch (error) { console.error('Error fetching warehouses:', error); }
+  };
 
   const fetchSuppliers = async () => {
     try {
@@ -116,11 +128,14 @@ const ImportList = () => {
   };
 
   const resetFormData = () => ({
+    receipt_type: 'PURCHASE',
+    warehouse_id: warehouses.find(w => w.is_default)?.id || warehouses[0]?.id || '',
+    qc_required: false,
     supplier_id: '',
     supplier_name: '',
     supplier_phone: '',
     note: '',
-    items: [{ product_id: '', quantity: '', unit_price: '', note: '' }]
+    items: [{ product_id: '', quantity: '', unit_price: '', note: '', batch_code: '', manufacture_date: '', expiry_date: '' }]
   });
 
   const openAddModal = () => {
@@ -135,6 +150,9 @@ const ImportList = () => {
       const data = res.data;
       setEditingId(data.id);
       setFormData({
+        receipt_type: data.receipt_type || 'PURCHASE',
+        warehouse_id: data.warehouse_id || '',
+        qc_required: data.qc_status === 'PENDING',
         supplier_id: data.supplier_id || '',
         supplier_name: data.supplier_name || '',
         supplier_phone: data.supplier_phone || '',
@@ -144,9 +162,12 @@ const ImportList = () => {
               product_id: item.product_id?.toString() || '',
               quantity: item.quantity?.toString() || '',
               unit_price: item.unit_price?.toString() || '',
-              note: item.note || ''
+              note: item.note || '',
+              batch_code: item.batch_code || '',
+              manufacture_date: item.manufacture_date ? item.manufacture_date.substring(0, 10) : '',
+              expiry_date: item.expiry_date ? item.expiry_date.substring(0, 10) : ''
             }))
-          : [{ product_id: '', quantity: '', unit_price: '', note: '' }]
+          : [{ product_id: '', quantity: '', unit_price: '', note: '', batch_code: '', manufacture_date: '', expiry_date: '' }]
       });
       setShowModal(true);
     } catch (error) {
@@ -190,7 +211,7 @@ const ImportList = () => {
   const addItem = () => {
     setFormData({
       ...formData,
-      items: [...formData.items, { product_id: '', quantity: '', unit_price: '', note: '' }]
+      items: [...formData.items, { product_id: '', quantity: '', unit_price: '', note: '', batch_code: '', manufacture_date: '', expiry_date: '' }]
     });
   };
 
@@ -237,11 +258,15 @@ const ImportList = () => {
 
     const payload = {
       ...formData,
+      warehouse_id: formData.warehouse_id ? parseInt(formData.warehouse_id) : null,
       items: validItems.map(item => ({
         product_id: parseInt(item.product_id),
         quantity: parseInt(item.quantity),
         unit_price: parseFloat(item.unit_price),
-        note: item.note
+        note: item.note,
+        batch_code: item.batch_code || null,
+        manufacture_date: item.manufacture_date || null,
+        expiry_date: item.expiry_date || null
       }))
     };
 
@@ -312,6 +337,21 @@ const ImportList = () => {
     } finally {
       setApprovalLoading(false);
     }
+  };
+
+  const handleQC = async (qc_status) => {
+    if (!selectedImport) return;
+    setApprovalLoading(true);
+    try {
+      await api.patch(`/imports/${selectedImport.id}/qc`, { qc_status, qc_note: qc_status === 'REJECTED' ? 'QC từ chối' : 'QC đạt' });
+      toast.success(`Đã cập nhật QC: ${qc_status}`);
+      // refresh detail
+      const res = await api.get(`/imports/${selectedImport.id}`);
+      setSelectedImport(res.data);
+      fetchImports();
+    } catch (error) {
+      toast.error(error.message || 'Lỗi cập nhật QC');
+    } finally { setApprovalLoading(false); }
   };
 
   const formatCurrency = (value) => {
@@ -587,6 +627,35 @@ const ImportList = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Loại phiếu *</label>
+              <select className="form-control" value={formData.receipt_type}
+                onChange={(e) => setFormData({ ...formData, receipt_type: e.target.value })}>
+                <option value="PURCHASE">Mua hàng từ NCC</option>
+                <option value="CUSTOMER_RETURN">Khách trả hàng</option>
+                <option value="TRANSFER_IN">Nhận chuyển kho</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Kho nhập *</label>
+              <select className="form-control" value={formData.warehouse_id} required
+                onChange={(e) => setFormData({ ...formData, warehouse_id: e.target.value })}>
+                <option value="">-- Chọn kho --</option>
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.code} — {w.name}{w.is_default ? ' (mặc định)' : ''}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group" style={{ display: 'flex', alignItems: 'flex-end' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <input type="checkbox" checked={formData.qc_required}
+                  onChange={(e) => setFormData({ ...formData, qc_required: e.target.checked })} />
+                Yêu cầu QC trước khi duyệt
+              </label>
+            </div>
+          </div>
+
           <div className="form-group">
             <label className="form-label">Chọn nhà cung cấp</label>
             <select
@@ -658,60 +727,51 @@ const ImportList = () => {
 
             {formData.items.map((item, index) => (
               <div key={index} style={{
-                display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr auto',
-                gap: '12px',
                 marginBottom: '12px',
                 padding: '12px',
                 background: 'white',
                 borderRadius: '6px',
                 border: '1px solid var(--border-color)'
               }}>
-                <select
-                  className="form-control"
-                  value={item.product_id}
-                  onChange={(e) => updateItem(index, 'product_id', e.target.value)}
-                  required
-                >
-                  <option value="">-- Chọn sản phẩm --</option>
-                  {products.map(p => (
-                    <option key={p.id} value={p.id}>{p.sku} - {p.name}</option>
-                  ))}
-                </select>
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Số lượng"
-                  value={item.quantity}
-                  onChange={(e) => updateItem(index, 'quantity', e.target.value)}
-                  min="1"
-                  required
-                />
-                <input
-                  type="number"
-                  className="form-control"
-                  placeholder="Đơn giá"
-                  value={item.unit_price}
-                  onChange={(e) => updateItem(index, 'unit_price', e.target.value)}
-                  min="0"
-                  required
-                />
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  fontWeight: 600,
-                  color: 'var(--success-color)'
-                }}>
-                  {formatCurrency(item.quantity * item.unit_price)}
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr auto', gap: '12px', marginBottom: 8 }}>
+                  <select
+                    className="form-control"
+                    value={item.product_id}
+                    onChange={(e) => updateItem(index, 'product_id', e.target.value)}
+                    required
+                  >
+                    <option value="">-- Chọn sản phẩm --</option>
+                    {products.map(p => (
+                      <option key={p.id} value={p.id}>{p.sku} - {p.name}</option>
+                    ))}
+                  </select>
+                  <input type="number" className="form-control" placeholder="Số lượng"
+                    value={item.quantity} onChange={(e) => updateItem(index, 'quantity', e.target.value)} min="1" required />
+                  <input type="number" className="form-control" placeholder="Đơn giá"
+                    value={item.unit_price} onChange={(e) => updateItem(index, 'unit_price', e.target.value)} min="0" required />
+                  <div style={{ display: 'flex', alignItems: 'center', fontWeight: 600, color: 'var(--success-color)' }}>
+                    {formatCurrency(item.quantity * item.unit_price)}
+                  </div>
+                  <button type="button" className="btn btn-icon btn-danger sm"
+                    onClick={() => removeItem(index)} disabled={formData.items.length === 1}><X size={16} /></button>
                 </div>
-                <button
-                  type="button"
-                  className="btn btn-icon btn-danger sm"
-                  onClick={() => removeItem(index)}
-                  disabled={formData.items.length === 1}
-                >
-                  <X size={16} />
-                </button>
+                <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '12px' }}>
+                  <div>
+                    <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Mã lô (tuỳ chọn)</label>
+                    <input type="text" className="form-control" placeholder="VD: LOT-2026-04"
+                      value={item.batch_code} onChange={(e) => updateItem(index, 'batch_code', e.target.value)} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Ngày sản xuất (NSX)</label>
+                    <input type="date" className="form-control"
+                      value={item.manufacture_date} onChange={(e) => updateItem(index, 'manufacture_date', e.target.value)} />
+                  </div>
+                  <div>
+                    <label style={{ fontSize: 11, color: 'var(--text-secondary)' }}>Hạn sử dụng (HSD)</label>
+                    <input type="date" className="form-control"
+                      value={item.expiry_date} onChange={(e) => updateItem(index, 'expiry_date', e.target.value)} />
+                  </div>
+                </div>
               </div>
             ))}
 
@@ -774,6 +834,29 @@ const ImportList = () => {
                 <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Trạng thái</label>
                 <div style={{ marginTop: '4px' }}>
                   <StatusBadge status={selectedImport.status} />
+                </div>
+              </div>
+              <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Loại phiếu</label>
+                <div style={{ fontWeight: 500 }}>
+                  {selectedImport.receipt_type === 'CUSTOMER_RETURN' ? 'Khách trả hàng'
+                    : selectedImport.receipt_type === 'TRANSFER_IN' ? 'Nhận chuyển kho'
+                    : 'Mua từ NCC'}
+                </div>
+              </div>
+              <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Trạng thái QC</label>
+                <div style={{ marginTop: '4px' }}>
+                  <span className={`badge ${
+                    selectedImport.qc_status === 'PASSED' ? 'badge-success'
+                    : selectedImport.qc_status === 'REJECTED' ? 'badge-danger'
+                    : selectedImport.qc_status === 'PENDING' ? 'badge-warning'
+                    : 'badge-secondary'
+                  }`}>
+                    {selectedImport.qc_status === 'PASSED' ? 'Đạt' :
+                     selectedImport.qc_status === 'REJECTED' ? 'Loại' :
+                     selectedImport.qc_status === 'PENDING' ? 'Chờ kiểm' : 'Không yêu cầu'}
+                  </span>
                 </div>
               </div>
               <div>
@@ -907,6 +990,16 @@ const ImportList = () => {
                 Đóng
               </button>
               <div style={{ display: 'flex', gap: '8px' }}>
+                {selectedImport.status === 'PENDING' && selectedImport.qc_status === 'PENDING' && (
+                  <>
+                    <button className="btn btn-danger" onClick={() => handleQC('REJECTED')} disabled={approvalLoading}>
+                      QC Loại
+                    </button>
+                    <button className="btn btn-success" onClick={() => handleQC('PASSED')} disabled={approvalLoading}>
+                      QC Đạt
+                    </button>
+                  </>
+                )}
                 {isAdmin() && selectedImport.status === 'PENDING' && !showRejectInput && (
                   <>
                     <button
@@ -917,14 +1010,22 @@ const ImportList = () => {
                       <XCircle size={16} />
                       Từ chối
                     </button>
-                    <button
-                      className="btn btn-success"
-                      onClick={handleApprove}
-                      disabled={approvalLoading}
-                    >
-                      <Check size={16} />
-                      {approvalLoading ? 'Đang xử lý...' : 'Duyệt'}
-                    </button>
+                    {/* Chỉ hiện nút Duyệt khi QC đã đạt hoặc không yêu cầu QC */}
+                    {(selectedImport.qc_status === 'PASSED' || selectedImport.qc_status === 'NOT_REQUIRED') && (
+                      <button
+                        className="btn btn-success"
+                        onClick={handleApprove}
+                        disabled={approvalLoading}
+                      >
+                        <Check size={16} />
+                        {approvalLoading ? 'Đang xử lý...' : 'Duyệt'}
+                      </button>
+                    )}
+                    {selectedImport.qc_status === 'REJECTED' && (
+                      <span className="badge badge-danger" style={{ alignSelf: 'center' }}>
+                        Phiếu đã bị QC từ chối — không thể duyệt
+                      </span>
+                    )}
                   </>
                 )}
                 <button className="btn btn-primary" onClick={handlePrint}>

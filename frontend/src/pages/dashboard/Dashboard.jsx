@@ -30,6 +30,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { vi } from 'date-fns/locale';
+import AlertBanner from '../../components/common/AlertBanner';
 
 // Register ChartJS components
 ChartJS.register(
@@ -258,6 +259,7 @@ const Dashboard = () => {
 
   return (
     <Layout title="Dashboard">
+      <AlertBanner />
       {/* Stats Cards */}
       <div className="stats-grid">
         <div className="stat-card">

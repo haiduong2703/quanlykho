@@ -10,6 +10,7 @@ router.get('/', importController.getImportReceipts);
 router.get('/:id', importController.getImportReceiptById);
 router.post('/', importController.createImportReceipt);
 router.put('/:id', importController.updateImportReceipt);
+router.patch('/:id/qc', importController.setQCStatus);
 router.patch('/:id/approve', roleCheck('ADMIN'), importController.approveImportReceipt);
 router.patch('/:id/reject', roleCheck('ADMIN'), importController.rejectImportReceipt);
 router.delete('/:id', importController.deleteImportReceipt);

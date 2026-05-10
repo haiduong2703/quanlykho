@@ -7,11 +7,13 @@ const roleCheck = require('../middlewares/roleCheck');
 router.use(auth);
 
 router.get('/', exportController.getExportReceipts);
+router.get('/:id/picking-list', exportController.previewPickingList);
 router.get('/:id', exportController.getExportReceiptById);
 router.post('/', exportController.createExportReceipt);
 router.put('/:id', exportController.updateExportReceipt);
 router.patch('/:id/approve', roleCheck('ADMIN'), exportController.approveExportReceipt);
 router.patch('/:id/reject', roleCheck('ADMIN'), exportController.rejectExportReceipt);
+router.patch('/:id/deliver', exportController.markDelivered);
 router.delete('/:id', exportController.deleteExportReceipt);
 
 module.exports = router;

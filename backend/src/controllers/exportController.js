@@ -67,6 +67,25 @@ class ExportController {
     }
   }
 
+  async previewPickingList(req, res) {
+    try {
+      const preview = await exportService.previewPickingList(req.params.id);
+      return successResponse(res, preview, 'Picking list preview');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
+  async markDelivered(req, res) {
+    try {
+      const receipt = await exportService.markDelivered(req.params.id);
+      await AuditLog.log(req, 'DELIVER', 'EXPORT_RECEIPT', receipt.id, receipt.receipt_code);
+      return successResponse(res, receipt, 'Đã đánh dấu giao hàng');
+    } catch (error) {
+      return errorResponse(res, error.message, 400);
+    }
+  }
+
   async rejectExportReceipt(req, res) {
     try {
       const receipt = await exportService.rejectExportReceipt(req.params.id, req.user.id, req.body.reason);

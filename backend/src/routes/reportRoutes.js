@@ -9,6 +9,8 @@ router.get('/inventory', reportController.getInventoryReport);
 router.get('/import-export', reportController.getImportExportReport);
 router.get('/supplier-stats', reportController.getSupplierStats);
 router.get('/customer-stats', reportController.getCustomerStats);
+router.get('/stock-card/:productId', reportController.getStockCard);
+router.get('/abc-analysis', reportController.getABCAnalysis);
 router.get('/export-csv', reportController.exportInventoryCSV);
 
 module.exports = router;

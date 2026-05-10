@@ -19,6 +19,12 @@ import {
   X,
   History,
   ClipboardCheck,
+  MapPin,
+  Layers,
+  ArrowRightLeft,
+  TrendingUp,
+  ScrollText,
+  Camera,
 } from "lucide-react";
 
 const Layout = ({ children, title }) => {
@@ -144,11 +150,18 @@ const Layout = ({ children, title }) => {
     { path: "/products", icon: Package, label: "Sản phẩm" },
     { path: "/categories", icon: FolderTree, label: "Danh mục" },
     { path: "/stocks", icon: Warehouse, label: "Tồn kho" },
+    { path: "/warehouses", icon: Warehouse, label: "Kho" },
+    { path: "/locations", icon: MapPin, label: "Vị trí trong kho" },
+    { path: "/batches", icon: Layers, label: "Lô hàng" },
     { path: "/imports", icon: ArrowDownToLine, label: "Nhập kho" },
     { path: "/exports", icon: ArrowUpFromLine, label: "Xuất kho" },
+    { path: "/transfers", icon: ArrowRightLeft, label: "Chuyển kho" },
     { path: "/inventory-checks", icon: ClipboardCheck, label: "Kiểm kê kho" },
     { path: "/suppliers", icon: Truck, label: "Nhà cung cấp" },
     { path: "/customers", icon: UserCheck, label: "Khách hàng" },
+    { path: "/stock-card", icon: ScrollText, label: "Thẻ kho" },
+    { path: "/abc-analysis", icon: TrendingUp, label: "Phân tích ABC" },
+    { path: "/scanner", icon: Camera, label: "Quét / In mã" },
     { path: "/reports", icon: FileText, label: "Báo cáo" },
   ];
 

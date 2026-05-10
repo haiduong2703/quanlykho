@@ -21,6 +21,13 @@ import SupplierList from './pages/suppliers/SupplierList';
 import CustomerList from './pages/customers/CustomerList';
 import AuditLogList from './pages/audit-logs/AuditLogList';
 import InventoryCheckList from './pages/inventory-checks/InventoryCheckList';
+import WarehouseList from './pages/warehouses/WarehouseList';
+import LocationList from './pages/locations/LocationList';
+import BatchList from './pages/batches/BatchList';
+import TransferList from './pages/transfers/TransferList';
+import StockCard from './pages/stock-card/StockCard';
+import ABCAnalysis from './pages/abc-analysis/ABCAnalysis';
+import Scanner from './pages/scanner/Scanner';
 
 function App() {
   return (
@@ -147,6 +154,14 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route path="/warehouses" element={<ProtectedRoute><WarehouseList /></ProtectedRoute>} />
+          <Route path="/locations" element={<ProtectedRoute><LocationList /></ProtectedRoute>} />
+          <Route path="/batches" element={<ProtectedRoute><BatchList /></ProtectedRoute>} />
+          <Route path="/transfers" element={<ProtectedRoute><TransferList /></ProtectedRoute>} />
+          <Route path="/stock-card" element={<ProtectedRoute><StockCard /></ProtectedRoute>} />
+          <Route path="/abc-analysis" element={<ProtectedRoute><ABCAnalysis /></ProtectedRoute>} />
+          <Route path="/scanner" element={<ProtectedRoute><Scanner /></ProtectedRoute>} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

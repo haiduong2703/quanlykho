@@ -14,6 +14,14 @@ const supplierRoutes = require('./supplierRoutes');
 const customerRoutes = require('./customerRoutes');
 const auditLogRoutes = require('./auditLogRoutes');
 const inventoryCheckRoutes = require('./inventoryCheckRoutes');
+const warehouseRoutes = require('./warehouseRoutes');
+const locationRoutes = require('./locationRoutes');
+const batchRoutes = require('./batchRoutes');
+const productUnitRoutes = require('./productUnitRoutes');
+const productAttributeRoutes = require('./productAttributeRoutes');
+const stockLocationRoutes = require('./stockLocationRoutes');
+const transferRoutes = require('./transferRoutes');
+const alertRoutes = require('./alertRoutes');
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
@@ -28,5 +36,13 @@ router.use('/suppliers', supplierRoutes);
 router.use('/customers', customerRoutes);
 router.use('/audit-logs', auditLogRoutes);
 router.use('/inventory-checks', inventoryCheckRoutes);
+router.use('/warehouses', warehouseRoutes);
+router.use('/locations', locationRoutes);
+router.use('/batches', batchRoutes);
+router.use('/product-units', productUnitRoutes);
+router.use('/product-attributes', productAttributeRoutes);
+router.use('/stock-by-location', stockLocationRoutes);
+router.use('/transfers', transferRoutes);
+router.use('/alerts', alertRoutes);
 
 module.exports = router;

@@ -24,8 +24,13 @@ const ProductList = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [formData, setFormData] = useState({
-    sku: '', name: '', description: '', category_id: '', unit: '', price: '', min_stock: ''
+    sku: '', barcode: '', name: '', description: '', category_id: '',
+    unit: '', price: '', min_stock: '', max_stock: ''
   });
+  const [units, setUnits] = useState([]);
+  const [attributes, setAttributes] = useState([]);
+  const [newUnit, setNewUnit] = useState({ unit_name: '', conversion_rate: 1, barcode: '', is_base: false });
+  const [newAttr, setNewAttr] = useState({ attr_name: '', attr_value: '' });
   const [imageFile, setImageFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [formLoading, setFormLoading] = useState(false);
@@ -81,26 +86,75 @@ const ProductList = () => {
 
   const openAddModal = () => {
     setSelectedProduct(null);
-    setFormData({ sku: '', name: '', description: '', category_id: '', unit: '', price: '', min_stock: '0' });
+    setFormData({ sku: '', barcode: '', name: '', description: '', category_id: '', unit: '', price: '', min_stock: '0', max_stock: '0' });
     setImageFile(null);
     setImagePreview(null);
+    setUnits([]); setAttributes([]);
     setShowModal(true);
   };
 
-  const openEditModal = (product) => {
+  const openEditModal = async (product) => {
     setSelectedProduct(product);
     setFormData({
       sku: product.sku,
+      barcode: product.barcode || '',
       name: product.name,
       description: product.description || '',
       category_id: product.category_id,
       unit: product.unit,
       price: product.price,
-      min_stock: product.min_stock
+      min_stock: product.min_stock,
+      max_stock: product.max_stock || 0
     });
     setImageFile(null);
     setImagePreview(product.image_url || getImageUrl(product));
+    // Load units & attributes của sản phẩm
+    try {
+      const [u, a] = await Promise.all([
+        api.get(`/product-units/product/${product.id}`),
+        api.get(`/product-attributes/product/${product.id}`)
+      ]);
+      setUnits(u.data || []);
+      setAttributes(a.data || []);
+    } catch { setUnits([]); setAttributes([]); }
     setShowModal(true);
+  };
+
+  const reloadUnits = async () => {
+    if (!selectedProduct) return;
+    try { const r = await api.get(`/product-units/product/${selectedProduct.id}`); setUnits(r.data || []); } catch {}
+  };
+  const reloadAttributes = async () => {
+    if (!selectedProduct) return;
+    try { const r = await api.get(`/product-attributes/product/${selectedProduct.id}`); setAttributes(r.data || []); } catch {}
+  };
+
+  const addUnit = async () => {
+    if (!selectedProduct) return toast.warn('Hãy lưu sản phẩm trước khi thêm đơn vị');
+    if (!newUnit.unit_name) return toast.warn('Nhập tên đơn vị');
+    try {
+      await api.post('/product-units', { ...newUnit, product_id: selectedProduct.id, conversion_rate: Number(newUnit.conversion_rate) });
+      toast.success('Đã thêm đơn vị');
+      setNewUnit({ unit_name: '', conversion_rate: 1, barcode: '', is_base: false });
+      reloadUnits();
+    } catch (e) { toast.error(e.message || 'Lỗi'); }
+  };
+  const deleteUnit = async (id) => {
+    try { await api.delete(`/product-units/${id}`); reloadUnits(); }
+    catch (e) { toast.error(e.message || 'Không xoá được'); }
+  };
+  const addAttribute = async () => {
+    if (!selectedProduct) return toast.warn('Hãy lưu sản phẩm trước');
+    if (!newAttr.attr_name || !newAttr.attr_value) return toast.warn('Nhập tên & giá trị thuộc tính');
+    try {
+      await api.post('/product-attributes', { ...newAttr, product_id: selectedProduct.id });
+      setNewAttr({ attr_name: '', attr_value: '' });
+      reloadAttributes();
+    } catch (e) { toast.error(e.message || 'Lỗi'); }
+  };
+  const deleteAttribute = async (id) => {
+    try { await api.delete(`/product-attributes/${id}`); reloadAttributes(); }
+    catch { toast.error('Không xoá được'); }
   };
 
   const openDeleteDialog = (product) => {
@@ -145,12 +199,14 @@ const ProductList = () => {
       // Use FormData for file upload
       const submitData = new FormData();
       submitData.append('sku', formData.sku);
+      submitData.append('barcode', formData.barcode || '');
       submitData.append('name', formData.name);
       submitData.append('description', formData.description);
       submitData.append('category_id', formData.category_id);
       submitData.append('unit', formData.unit);
       submitData.append('price', formData.price);
       submitData.append('min_stock', formData.min_stock);
+      submitData.append('max_stock', formData.max_stock || 0);
 
       if (imageFile) {
         submitData.append('image', imageFile);
@@ -591,18 +647,82 @@ const ProductList = () => {
             </div>
           </div>
 
-          <div className="form-group">
-            <label className="form-label required">Số lượng tồn tối thiểu</label>
-            <input
-              type="number"
-              className="form-control"
-              value={formData.min_stock}
-              onChange={(e) => setFormData({ ...formData, min_stock: e.target.value })}
-              required
-              min="0"
-            />
-            <p className="form-hint">Hệ thống sẽ cảnh báo khi tồn kho thấp hơn mức này</p>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label required">Tồn tối thiểu</label>
+              <input type="number" className="form-control" value={formData.min_stock}
+                onChange={(e) => setFormData({ ...formData, min_stock: e.target.value })} required min="0" />
+              <p className="form-hint">Cảnh báo khi tồn ≤ mức này</p>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Tồn tối đa</label>
+              <input type="number" className="form-control" value={formData.max_stock}
+                onChange={(e) => setFormData({ ...formData, max_stock: e.target.value })} min="0" />
+              <p className="form-hint">Cảnh báo khi tồn ≥ mức này (0 = không giới hạn)</p>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Barcode (cấp SKU)</label>
+              <input type="text" className="form-control" value={formData.barcode}
+                onChange={(e) => setFormData({ ...formData, barcode: e.target.value })}
+                placeholder="VD: 8930000000001" />
+              <p className="form-hint">Quét bằng camera/máy quét sẽ tra cứu theo mã này</p>
+            </div>
           </div>
+
+          {selectedProduct && (
+            <>
+              <div style={{ marginTop: 16, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8 }}>
+                <h4 style={{ margin: '0 0 8px' }}>Đơn vị quy đổi</h4>
+                <table className="table" style={{ marginBottom: 8 }}>
+                  <thead><tr><th>Đơn vị</th><th>Hệ số (so với base)</th><th>Cơ sở?</th><th>Barcode</th><th></th></tr></thead>
+                  <tbody>
+                    {units.map(u => (
+                      <tr key={u.id}>
+                        <td>{u.unit_name}</td><td>{u.conversion_rate}</td>
+                        <td>{u.is_base ? '✓' : '-'}</td><td>{u.barcode || '-'}</td>
+                        <td><button type="button" className="btn btn-icon btn-danger sm" onClick={() => deleteUnit(u.id)}><Trash2 size={14} /></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr auto auto', gap: 8 }}>
+                  <input className="form-control" placeholder="VD: Lốc" value={newUnit.unit_name}
+                    onChange={(e) => setNewUnit({ ...newUnit, unit_name: e.target.value })} />
+                  <input type="number" className="form-control" placeholder="Hệ số" value={newUnit.conversion_rate}
+                    onChange={(e) => setNewUnit({ ...newUnit, conversion_rate: e.target.value })} />
+                  <input className="form-control" placeholder="Barcode (tuỳ chọn)" value={newUnit.barcode}
+                    onChange={(e) => setNewUnit({ ...newUnit, barcode: e.target.value })} />
+                  <label style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <input type="checkbox" checked={newUnit.is_base}
+                      onChange={(e) => setNewUnit({ ...newUnit, is_base: e.target.checked })} /> base
+                  </label>
+                  <button type="button" className="btn btn-secondary" onClick={addUnit}>Thêm</button>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 16, padding: 12, background: 'var(--bg-secondary)', borderRadius: 8 }}>
+                <h4 style={{ margin: '0 0 8px' }}>Thuộc tính (màu, size...)</h4>
+                <table className="table" style={{ marginBottom: 8 }}>
+                  <thead><tr><th>Tên thuộc tính</th><th>Giá trị</th><th></th></tr></thead>
+                  <tbody>
+                    {attributes.map(a => (
+                      <tr key={a.id}>
+                        <td>{a.attr_name}</td><td>{a.attr_value}</td>
+                        <td><button type="button" className="btn btn-icon btn-danger sm" onClick={() => deleteAttribute(a.id)}><Trash2 size={14} /></button></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto', gap: 8 }}>
+                  <input className="form-control" placeholder="VD: color" value={newAttr.attr_name}
+                    onChange={(e) => setNewAttr({ ...newAttr, attr_name: e.target.value })} />
+                  <input className="form-control" placeholder="VD: Đỏ" value={newAttr.attr_value}
+                    onChange={(e) => setNewAttr({ ...newAttr, attr_value: e.target.value })} />
+                  <button type="button" className="btn btn-secondary" onClick={addAttribute}>Thêm</button>
+                </div>
+              </div>
+            </>
+          )}
 
           <div className="form-actions">
             <button type="button" className="btn btn-secondary" onClick={() => setShowModal(false)}>

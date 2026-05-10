@@ -58,6 +58,51 @@ class Product {
     return rows[0];
   }
 
+  // Tìm theo barcode (3 lớp ưu tiên):
+  //   1. products.barcode
+  //   2. product_units.barcode  (đơn vị quy đổi có barcode riêng)
+  //   3. products.sku  (fallback — tiện cho test khi chưa gán barcode)
+  static async findByBarcode(barcode) {
+    const [direct] = await pool.query(
+      `SELECT p.*, c.name AS category_name,
+              NULL AS matched_unit_id, NULL AS matched_unit_name, 1 AS matched_conversion_rate,
+              'barcode' AS matched_field
+       FROM products p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.barcode = ?
+       LIMIT 1`,
+      [barcode]
+    );
+    if (direct.length > 0) return direct[0];
+
+    const [viaUnit] = await pool.query(
+      `SELECT p.*, c.name AS category_name,
+              pu.id AS matched_unit_id, pu.unit_name AS matched_unit_name,
+              pu.conversion_rate AS matched_conversion_rate,
+              'unit_barcode' AS matched_field
+       FROM product_units pu
+       JOIN products p ON pu.product_id = p.id
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE pu.barcode = ?
+       LIMIT 1`,
+      [barcode]
+    );
+    if (viaUnit.length > 0) return viaUnit[0];
+
+    // Fallback: tra theo SKU
+    const [bySku] = await pool.query(
+      `SELECT p.*, c.name AS category_name,
+              NULL AS matched_unit_id, NULL AS matched_unit_name, 1 AS matched_conversion_rate,
+              'sku' AS matched_field
+       FROM products p
+       LEFT JOIN categories c ON p.category_id = c.id
+       WHERE p.sku = ?
+       LIMIT 1`,
+      [barcode]
+    );
+    return bySku[0];
+  }
+
   static async search(keyword, filters = {}) {
     const { page = 1, limit = 10, category_id } = filters;
     const offset = (page - 1) * limit;
@@ -84,18 +129,21 @@ class Product {
 
   static async create(productData) {
     const query = `
-      INSERT INTO products (category_id, sku, name, description, image, unit, price, min_stock, is_active)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO products
+        (category_id, sku, barcode, name, description, image, unit, price, min_stock, max_stock, is_active)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await pool.query(query, [
       productData.category_id,
       productData.sku,
+      productData.barcode || null,
       productData.name,
       productData.description,
       productData.image || null,
       productData.unit,
       productData.price,
       productData.min_stock,
+      productData.max_stock || 0,
       productData.is_active !== undefined ? productData.is_active : true
     ]);
     return { id: result.insertId, ...productData };
@@ -132,6 +180,14 @@ class Product {
     if (productData.min_stock !== undefined) {
       fields.push('min_stock = ?');
       params.push(productData.min_stock);
+    }
+    if (productData.max_stock !== undefined) {
+      fields.push('max_stock = ?');
+      params.push(productData.max_stock);
+    }
+    if (productData.barcode !== undefined) {
+      fields.push('barcode = ?');
+      params.push(productData.barcode);
     }
     if (productData.is_active !== undefined) {
       fields.push('is_active = ?');

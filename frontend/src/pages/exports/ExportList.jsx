@@ -38,7 +38,10 @@ const ExportList = () => {
   const [exports, setExports] = useState([]);
   const [products, setProducts] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [warehouses, setWarehouses] = useState([]);
   const [stocks, setStocks] = useState({});
+  const [showPickingModal, setShowPickingModal] = useState(false);
+  const [pickingPreview, setPickingPreview] = useState(null);
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, limit: 10, total: 0 });
   const [search, setSearch] = useState('');
@@ -57,6 +60,10 @@ const ExportList = () => {
   const [approvalLoading, setApprovalLoading] = useState(false);
 
   const [formData, setFormData] = useState({
+    receipt_type: 'SALE',
+    warehouse_id: '',
+    pick_strategy: 'FIFO',
+    disposal_reason: '',
     customer_id: '',
     customer_name: '',
     customer_phone: '',
@@ -68,7 +75,15 @@ const ExportList = () => {
     fetchProducts();
     fetchStocks();
     fetchCustomers();
+    fetchWarehouses();
   }, []);
+
+  const fetchWarehouses = async () => {
+    try {
+      const res = await api.get('/warehouses/active');
+      setWarehouses(res.data || []);
+    } catch (error) { console.error('Error fetching warehouses:', error); }
+  };
 
   const fetchCustomers = async () => {
     try {
@@ -139,6 +154,10 @@ const ExportList = () => {
     fetchStocks(); // Refresh stock data
     setEditingId(null);
     setFormData({
+      receipt_type: 'SALE',
+      warehouse_id: warehouses.find(w => w.is_default)?.id || warehouses[0]?.id || '',
+      pick_strategy: 'FIFO',
+      disposal_reason: '',
       customer_id: '',
       customer_name: '',
       customer_phone: '',
@@ -155,6 +174,10 @@ const ExportList = () => {
       const data = res.data;
       setEditingId(data.id);
       setFormData({
+        receipt_type: data.receipt_type || 'SALE',
+        warehouse_id: data.warehouse_id || '',
+        pick_strategy: data.pick_strategy || 'FIFO',
+        disposal_reason: data.disposal_reason || '',
         customer_id: data.customer_id || '',
         customer_name: data.customer_name || '',
         customer_phone: data.customer_phone || '',
@@ -281,6 +304,7 @@ const ExportList = () => {
     try {
       const payload = {
         ...formData,
+        warehouse_id: formData.warehouse_id ? parseInt(formData.warehouse_id) : null,
         items: validItems.map(item => ({
           product_id: parseInt(item.product_id),
           quantity: parseInt(item.quantity),
@@ -338,6 +362,31 @@ const ExportList = () => {
     } finally {
       setApprovalLoading(false);
     }
+  };
+
+  const handlePreviewPicking = async () => {
+    if (!selectedExport) return;
+    try {
+      const res = await api.get(`/exports/${selectedExport.id}/picking-list`);
+      setPickingPreview(res.data);
+      setShowPickingModal(true);
+    } catch (error) {
+      toast.error(error.message || 'Không tải được Picking List');
+    }
+  };
+
+  const handleMarkDelivered = async () => {
+    if (!selectedExport) return;
+    setApprovalLoading(true);
+    try {
+      await api.patch(`/exports/${selectedExport.id}/deliver`);
+      toast.success('Đã đánh dấu giao hàng');
+      const res = await api.get(`/exports/${selectedExport.id}`);
+      setSelectedExport(res.data);
+      fetchExports();
+    } catch (error) {
+      toast.error(error.message || 'Có lỗi xảy ra');
+    } finally { setApprovalLoading(false); }
   };
 
   const handleReject = async () => {
@@ -635,6 +684,46 @@ const ExportList = () => {
         size="lg"
       >
         <form onSubmit={handleSubmit}>
+          <div className="form-row">
+            <div className="form-group">
+              <label className="form-label">Loại phiếu *</label>
+              <select className="form-control" value={formData.receipt_type}
+                onChange={(e) => setFormData({ ...formData, receipt_type: e.target.value })}>
+                <option value="SALE">Xuất bán</option>
+                <option value="DISPOSAL">Xuất hủy (hàng hỏng/hết hạn)</option>
+                <option value="TRANSFER_OUT">Xuất chuyển kho</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Kho xuất *</label>
+              <select className="form-control" value={formData.warehouse_id} required
+                onChange={(e) => setFormData({ ...formData, warehouse_id: e.target.value })}>
+                <option value="">-- Chọn kho --</option>
+                {warehouses.map(w => (
+                  <option key={w.id} value={w.id}>{w.code} — {w.name}{w.is_default ? ' (mặc định)' : ''}</option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Quy tắc lấy lô</label>
+              <select className="form-control" value={formData.pick_strategy}
+                onChange={(e) => setFormData({ ...formData, pick_strategy: e.target.value })}>
+                <option value="FIFO">FIFO — Nhập trước xuất trước (HSD gần hết trước)</option>
+                <option value="LIFO">LIFO — Nhập sau xuất trước</option>
+                <option value="MANUAL">Thủ công</option>
+              </select>
+            </div>
+          </div>
+
+          {formData.receipt_type === 'DISPOSAL' && (
+            <div className="form-group">
+              <label className="form-label">Lý do hủy *</label>
+              <input type="text" className="form-control" value={formData.disposal_reason} required
+                onChange={(e) => setFormData({ ...formData, disposal_reason: e.target.value })}
+                placeholder="VD: Hết hạn sử dụng, hư hỏng do va đập..." />
+            </div>
+          )}
+
           <div className="form-group">
             <label className="form-label">Chọn khách hàng</label>
             <select
@@ -868,6 +957,41 @@ const ExportList = () => {
                 </div>
               </div>
               <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Loại phiếu</label>
+                <div style={{ fontWeight: 500 }}>
+                  {selectedExport.receipt_type === 'DISPOSAL' ? '🗑 Xuất hủy'
+                    : selectedExport.receipt_type === 'TRANSFER_OUT' ? '↗ Xuất chuyển kho'
+                    : '🛒 Xuất bán'}
+                </div>
+              </div>
+              <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Quy tắc lấy lô</label>
+                <div style={{ fontWeight: 500 }}>{selectedExport.pick_strategy || 'FIFO'}</div>
+              </div>
+              <div>
+                <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Trạng thái giao</label>
+                <div style={{ marginTop: '4px' }}>
+                  <span className={`badge ${
+                    selectedExport.picking_status === 'DELIVERED' ? 'badge-success'
+                    : selectedExport.picking_status === 'PICKED' ? 'badge-info'
+                    : 'badge-secondary'
+                  }`}>
+                    {selectedExport.picking_status === 'DELIVERED' ? 'Đã giao'
+                      : selectedExport.picking_status === 'PICKED' ? 'Đã pick xong'
+                      : selectedExport.picking_status === 'PICKING' ? 'Đang pick'
+                      : 'Chưa pick'}
+                  </span>
+                </div>
+              </div>
+              {selectedExport.receipt_type === 'DISPOSAL' && selectedExport.disposal_reason && (
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Lý do hủy</label>
+                  <div style={{ fontWeight: 500, color: '#ef4444', background: '#fef2f2', padding: '8px 12px', borderRadius: 6, marginTop: 4 }}>
+                    {selectedExport.disposal_reason}
+                  </div>
+                </div>
+              )}
+              <div>
                 <label style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>Người tạo</label>
                 <div style={{ fontWeight: 500 }}>{selectedExport.created_by_name || 'N/A'}</div>
               </div>
@@ -992,6 +1116,16 @@ const ExportList = () => {
                 Đóng
               </button>
               <div style={{ display: 'flex', gap: '8px' }}>
+                {selectedExport.status === 'PENDING' && (
+                  <button className="btn btn-secondary" onClick={handlePreviewPicking}>
+                    Xem Picking List
+                  </button>
+                )}
+                {selectedExport.status === 'APPROVED' && selectedExport.picking_status !== 'DELIVERED' && (
+                  <button className="btn btn-info" onClick={handleMarkDelivered} disabled={approvalLoading}>
+                    Đánh dấu đã giao
+                  </button>
+                )}
                 {isAdmin() && selectedExport.status === 'PENDING' && !showRejectInput && (
                   <>
                     <button
@@ -1017,6 +1151,54 @@ const ExportList = () => {
                   In phiếu
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+      </Modal>
+
+      {/* Picking List Preview Modal */}
+      <Modal
+        isOpen={showPickingModal}
+        onClose={() => setShowPickingModal(false)}
+        title={`Picking List — ${pickingPreview?.receipt_code || ''}`}
+        size="lg"
+      >
+        {pickingPreview && (
+          <div>
+            <div style={{ marginBottom: 12 }}>
+              <strong>Quy tắc lấy lô:</strong> {pickingPreview.pick_strategy}
+            </div>
+            {pickingPreview.items.map((it, idx) => (
+              <div key={idx} className="card" style={{ padding: 12, marginBottom: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
+                  <div><code>{it.sku}</code> — {it.product_name}</div>
+                  <div>Yêu cầu: <strong>{it.requested_quantity}</strong></div>
+                </div>
+                {it.picks.length > 0 ? (
+                  <table className="table">
+                    <thead><tr><th>Mã lô</th><th>HSD</th><th>SL pick</th></tr></thead>
+                    <tbody>
+                      {it.picks.map((p, i) => (
+                        <tr key={i}>
+                          <td><code>{p.batch_code || '— (không có lô)'}</code></td>
+                          <td>{p.expiry_date ? new Date(p.expiry_date).toLocaleDateString('vi-VN') : '-'}</td>
+                          <td><strong>{p.quantity}</strong></td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                ) : (
+                  <div style={{ color: 'var(--danger-color)' }}>Không có lô nào sẵn sàng</div>
+                )}
+                {it.shortage > 0 && (
+                  <div style={{ color: 'var(--danger-color)', marginTop: 4 }}>
+                    ⚠ Thiếu <strong>{it.shortage}</strong> đơn vị
+                  </div>
+                )}
+              </div>
+            ))}
+            <div className="form-actions">
+              <button className="btn btn-secondary" onClick={() => setShowPickingModal(false)}>Đóng</button>
             </div>
           </div>
         )}

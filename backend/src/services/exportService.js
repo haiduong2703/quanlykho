@@ -4,85 +4,110 @@ const ExportReceiptItem = require('../models/ExportReceiptItem');
 const Stock = require('../models/Stock');
 const Product = require('../models/Product');
 const StockMovement = require('../models/StockMovement');
+const Batch = require('../models/Batch');
+const StockByLocation = require('../models/StockByLocation');
+const Warehouse = require('../models/Warehouse');
+
+const MOVEMENT_TYPE = {
+  SALE: 'EXPORT',
+  DISPOSAL: 'DISPOSAL',
+  TRANSFER_OUT: 'TRANSFER_OUT'
+};
+
+async function resolveWarehouseId(candidate) {
+  if (candidate) return candidate;
+  const def = await Warehouse.findDefault();
+  if (!def) throw new Error('Chưa cấu hình kho mặc định.');
+  return def.id;
+}
+
+// Sinh danh sách pick suggestion từ batches theo FIFO/LIFO cho 1 item
+async function suggestPicks(connection, { productId, warehouseId, quantity, pickStrategy }) {
+  const fn = pickStrategy === 'LIFO' ? 'findAvailableLIFO' : 'findAvailableFIFO';
+  const batches = await Batch[fn](productId, warehouseId);
+  const picks = [];
+  let remaining = Number(quantity);
+  for (const b of batches) {
+    if (remaining <= 0) break;
+    const take = Math.min(Number(b.remaining_quantity), remaining);
+    if (take > 0) {
+      picks.push({ batch_id: b.id, batch_code: b.batch_code, expiry_date: b.expiry_date, quantity: take });
+      remaining -= take;
+    }
+  }
+  return { picks, shortage: remaining };
+}
 
 class ExportService {
   async createExportReceipt(userId, receiptData) {
     const connection = await pool.getConnection();
-
     try {
       await connection.beginTransaction();
 
-      // Validate items
       if (!receiptData.items || receiptData.items.length === 0) {
         throw new Error('Export items cannot be empty');
       }
 
-      // Validate products exist and check stock availability
+      const receiptType = receiptData.receipt_type || 'SALE';
+      if (!['SALE', 'DISPOSAL', 'TRANSFER_OUT'].includes(receiptType)) {
+        throw new Error('Invalid receipt_type');
+      }
+      const pickStrategy = receiptData.pick_strategy || 'FIFO';
+      if (!['FIFO', 'LIFO', 'MANUAL'].includes(pickStrategy)) {
+        throw new Error('Invalid pick_strategy');
+      }
+
+      const warehouseId = await resolveWarehouseId(receiptData.warehouse_id);
+
       let totalAmount = 0;
       for (const item of receiptData.items) {
         const product = await Product.findById(item.product_id);
-        if (!product) {
-          throw new Error(`Product ID ${item.product_id} not found`);
-        }
-        if (item.quantity <= 0) {
-          throw new Error('Quantity must be greater than 0');
-        }
-        if (item.unit_price < 0) {
-          throw new Error('Unit price cannot be negative');
-        }
+        if (!product) throw new Error(`Product ID ${item.product_id} not found`);
+        if (item.quantity <= 0) throw new Error('Quantity must be greater than 0');
+        const unitPrice = Number(item.unit_price || 0);
+        if (unitPrice < 0) throw new Error('Unit price cannot be negative');
 
-        // Check stock availability
-        const stock = await Stock.findByProductId(item.product_id);
-        if (!stock) {
-          throw new Error(`Product "${product.name}" has no stock record`);
-        }
-        if (stock.quantity < item.quantity) {
+        // Kiểm tra tồn trong kho chỉ định (tổng qua stock_by_location)
+        const availableInWh = await StockByLocation.totalByProduct(item.product_id, warehouseId);
+        if (availableInWh < item.quantity) {
           throw new Error(
-            `Insufficient stock for product "${product.name}". ` +
-            `Available: ${stock.quantity}, Required: ${item.quantity}`
+            `Tồn kho không đủ cho "${product.name}" trong kho. ` +
+            `Khả dụng: ${availableInWh}, yêu cầu: ${item.quantity}`
           );
         }
-
-        const subtotal = item.quantity * item.unit_price;
-        totalAmount += subtotal;
+        totalAmount += item.quantity * unitPrice;
       }
 
-      // Generate receipt code
       const receiptCode = await ExportReceipt.generateReceiptCode();
-
-      // Create export receipt - default status is PENDING
       const receipt = await ExportReceipt.create({
         receipt_code: receiptCode,
+        receipt_type: receiptType,
         user_id: userId,
         customer_id: receiptData.customer_id || null,
         customer_name: receiptData.customer_name,
         customer_phone: receiptData.customer_phone,
+        warehouse_id: warehouseId,
+        disposal_reason: receiptData.disposal_reason || null,
+        pick_strategy: pickStrategy,
         total_amount: totalAmount,
         note: receiptData.note,
         status: 'PENDING',
         export_date: receiptData.export_date || new Date()
       }, connection);
 
-      // Create items (stock NOT updated yet - wait for approval)
       for (const item of receiptData.items) {
-        const subtotal = item.quantity * item.unit_price;
-
         await ExportReceiptItem.create({
           export_receipt_id: receipt.id,
           product_id: item.product_id,
           quantity: item.quantity,
-          unit_price: item.unit_price,
-          subtotal: subtotal,
+          unit_price: item.unit_price || 0,
+          subtotal: item.quantity * (item.unit_price || 0),
           note: item.note
         }, connection);
       }
 
       await connection.commit();
-
-      // Get full receipt with items
-      const fullReceipt = await ExportReceipt.findByIdWithItems(receipt.id);
-      return fullReceipt;
-
+      return await ExportReceipt.findByIdWithItems(receipt.id);
     } catch (error) {
       await connection.rollback();
       throw error;
@@ -93,60 +118,38 @@ class ExportService {
 
   async updateExportReceipt(id, userId, receiptData) {
     const connection = await pool.getConnection();
-
     try {
       await connection.beginTransaction();
-
       const existing = await ExportReceipt.findByIdWithItems(id);
-      if (!existing) {
-        throw new Error('Export receipt not found');
-      }
-
-      if (existing.status !== 'PENDING') {
-        throw new Error('Only PENDING receipts can be edited');
-      }
+      if (!existing) throw new Error('Export receipt not found');
+      if (existing.status !== 'PENDING') throw new Error('Only PENDING receipts can be edited');
 
       if (receiptData.items && receiptData.items.length > 0) {
         let totalAmount = 0;
+        const warehouseId = existing.warehouse_id;
         for (const item of receiptData.items) {
           const product = await Product.findById(item.product_id);
-          if (!product) {
-            throw new Error(`Product ID ${item.product_id} not found`);
+          if (!product) throw new Error(`Product ID ${item.product_id} not found`);
+          if (item.quantity <= 0) throw new Error('Quantity must be greater than 0');
+          const unitPrice = Number(item.unit_price || 0);
+          if (unitPrice < 0) throw new Error('Unit price cannot be negative');
+          const availableInWh = await StockByLocation.totalByProduct(item.product_id, warehouseId);
+          if (availableInWh < item.quantity) {
+            throw new Error(`Tồn kho không đủ cho "${product.name}". Khả dụng: ${availableInWh}, yêu cầu: ${item.quantity}`);
           }
-          if (item.quantity <= 0) {
-            throw new Error('Quantity must be greater than 0');
-          }
-          if (item.unit_price < 0) {
-            throw new Error('Unit price cannot be negative');
-          }
-
-          // Check stock availability
-          const stock = await Stock.findByProductId(item.product_id);
-          if (!stock || stock.quantity < item.quantity) {
-            throw new Error(
-              `Insufficient stock for product "${product.name}". ` +
-              `Available: ${stock ? stock.quantity : 0}, Required: ${item.quantity}`
-            );
-          }
-
-          totalAmount += item.quantity * item.unit_price;
+          totalAmount += item.quantity * unitPrice;
         }
-
-        // Delete old items and create new ones
         await ExportReceiptItem.deleteByReceiptId(id, connection);
-
         for (const item of receiptData.items) {
-          const subtotal = item.quantity * item.unit_price;
           await ExportReceiptItem.create({
             export_receipt_id: id,
             product_id: item.product_id,
             quantity: item.quantity,
-            unit_price: item.unit_price,
-            subtotal: subtotal,
+            unit_price: item.unit_price || 0,
+            subtotal: item.quantity * (item.unit_price || 0),
             note: item.note
           }, connection);
         }
-
         await ExportReceipt.update(id, {
           customer_id: receiptData.customer_id,
           customer_name: receiptData.customer_name,
@@ -165,7 +168,6 @@ class ExportService {
 
       await connection.commit();
       return await ExportReceipt.findByIdWithItems(id);
-
     } catch (error) {
       await connection.rollback();
       throw error;
@@ -174,63 +176,156 @@ class ExportService {
     }
   }
 
+  // Preview picking list (không commit). Trả về danh sách batch gợi ý cho mỗi item.
+  async previewPickingList(id) {
+    const receipt = await ExportReceipt.findByIdWithItems(id);
+    if (!receipt) throw new Error('Export receipt not found');
+    const warehouseId = receipt.warehouse_id;
+    const pickStrategy = receipt.pick_strategy || 'FIFO';
+    const result = [];
+    for (const item of receipt.items) {
+      const { picks, shortage } = await suggestPicks(pool, {
+        productId: item.product_id,
+        warehouseId,
+        quantity: item.quantity,
+        pickStrategy
+      });
+      result.push({
+        item_id: item.id,
+        product_id: item.product_id,
+        product_name: item.product_name,
+        sku: item.sku,
+        requested_quantity: item.quantity,
+        picks,
+        shortage
+      });
+    }
+    return {
+      receipt_code: receipt.receipt_code,
+      warehouse_id: warehouseId,
+      pick_strategy: pickStrategy,
+      items: result
+    };
+  }
+
   async approveExportReceipt(id, approvedBy) {
     const connection = await pool.getConnection();
-
     try {
       await connection.beginTransaction();
 
       const receipt = await ExportReceipt.findByIdWithItems(id);
-      if (!receipt) {
-        throw new Error('Export receipt not found');
-      }
+      if (!receipt) throw new Error('Export receipt not found');
+      if (receipt.status !== 'PENDING') throw new Error('Only PENDING receipts can be approved');
 
-      if (receipt.status !== 'PENDING') {
-        throw new Error('Only PENDING receipts can be approved');
-      }
+      const warehouseId = receipt.warehouse_id;
+      const pickStrategy = receipt.pick_strategy || 'FIFO';
+      const movementType = MOVEMENT_TYPE[receipt.receipt_type] || 'EXPORT';
 
-      // Re-validate stock availability before approving
+      // Re-validate
       for (const item of receipt.items) {
-        const [stockRows] = await connection.query('SELECT quantity FROM stocks WHERE product_id = ?', [item.product_id]);
-        const available = stockRows.length > 0 ? stockRows[0].quantity : 0;
-        if (available < item.quantity) {
+        const avail = await StockByLocation.totalByProduct(item.product_id, warehouseId);
+        if (avail < item.quantity) {
           const product = await Product.findById(item.product_id);
-          throw new Error(
-            `Insufficient stock for product "${product.name}". ` +
-            `Available: ${available}, Required: ${item.quantity}`
-          );
+          throw new Error(`Tồn kho không đủ cho "${product.name}". Khả dụng: ${avail}, yêu cầu: ${item.quantity}`);
         }
       }
 
-      // Update status
       await connection.query(
-        'UPDATE export_receipts SET status = ?, approved_by = ?, approved_at = NOW() WHERE id = ?',
-        ['APPROVED', approvedBy, id]
+        'UPDATE export_receipts SET status = ?, approved_by = ?, approved_at = NOW(), picking_status = ? WHERE id = ?',
+        ['APPROVED', approvedBy, 'PICKED', id]
       );
 
-      // Apply stock changes
       for (const item of receipt.items) {
+        // Tồn trước (tổng)
         const [stockRows] = await connection.query('SELECT quantity FROM stocks WHERE product_id = ?', [item.product_id]);
-        const beforeQty = stockRows[0].quantity;
+        const beforeQty = stockRows.length > 0 ? stockRows[0].quantity : 0;
 
-        await Stock.decrement(item.product_id, item.quantity, connection);
+        // Auto-pick FIFO/LIFO — dùng connection để đọc batch real-time trong transaction
+        const pickStrategyFn = pickStrategy === 'LIFO' ? 'findAvailableLIFO' : 'findAvailableFIFO';
+        const availableBatches = await Batch[pickStrategyFn](item.product_id, warehouseId);
 
-        await StockMovement.create({
-          product_id: item.product_id,
-          type: 'EXPORT',
-          quantity: item.quantity,
-          before_quantity: beforeQty,
-          after_quantity: beforeQty - item.quantity,
-          reference_type: 'EXPORT_RECEIPT',
-          reference_id: receipt.id,
-          reference_code: receipt.receipt_code,
-          created_by: approvedBy
-        }, connection);
+        let remaining = Number(item.quantity);
+        const appliedPicks = [];
+
+        // Nếu có batch còn hàng → pick theo batch
+        for (const b of availableBatches) {
+          if (remaining <= 0) break;
+          const take = Math.min(Number(b.remaining_quantity), remaining);
+          if (take <= 0) continue;
+
+          await Batch.adjustRemaining(b.id, -take, connection);
+          await StockByLocation.upsert({
+            product_id: item.product_id,
+            warehouse_id: warehouseId,
+            location_id: null,
+            batch_id: b.id,
+            delta: -take
+          }, connection);
+          await ExportReceiptItem.addPick({
+            export_receipt_item_id: item.id,
+            batch_id: b.id,
+            location_id: null,
+            quantity: take,
+            picked_by: approvedBy
+          }, connection);
+          appliedPicks.push({ batch_id: b.id, quantity: take });
+          remaining -= take;
+        }
+
+        // Nếu vẫn còn remaining (có tồn ở dòng stock_by_location không gắn batch — dữ liệu cũ)
+        if (remaining > 0) {
+          await StockByLocation.upsert({
+            product_id: item.product_id,
+            warehouse_id: warehouseId,
+            location_id: null,
+            batch_id: null,
+            delta: -remaining
+          }, connection);
+          await ExportReceiptItem.addPick({
+            export_receipt_item_id: item.id,
+            batch_id: null,
+            location_id: null,
+            quantity: remaining,
+            picked_by: approvedBy
+          }, connection);
+          appliedPicks.push({ batch_id: null, quantity: remaining });
+          remaining = 0;
+        }
+
+        await ExportReceiptItem.addPickedQuantity(item.id, item.quantity, connection);
+        // Cập nhật tồn cache (stocks) — không throw nếu cache lệch; stock_by_location là nguồn chính
+        await connection.query(
+          'INSERT IGNORE INTO stocks (product_id, quantity) VALUES (?, 0)',
+          [item.product_id]
+        );
+        await connection.query(
+          'UPDATE stocks SET quantity = GREATEST(0, quantity - ?), last_export_date = NOW() WHERE product_id = ?',
+          [item.quantity, item.product_id]
+        );
+
+        // Tạo 1 stock_movement tổng cho toàn bộ item (hoặc nhiều cái theo batch?
+        // Chọn 1 movement/pick để log chi tiết)
+        for (const p of appliedPicks) {
+          await StockMovement.create({
+            product_id: item.product_id,
+            warehouse_id: warehouseId,
+            batch_id: p.batch_id,
+            location_id: null,
+            type: movementType,
+            quantity: p.quantity,
+            before_quantity: beforeQty,
+            after_quantity: beforeQty - item.quantity,
+            reference_type: 'EXPORT_RECEIPT',
+            reference_id: receipt.id,
+            reference_code: receipt.receipt_code,
+            note: receipt.receipt_type === 'DISPOSAL' ? (receipt.disposal_reason || 'Xuất hủy') : null,
+            created_by: approvedBy
+          }, connection);
+        }
       }
 
       await connection.commit();
       return await ExportReceipt.findByIdWithItems(id);
-
     } catch (error) {
       await connection.rollback();
       throw error;
@@ -241,58 +336,66 @@ class ExportService {
 
   async rejectExportReceipt(id, rejectedBy, reason) {
     const receipt = await ExportReceipt.findById(id);
-    if (!receipt) {
-      throw new Error('Export receipt not found');
-    }
-
-    if (receipt.status !== 'PENDING') {
-      throw new Error('Only PENDING receipts can be rejected');
-    }
-
+    if (!receipt) throw new Error('Export receipt not found');
+    if (receipt.status !== 'PENDING') throw new Error('Only PENDING receipts can be rejected');
     await pool.query(
       'UPDATE export_receipts SET status = ?, approved_by = ?, approved_at = NOW(), rejected_reason = ? WHERE id = ?',
       ['REJECTED', rejectedBy, reason || null, id]
     );
-
     return await ExportReceipt.findByIdWithItems(id);
   }
 
   async getExportReceipts(filters) {
     const receipts = await ExportReceipt.findAll(filters);
     const total = await ExportReceipt.count(filters);
-
     return { receipts, total };
   }
 
   async getExportReceiptById(id) {
     const receipt = await ExportReceipt.findByIdWithItems(id);
-    if (!receipt) {
-      throw new Error('Export receipt not found');
-    }
+    if (!receipt) throw new Error('Export receipt not found');
+    // Kèm luôn danh sách picks đã thực hiện
+    receipt.picks = await ExportReceiptItem.findPicksByReceiptId(id);
     return receipt;
+  }
+
+  async markDelivered(id) {
+    const receipt = await ExportReceipt.findById(id);
+    if (!receipt) throw new Error('Export receipt not found');
+    if (receipt.status !== 'APPROVED') throw new Error('Chỉ phiếu đã duyệt mới có thể đánh dấu đã giao');
+    await pool.query('UPDATE export_receipts SET picking_status = ? WHERE id = ?', ['DELIVERED', id]);
+    return await ExportReceipt.findByIdWithItems(id);
   }
 
   async deleteExportReceipt(id) {
     const connection = await pool.getConnection();
-
     try {
       await connection.beginTransaction();
-
       const receipt = await ExportReceipt.findByIdWithItems(id);
-      if (!receipt) {
-        throw new Error('Export receipt not found');
-      }
+      if (!receipt) throw new Error('Export receipt not found');
 
-      // If APPROVED, reverse stock changes
       if (receipt.status === 'APPROVED') {
+        const warehouseId = receipt.warehouse_id;
+        const picks = await ExportReceiptItem.findPicksByReceiptId(id);
+
+        // Hoàn trả theo từng pick
+        for (const p of picks) {
+          if (p.batch_id) await Batch.adjustRemaining(p.batch_id, p.quantity, connection);
+          await StockByLocation.upsert({
+            product_id: p.product_id,
+            warehouse_id: warehouseId,
+            location_id: p.location_id || null,
+            batch_id: p.batch_id || null,
+            delta: p.quantity
+          }, connection);
+        }
         for (const item of receipt.items) {
           const [stockRows] = await connection.query('SELECT quantity FROM stocks WHERE product_id = ?', [item.product_id]);
           const beforeQty = stockRows.length > 0 ? stockRows[0].quantity : 0;
-
           await Stock.increment(item.product_id, item.quantity, connection);
-
           await StockMovement.create({
             product_id: item.product_id,
+            warehouse_id: warehouseId,
             type: 'ADJUST',
             quantity: item.quantity,
             before_quantity: beforeQty,
@@ -306,13 +409,11 @@ class ExportService {
         }
       }
 
-      // Delete items and receipt
       await ExportReceiptItem.deleteByReceiptId(id, connection);
       await ExportReceipt.delete(id, connection);
 
       await connection.commit();
       return true;
-
     } catch (error) {
       await connection.rollback();
       throw error;

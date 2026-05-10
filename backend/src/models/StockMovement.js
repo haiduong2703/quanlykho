@@ -4,11 +4,16 @@ class StockMovement {
   static async create(data, connection = null) {
     const conn = connection || pool;
     const query = `
-      INSERT INTO stock_movements (product_id, type, quantity, before_quantity, after_quantity, reference_type, reference_id, reference_code, note, created_by)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO stock_movements
+        (product_id, warehouse_id, batch_id, location_id, type, quantity,
+         before_quantity, after_quantity, reference_type, reference_id, reference_code, note, created_by)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await conn.query(query, [
       data.product_id,
+      data.warehouse_id || null,
+      data.batch_id || null,
+      data.location_id || null,
       data.type,
       data.quantity,
       data.before_quantity || 0,

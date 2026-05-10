@@ -79,18 +79,26 @@ class ImportReceipt {
   static async create(receiptData, connection = null) {
     const conn = connection || pool;
     const query = `
-      INSERT INTO import_receipts (receipt_code, user_id, supplier_id, supplier_name, supplier_phone, total_amount, note, status, import_date)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO import_receipts
+        (receipt_code, receipt_type, user_id, supplier_id, supplier_name, supplier_phone,
+         warehouse_id, total_amount, note, status, qc_status,
+         source_export_receipt_id, source_transfer_receipt_id, import_date)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await conn.query(query, [
       receiptData.receipt_code,
+      receiptData.receipt_type || 'PURCHASE',
       receiptData.user_id,
       receiptData.supplier_id || null,
       receiptData.supplier_name,
       receiptData.supplier_phone,
+      receiptData.warehouse_id || null,
       receiptData.total_amount,
       receiptData.note,
       receiptData.status || 'PENDING',
+      receiptData.qc_status || 'NOT_REQUIRED',
+      receiptData.source_export_receipt_id || null,
+      receiptData.source_transfer_receipt_id || null,
       receiptData.import_date || new Date()
     ]);
     return { id: result.insertId, ...receiptData };

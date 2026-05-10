@@ -16,18 +16,30 @@ class ImportReceiptItem {
   static async create(itemData, connection = null) {
     const conn = connection || pool;
     const query = `
-      INSERT INTO import_receipt_items (import_receipt_id, product_id, quantity, unit_price, subtotal, note)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO import_receipt_items
+        (import_receipt_id, product_id, batch_id, location_id, batch_code,
+         manufacture_date, expiry_date, quantity, unit_price, subtotal, note)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const [result] = await conn.query(query, [
       itemData.import_receipt_id,
       itemData.product_id,
+      itemData.batch_id || null,
+      itemData.location_id || null,
+      itemData.batch_code || null,
+      itemData.manufacture_date || null,
+      itemData.expiry_date || null,
       itemData.quantity,
       itemData.unit_price,
       itemData.subtotal,
       itemData.note
     ]);
     return { id: result.insertId, ...itemData };
+  }
+
+  static async setBatch(itemId, batchId, connection = null) {
+    const conn = connection || pool;
+    await conn.query('UPDATE import_receipt_items SET batch_id = ? WHERE id = ?', [batchId, itemId]);
   }
 
   static async createBulk(items, connection = null) {

@@ -10,6 +10,7 @@ router.use(auth);
 router.get('/', productController.getProducts);
 router.get('/all', productController.getAllProducts);
 router.get('/search', productController.searchProducts);
+router.get('/barcode/:code', productController.findByBarcode);
 router.get('/sample-excel', productController.downloadSampleExcel);
 router.get('/:id', productController.getProductById);
 router.post('/', upload.single('image'), productController.createProduct);

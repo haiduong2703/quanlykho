@@ -92,6 +92,48 @@ class ExportReceiptItem {
     const [result] = await conn.query(query, [receiptId]);
     return result.affectedRows > 0;
   }
+
+  static async addPickedQuantity(itemId, picked, connection = null) {
+    const conn = connection || pool;
+    await conn.query(
+      'UPDATE export_receipt_items SET picked_quantity = picked_quantity + ? WHERE id = ?',
+      [picked, itemId]
+    );
+  }
+
+  static async addPick(data, connection = null) {
+    const conn = connection || pool;
+    const [result] = await conn.query(
+      `INSERT INTO export_receipt_picks
+         (export_receipt_item_id, batch_id, location_id, quantity, picked_by, picked_at)
+       VALUES (?, ?, ?, ?, ?, NOW())`,
+      [
+        data.export_receipt_item_id,
+        data.batch_id || null,
+        data.location_id || null,
+        data.quantity,
+        data.picked_by || null
+      ]
+    );
+    return result.insertId;
+  }
+
+  static async findPicksByReceiptId(receiptId) {
+    const [rows] = await pool.query(
+      `SELECT erp.*, eri.product_id, p.sku, p.name AS product_name,
+              b.batch_code, b.expiry_date,
+              l.code AS location_code
+       FROM export_receipt_picks erp
+       JOIN export_receipt_items eri ON erp.export_receipt_item_id = eri.id
+       JOIN products p ON eri.product_id = p.id
+       LEFT JOIN batches b ON erp.batch_id = b.id
+       LEFT JOIN warehouse_locations l ON erp.location_id = l.id
+       WHERE eri.export_receipt_id = ?
+       ORDER BY eri.id ASC, erp.id ASC`,
+      [receiptId]
+    );
+    return rows;
+  }
 }
 
 module.exports = ExportReceiptItem;

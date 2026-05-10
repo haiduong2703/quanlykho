@@ -1,4 +1,5 @@
 const productService = require('../services/productService');
+const Product = require('../models/Product');
 const { successResponse, errorResponse, paginatedResponse } = require('../utils/responseHelper');
 const { deleteImage } = require('../config/upload');
 
@@ -27,6 +28,19 @@ class ProductController {
       return successResponse(res, product);
     } catch (error) {
       return errorResponse(res, error.message, 404);
+    }
+  }
+
+  // Tìm sản phẩm theo barcode (quét bằng camera/máy quét)
+  async findByBarcode(req, res) {
+    try {
+      const code = req.params.code || req.query.code;
+      if (!code) return errorResponse(res, 'Thiếu mã barcode', 400);
+      const product = await Product.findByBarcode(code);
+      if (!product) return errorResponse(res, 'Không tìm thấy sản phẩm với barcode này', 404);
+      return successResponse(res, product, 'Product found by barcode');
+    } catch (error) {
+      return errorResponse(res, error.message, 500);
     }
   }
 
